@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Guida all'Erbologia - Strumenti Interattivi</title>
+<style>
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css');
+@font-face {
+  font-family:'magic';
+  src:url('https://dl.dropboxusercontent.com/scl/fi/nbzmrri4qyvc3tzx96911/HarryBeastDisplay-Regular.woff2?rlkey=he290voe32k33gowug23c1osc&st=nj9fgly1') format('woff2');
+  font-weight:normal;
+  font-style:normal;
+  font-display:swap;
+}
+
+body{
+  background:
+    radial-gradient(circle at 12% 0%, rgba(200,173,104,.08), transparent 30%),
+    radial-gradient(circle at 88% 8%, rgba(89,111,67,.18), transparent 34%),
+    linear-gradient(180deg,#1f2c1b 0%,#172116 68%,#11180f 100%);
+  color:#eee7d1;
+  font-family:Georgia, "Times New Roman", serif;
+  margin:0;
+  padding:20px;
+}
+.contenitore{
+  max-width:920px;
+  margin:0 auto;
+  background:linear-gradient(180deg,#2a3a23 0%,#24311f 100%);
+  border:1px solid #765438;
+  border-radius:10px;
+  padding:20px 26px;
+  box-shadow:0 0 25px rgba(0,0,0,0.6);
+}
+h1{
+  margin:0 0 8px;
+  text-align:center;
+  color:#eee7d1;
+  font-family:'magic', Georgia, "Times New Roman", serif;
+  font-size:42px;
+  font-weight:400;
+  line-height:1.12;
+  letter-spacing:.02em;
+  text-shadow:0 2px 8px rgba(0,0,0,.45);
+}
+h1:after{
+  content:"";
+  display:block;
+  width:120px;
+  height:1px;
+  margin:15px auto 0;
+  background:linear-gradient(90deg,transparent,#c8ad68,transparent);
+}
+.sigillo-erbologia{
+  width:66px;
+  height:66px;
+  margin:2px auto 15px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid #c8ad68;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(185,201,158,.13),rgba(89,111,67,.17) 56%,rgba(53,38,28,.46) 100%);
+  color:#d7e4a4;
+  font-size:31px;
+  line-height:1;
+  box-shadow:0 0 0 4px rgba(200,173,104,.035),0 8px 24px rgba(0,0,0,.28),inset 0 0 18px rgba(185,201,158,.08);
+}
+.sigillo-erbologia i{ color:#d7e4a4; }
+h2{
+  color:#c8ad68;
+  border-bottom:1px solid #765438;
+  padding-bottom:4px;
+}
+.sottotitolo{
+  text-align:center;
+  color:#b9c99e;
+  margin-top:0;
+  margin-bottom:20px;
+  font-style:italic;
+}
+.scheda{
+  background:#1f2d1b;
+  border:1px solid #596f43;
+  border-radius:8px;
+  padding:14px 18px;
+  margin-bottom:18px;
+}
+.riga{
+  display:flex;
+  flex-wrap:wrap;
+  gap:14px;
+  margin-bottom:8px;
+}
+.campo{
+  display:flex;
+  flex-direction:column;
+  min-width:150px;
+  flex:1 1 190px;
+}
+.campo label{
+  font-size:0.85em;
+  color:#c8ad68;
+  margin-bottom:3px;
+}
+select, input[type=number]{
+  background:#10180e;
+  color:#eee7d1;
+  border:1px solid #596f43;
+  border-radius:4px;
+  padding:5px 7px;
+  font-family:inherit;
+  width:100%;
+  box-sizing:border-box;
+}
+select:disabled, input:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+.barra-tab{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-bottom:16px;
+}
+.tab-bottone{
+  background:#3d5130;
+  color:#eee7d1;
+  border:1px solid #596f43;
+  padding:9px 16px;
+  border-radius:6px 6px 0 0;
+  cursor:pointer;
+  font-family:inherit;
+  font-size:0.95em;
+}
+.tab-bottone.attivo{
+  background:#765438;
+  color:#fff;
+  border-color:#765438;
+}
+.pannello{
+  display:none;
+}
+.pannello.visibile{
+  display:block;
+}
+.bottone-azione{
+  background:#765438;
+  color:#fff;
+  border:none;
+  padding:10px 18px;
+  border-radius:6px;
+  cursor:pointer;
+  font-family:inherit;
+  font-size:1em;
+  margin-top:8px;
+}
+.bottone-azione:hover{
+  background:#8f6845;
+}
+.bottone-secondario{
+  background:#596f43;
+}
+.bottone-secondario:hover{
+  background:#71895a;
+}
+.bottone-pericolo{
+  background:transparent;
+  border:1px solid #9b7352;
+  color:#d2b38e;
+}
+.bottone-pericolo:hover{
+  background:#3a2a20;
+  color:#f0d7b5;
+}
+.esito{
+  margin-top:12px;
+  padding:12px;
+  background:#10180e;
+  border-left:4px solid #c8ad68;
+  border-radius:4px;
+  min-height:18px;
+}
+.nota-regole{
+  font-size:0.85em;
+  color:#b9c99e;
+  margin-top:6px;
+}
+.check-riga{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:8px 0;
+}
+.info-bonus{
+  font-size:0.9em;
+  color:#c8ad68;
+  margin-top:6px;
+}
+.formula-tag{
+  display:inline-block;
+  margin:6px 0 8px;
+  padding:6px 10px;
+  background:rgba(201,162,39,.08);
+  border:1px solid rgba(201,162,39,.35);
+  border-radius:6px;
+  color:#eee7d1;
+  font-family:Consolas,"Courier New",monospace;
+  font-size:12.5px;
+}
+.result-line{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:8px 0;
+}
+.dice-code{
+  flex:1 1 320px;
+  min-height:20px;
+  padding:8px 10px;
+  background:#10180e;
+  border:1px solid #596f43;
+  border-radius:6px;
+  color:#d7e4a4;
+  font-family:Consolas,"Courier New",monospace;
+  font-size:12.5px;
+  overflow-wrap:anywhere;
+}
+button.copy-btn{
+  flex:0 0 auto;
+  min-height:34px;
+  padding:0 14px;
+  background:rgba(53,22,63,.55);
+  border:1px solid #765438;
+  border-radius:6px;
+  color:#eee7d1;
+  font-family:inherit;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.03em;
+  cursor:pointer;
+}
+button.copy-btn:hover{
+  background:#765438;
+}
+button.copy-btn:disabled{
+  opacity:.4;
+  cursor:not-allowed;
+}
+.out-tag{
+  display:inline-block;
+  padding:5px 11px;
+  border:1px solid #596f43;
+  border-radius:18px;
+  font-family:Consolas,"Courier New",monospace;
+  font-size:11px;
+  letter-spacing:.03em;
+}
+.out-ok{
+  background:rgba(159,190,40,.12);
+  border-color:#8fab54;
+  color:#d7e4a4;
+}
+.out-fail{
+  background:rgba(201,104,124,.12);
+  border-color:#9b7352;
+  color:#d2b38e;
+}
+.out-neutral{
+  background:transparent;
+  border-color:#596f43;
+  color:#b9c99e;
+}
+table.fasce{
+  width:100%;
+  margin-top:8px;
+  border-collapse:collapse;
+  font-size:12.5px;
+}
+table.fasce th, table.fasce td{
+  padding:6px 8px;
+  border:1px solid #596f43;
+  text-align:center;
+}
+table.fasce th{
+  background:rgba(53,22,63,.5);
+  color:#c8ad68;
+  font-family:Consolas,"Courier New",monospace;
+  font-size:10.5px;
+  text-transform:uppercase;
+}
+table.fasce td{
+  background:rgba(15,26,13,.6);
+}
+.piede-nota{
+  text-align:center;
+  color:#b9c99e;
+  font-size:.82em;
+  margin-top:14px;
+}
+</style>
+</head>
+<body>
+<div class="contenitore">
+
+<div class="sigillo-erbologia" aria-hidden="true"><i class="fa-brands fa-pagelines"></i></div>
+<h1>Guida all'Erbologia</h1>
+<div class="sottotitolo">Strumenti interattivi per Riconoscimento, Interazione, Trattamento e Coltivazione delle Piante Magiche</div>
+<div class="nota-regole" style="text-align:center; margin-bottom:14px;">I tiri vanno eseguiti con il dado del forum: copia il codice, incollalo in un post, poi riporta qui il risultato ottenuto. I dati restano disponibili durante l'uso della pagina, ma un refresh avvia una nuova sessione pulita.</div>
+
+<div class="scheda">
+<h2>Il tuo Personaggio</h2>
+<div class="riga">
+  <div class="campo">
+    <label>Tipo di PG</label>
+    <select id="pgTipo" data-key="pgTipo">
+      <option value="studente">Studente</option>
+      <option value="adulto">Adulto</option>
+    </select>
+  </div>
+  <div class="campo">
+    <label>Voto in Erbologia (solo Studenti)</label>
+    <select id="pgVoto" data-key="pgVoto">
+      <option value="T">T (Troll)</option>
+      <option value="D">D (Deludente)</option>
+      <option value="S">S (Scarso)</option>
+      <option value="A">A (Accettabile)</option>
+      <option value="O">O (Oltre le Aspettative)</option>
+      <option value="E">E (Eccezionale)</option>
+    </select>
+  </div>
+  <div class="campo">
+    <label>Empatia</label>
+    <input type="number" id="empatia" data-key="empatia" value="10">
+  </div>
+</div>
+<div class="riga">
+  <div class="campo">
+    <label>Livello Erborista</label>
+    <select id="livErborista" data-key="livErborista">
+      <option value="0">Nessuno</option>
+      <option value="1">Livello I</option>
+      <option value="2">Livello II</option>
+      <option value="3">Livello III</option>
+      <option value="4">Livello IV</option>
+      <option value="5">Livello V</option>
+    </select>
+  </div>
+  <div class="campo">
+    <label>Livello Amico delle Piante Magiche</label>
+    <select id="livAmico" data-key="livAmico">
+      <option value="0">Nessuno</option>
+      <option value="1">Livello I</option>
+      <option value="2">Livello II</option>
+      <option value="3">Livello III</option>
+      <option value="4">Livello IV</option>
+      <option value="5">Livello V</option>
+    </select>
+  </div>
+</div>
+<div class="riga">
+  <div class="campo">
+    <label>Livello Custode delle Piante Magiche</label>
+    <select id="livCustode" data-key="livCustode">
+      <option value="0">Nessuno</option>
+      <option value="1">Livello I</option>
+      <option value="2">Livello II</option>
+      <option value="3">Livello III</option>
+      <option value="4">Livello IV</option>
+      <option value="5">Livello V</option>
+    </select>
+  </div>
+  <div class="campo">
+    <label>Livello Coltivatore di Piante Magiche</label>
+    <select id="livColtivatore" data-key="livColtivatore">
+      <option value="0">Nessuno</option>
+      <option value="1">Livello I</option>
+      <option value="2">Livello II</option>
+      <option value="3">Livello III</option>
+      <option value="4">Livello IV</option>
+      <option value="5">Livello V</option>
+    </select>
+  </div>
+</div>
+</div>
+
+<div class="scheda">
+<h2>La Pianta Magica</h2>
+<div class="riga">
+  <div class="campo">
+    <label>Classificazione</label>
+    <select id="classificazione" data-key="classificazione">
+      <option value="X">X</option>
+      <option value="XX">XX</option>
+      <option value="XXX">XXX</option>
+      <option value="XXXX">XXXX</option>
+      <option value="XXXXX">XXXXX</option>
+    </select>
+  </div>
+</div>
+</div>
+
+<div class="barra-tab">
+  <button class="tab-bottone attivo" id="tabRiconoscimento">Riconoscimento</button>
+  <button class="tab-bottone" id="tabInterazione">Interazione</button>
+  <button class="tab-bottone" id="tabTrattamento">Trattamento</button>
+  <button class="tab-bottone" id="tabColtivazione">Coltivazione</button>
+</div>
+
+<div class="pannello visibile" id="pannelloRiconoscimento">
+<h2>Riconoscimento (1d17)</h2>
+<div class="riga">
+  <div class="campo">
+    <label>Bonus extra (Oggetti/Conoscenze)</label>
+    <input type="number" id="extraRiconoscimento" data-key="extraRiconoscimento" value="0">
+  </div>
+  <div class="campo">
+    <label>Tentativi di Riconoscimento gia falliti (0-2)</label>
+    <input type="number" id="tentativiRiconoscimentoFalliti" data-key="tentativiRiconoscimentoFalliti" value="0" min="0" max="2">
+  </div>
+</div>
+<div class="formula-tag" id="formulaRiconoscimento"></div>
+<div class="result-line">
+  <div class="dice-code" id="codiceRiconoscimento"></div>
+  <button class="copy-btn" id="copiaRiconoscimento">Copia</button>
+</div>
+<div class="result-line">
+  <span>Risultato ottenuto sul forum (1-17):</span>
+  <input type="number" id="risultatoRiconoscimento" data-key="risultatoRiconoscimento" min="1" max="17">
+  <span class="out-tag out-neutral" id="tagRiconoscimento">in attesa</span>
+</div>
+<div class="nota-regole" id="noteRiconoscimento"></div>
+<div class="nota-regole">Dopo 2 tentativi falliti il Riconoscimento di questa Pianta non puo piu essere ritentato; il valore sopra alimenta anche il malus di Interazione.</div>
+</div>
+
+<div class="pannello" id="pannelloInterazione">
+<h2>Interazione (1d30)</h2>
+<div class="check-riga">
+  <input type="checkbox" id="interazioneAuto" data-key="interazioneAuto">
+  <label for="interazioneAuto">Pianta di Classificazione X o in Fase Seme (autoconclusivo)</label>
+</div>
+<div class="riga">
+  <div class="campo">
+    <label>Bonus extra (Oggetti/Conoscenze)</label>
+    <input type="number" id="extraInterazione" data-key="extraInterazione" value="0">
+  </div>
+</div>
+<div class="formula-tag" id="formulaInterazione"></div>
+<div class="result-line">
+  <div class="dice-code" id="codiceInterazione"></div>
+  <button class="copy-btn" id="copiaInterazione">Copia</button>
+</div>
+<div class="result-line">
+  <span>Risultato ottenuto sul forum (1-30):</span>
+  <input type="number" id="risultatoInterazione" data-key="risultatoInterazione" min="1" max="30">
+  <span class="out-tag out-neutral" id="tagInterazione">in attesa</span>
+</div>
+<div class="nota-regole" id="noteInterazione"></div>
+</div>
+
+<div class="pannello" id="pannelloTrattamento">
+<h2>Trattamento delle Piante Magiche</h2>
+
+<h2 style="font-size:1.1em">Dado 1: Esportazione (1d35)</h2>
+<div class="check-riga">
+  <input type="checkbox" id="pianteAcquistata" data-key="pianteAcquistata">
+  <label for="pianteAcquistata">Pianta acquistata presso un Negozio Magico (autoconclusivo)</label>
+</div>
+<div class="riga">
+  <div class="campo">
+    <label>Bonus extra (Oggetti/Conoscenze)</label>
+    <input type="number" id="extraEsportazione" data-key="extraEsportazione" value="0">
+  </div>
+</div>
+<div class="formula-tag" id="formulaEsportazione"></div>
+<div class="result-line">
+  <div class="dice-code" id="codiceEsportazione"></div>
+  <button class="copy-btn" id="copiaEsportazione">Copia</button>
+</div>
+<div class="result-line">
+  <span>Risultato ottenuto sul forum (1-35):</span>
+  <input type="number" id="risultatoEsportazione" data-key="risultatoEsportazione" min="1" max="35">
+  <span class="out-tag out-neutral" id="tagEsportazione">in attesa</span>
+</div>
+<div class="nota-regole" id="noteEsportazione"></div>
+<div class="riga">
+  <div class="campo">
+    <label>Malus extra per ulteriori Esportazioni fallite (facoltativo)</label>
+    <input type="number" id="malusExtraEsportazione" data-key="malusExtraEsportazione" value="0" min="0">
+  </div>
+</div>
+<div class="info-bonus" id="bonusCollocazioneMostrato"></div>
+
+<h2 style="font-size:1.1em; margin-top:20px">Dado 2: Collocazione (1d35)</h2>
+<div class="riga">
+  <div class="campo">
+    <label>Bonus extra (Oggetti/Conoscenze)</label>
+    <input type="number" id="extraCollocazione" data-key="extraCollocazione" value="0">
+  </div>
+</div>
+<div class="formula-tag" id="formulaCollocazione"></div>
+<div class="result-line">
+  <div class="dice-code" id="codiceCollocazione"></div>
+  <button class="copy-btn" id="copiaCollocazione">Copia</button>
+</div>
+<div class="result-line">
+  <span>Risultato ottenuto sul forum (1-35):</span>
+  <input type="number" id="risultatoCollocazione" data-key="risultatoCollocazione" min="1" max="35">
+  <span class="out-tag out-neutral" id="tagCollocazione">in attesa</span>
+</div>
+<div class="nota-regole" id="noteCollocazione"></div>
+</div>
+
+<div class="pannello" id="pannelloColtivazione">
+<h2>Coltivazione e Riproduzione (1d10)</h2>
+<div class="nota-regole" id="baseAdultoInfo"></div>
+<div class="result-line" id="rigaBaseAdulto">
+  <div class="dice-code" id="codiceBaseAdulto"></div>
+  <button class="copy-btn" id="copiaBaseAdulto">Copia</button>
+  <input type="number" id="baseAdultoRisultato" data-key="baseAdultoRisultato" min="1" max="6" placeholder="1-6">
+</div>
+<div class="formula-tag" id="formulaColtivazione"></div>
+<div id="tabellaFasceColtivazione"></div>
+<div class="riga">
+  <div class="campo">
+    <label>Bonus extra al risultato del dado (Oggetti/Conoscenze)</label>
+    <input type="number" id="extraColtivazione" data-key="extraColtivazione" value="0">
+  </div>
+</div>
+<div class="result-line">
+  <div class="dice-code" id="codiceColtivazione"></div>
+  <button class="copy-btn" id="copiaColtivazione">Copia</button>
+</div>
+<div class="result-line">
+  <span>Risultato ottenuto sul forum (1-10):</span>
+  <input type="number" id="risultatoColtivazione" data-key="risultatoColtivazione" min="1" max="10">
+  <span class="out-tag out-neutral" id="tagColtivazione">in attesa</span>
+</div>
+<div class="nota-regole" id="noteColtivazione"></div>
+</div>
+
+<div class="piede-nota">
+  <button class="bottone-azione bottone-pericolo" id="bottoneReset">Azzera tutti i dati</button>
+</div>
+
+</div>
+
+<script>
+
+var evtClick = 'cli' + 'ck';
+var CHIAVE_SALVATAGGIO = 'erbologia_tool_v1';
+
+/* ---------- HELPERS DI VALIDAZIONE ---------- */
+
+function intInRange(v, min, max){
+  if(v === null){ return false; }
+  if(v === undefined){ return false; }
+  if(v === ""){ return false; }
+  var n = Number(v);
+  if(!isFinite(n)){ return false; }
+  if(Math.floor(n) !== n){ return false; }
+  if(n < min){ return false; }
+  if(n > max){ return false; }
+  return true;
+}
+
+function bonusValore(id){
+  var el = document.getElementById(id);
+  if(!el){ return 0; }
+  var v = el.value;
+  if(v === ""){ return 0; }
+  var n = Number(v);
+  if(!isFinite(n)){ return 0; }
+  if(n < 0){ return 0; }
+  return Math.floor(n);
+}
+
+var formulaSignatures = {};
+function guardFormula(chiave, firma, idRisultato){
+  var f = String(firma);
+  if(formulaSignatures[chiave] !== undefined){
+    if(formulaSignatures[chiave] !== f){
+      var el = document.getElementById(idRisultato);
+      if(el){
+        if(el.value !== ''){
+          el.value = '';
+        }
+      }
+    }
+  }
+  formulaSignatures[chiave] = f;
+}
+
+function leggiPG(){
+  var pg = {};
+  pg.tipo = document.getElementById('pgTipo').value;
+  pg.voto = document.getElementById('pgVoto').value;
+  pg.empatia = bonusValore('empatia');
+  pg.livErborista = parseInt(document.getElementById('livErborista').value, 10);
+  pg.livAmico = parseInt(document.getElementById('livAmico').value, 10);
+  pg.livCustode = parseInt(document.getElementById('livCustode').value, 10);
+  pg.livColtivatore = parseInt(document.getElementById('livColtivatore').value, 10);
+  pg.classificazione = document.getElementById('classificazione').value;
+  return pg;
+}
+
+var tabellaVoto = {T:5, D:6, S:7, A:8, O:9, E:10};
+
+/* ---------- COPIA NEGLI APPUNTI ---------- */
+
+function fallbackCopyText(txt){
+  var scrollX = window.scrollX || window.pageXOffset || 0;
+  var scrollY = window.scrollY || window.pageYOffset || 0;
+  var ta = document.createElement('textarea');
+  ta.value = txt;
+  ta.setAttribute('readonly', '');
+  ta.style.position = 'fixed';
+  ta.style.top = '0';
+  ta.style.left = '-9999px';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  var ok = false;
+  try{
+    ok = document.execCommand('copy');
+  }catch(e){
+    ok = false;
+  }
+  document.body.removeChild(ta);
+  window.scrollTo(scrollX, scrollY);
+  return ok;
+}
+
+function flashCopiato(btn, ok){
+  var vecchio = btn.getAttribute('data-orig');
+  if(vecchio === null){
+    vecchio = btn.textContent;
+    btn.setAttribute('data-orig', vecchio);
+  }
+  btn.textContent = ok ? 'Copiato!' : 'Copia manualmente';
+  setTimeout(function(){ btn.textContent = vecchio; }, 1600);
+}
+
+function attachCopy(btnId, sourceId){
+  var btn = document.getElementById(btnId);
+  if(!btn){ return; }
+  btn.addEventListener(evtClick, function(){
+    var src = document.getElementById(sourceId);
+    if(!src){ return; }
+    var txt = src.textContent;
+    if(txt === ""){ return; }
+    var gestito = false;
+    if(navigator.clipboard){
+      if(navigator.clipboard.writeText){
+        gestito = true;
+        navigator.clipboard.writeText(txt).then(function(){
+          flashCopiato(btn, true);
+        }).catch(function(){
+          var ok = fallbackCopyText(txt);
+          flashCopiato(btn, ok);
+        });
+      }
+    }
+    if(!gestito){
+      var ok2 = fallbackCopyText(txt);
+      flashCopiato(btn, ok2);
+    }
+  });
+}
+
+/* ---------- SALVATAGGIO AUTOMATICO ---------- */
+
+function salvaStato(){
+  /* v2: nessuna persistenza tra refresh. Lo stato resta solo nella pagina corrente. */
+}
+
+function ripristinaStato(){
+  /* v2: elimina eventuali salvataggi creati dalle versioni precedenti e riparte dai valori HTML di default. */
+  try{
+    window.localStorage.removeItem(CHIAVE_SALVATAGGIO);
+  }catch(e){}
+}
+
+/* ---------- RICONOSCIMENTO ---------- */
+
+var tabErboristaRiconoscimento = {1:12, 2:13, 3:14, 4:15};
+var classRiconoscimento = {X:4, XX:3, XXX:2, XXXX:1, XXXXX:0};
+
+function baseRiconoscimento(pg){
+  if(pg.livErborista >= 5){
+    return 999;
+  }
+  if(pg.livErborista >= 1){
+    return tabErboristaRiconoscimento[pg.livErborista];
+  }
+  if(pg.tipo === 'adulto'){
+    return 11;
+  }
+  return tabellaVoto[pg.voto];
+}
+
+function recomputeRiconoscimento(){
+  var pg = leggiPG();
+  var base = baseRiconoscimento(pg);
+  var bonusClasse = classRiconoscimento[pg.classificazione];
+  var extra = bonusValore('extraRiconoscimento');
+  var totale = base + bonusClasse + extra;
+  guardFormula('riconoscimento', totale, 'risultatoRiconoscimento');
+
+  var formulaEl = document.getElementById('formulaRiconoscimento');
+  var codiceEl = document.getElementById('codiceRiconoscimento');
+  var copiaBtn = document.getElementById('copiaRiconoscimento');
+  var risultatoInp = document.getElementById('risultatoRiconoscimento');
+  var tagEl = document.getElementById('tagRiconoscimento');
+  var noteEl = document.getElementById('noteRiconoscimento');
+
+  formulaEl.textContent = 'Base ' + base + ' + Classificazione ' + bonusClasse + ' + Extra ' + extra + ' = ' + totale + ' su 17';
+
+  if(totale >= 17){
+    codiceEl.textContent = 'Autoconclusivo: possibilita ' + totale + ' su 17, nessun tiro necessario.';
+    copiaBtn.disabled = true;
+    risultatoInp.disabled = true;
+    tagEl.textContent = 'Automaticamente riuscito';
+    tagEl.className = 'out-tag out-ok';
+    noteEl.textContent = 'La Pianta viene riconosciuta senza bisogno di tirare il dado.';
+    return;
+  }
+
+  codiceEl.textContent = '[dice=1d17]Riconoscimento Pianta Magica (Classificazione ' + pg.classificazione + ') - Riesce se 1-' + totale + ' su 17[/dice]';
+  codiceEl.title = formulaEl.textContent;
+  copiaBtn.disabled = false;
+  risultatoInp.disabled = false;
+
+  var v = risultatoInp.value;
+  if(v === ''){
+    tagEl.textContent = 'in attesa';
+    tagEl.className = 'out-tag out-neutral';
+    noteEl.textContent = '';
+    return;
+  }
+  if(!intInRange(v, 1, 17)){
+    tagEl.textContent = 'Risultato impossibile';
+    tagEl.className = 'out-tag out-fail';
+    noteEl.textContent = 'Inserisci un intero compreso fra 1 e 17.';
+    return;
+  }
+  var successo = Number(v) <= totale;
+  if(successo){
+    tagEl.textContent = 'Successo';
+    tagEl.className = 'out-tag out-ok';
+    noteEl.textContent = 'La Pianta viene riconosciuta.';
+  } else {
+    tagEl.textContent = 'Fallimento';
+    tagEl.className = 'out-tag out-fail';
+    noteEl.textContent = 'La Pianta non viene riconosciuta: meno possibilita in Interazione.';
+  }
+}
+
+/* ---------- INTERAZIONE ---------- */
+
+var tabAmicoInterazione = {1:12, 2:13, 3:14, 4:15, 5:16};
+var classInterazione = {X:0, XX:2, XXX:0, XXXX:-2, XXXXX:-3};
+
+function baseInterazione(pg){
+  if(pg.livAmico >= 1){
+    return tabAmicoInterazione[pg.livAmico];
+  }
+  if(pg.tipo === 'adulto'){
+    return 11;
+  }
+  return tabellaVoto[pg.voto];
+}
+
+function recomputeInterazione(){
+  var formulaEl = document.getElementById('formulaInterazione');
+  var codiceEl = document.getElementById('codiceInterazione');
+  var copiaBtn = document.getElementById('copiaInterazione');
+  var risultatoInp = document.getElementById('risultatoInterazione');
+  var tagEl = document.getElementById('tagInterazione');
+  var noteEl = document.getElementById('noteInterazione');
+
+  var autoconclusivo = document.getElementById('interazioneAuto').checked;
+  if(autoconclusivo){
+    formulaEl.textContent = 'Pianta di Classificazione X o in Fase Seme.';
+    codiceEl.textContent = 'Autoconclusivo: nessun tiro necessario.';
+    copiaBtn.disabled = true;
+    risultatoInp.disabled = true;
+    tagEl.textContent = 'Automaticamente riuscita';
+    tagEl.className = 'out-tag out-ok';
+    noteEl.textContent = "L'Interazione riesce senza bisogno di tirare il dado.";
+    return;
+  }
+
+  var pg = leggiPG();
+  var base = baseInterazione(pg);
+  var bonusClasse = classInterazione[pg.classificazione];
+  var bonusEmpatia = Math.floor(pg.empatia / 2);
+  var tentativiRic = document.getElementById('tentativiRiconoscimentoFalliti').value;
+  var malusRiconoscimento = 0;
+  if(intInRange(tentativiRic, 2, 2)){
+    malusRiconoscimento = -5;
+  }
+  var extra = bonusValore('extraInterazione');
+  var totale = base + bonusClasse + bonusEmpatia + malusRiconoscimento + extra;
+  guardFormula('interazione', totale, 'risultatoInterazione');
+
+  var testoFormula = 'Base ' + base + ' + Classificazione ' + bonusClasse + ' + Empatia/2 ' + bonusEmpatia + ' + Extra ' + extra;
+  if(malusRiconoscimento !== 0){
+    testoFormula = testoFormula + ' + Malus Riconoscimento ' + malusRiconoscimento;
+  }
+  testoFormula = testoFormula + ' = ' + totale + ' su 30';
+  formulaEl.textContent = testoFormula;
+
+  if(totale >= 30){
+    codiceEl.textContent = 'Autoconclusivo: possibilita ' + totale + ' su 30, nessun tiro necessario.';
+    copiaBtn.disabled = true;
+    risultatoInp.disabled = true;
+    tagEl.textContent = 'Automaticamente riuscita';
+    tagEl.className = 'out-tag out-ok';
+    noteEl.textContent = "L'Interazione riesce senza bisogno di tirare il dado.";
+    return;
+  }
+
+  codiceEl.textContent = '[dice=1d30]Interazione con la Pianta Magica (Classificazione ' + pg.classificazione + ') - Riesce se 1-' + totale + ' su 30[/dice]';
+  codiceEl.title = formulaEl.textContent;
+  copiaBtn.disabled = false;
+  risultatoInp.disabled = false;
+
+  var v = risultatoInp.value;
+  if(v === ''){
+    tagEl.textContent = 'in attesa';
+    tagEl.className = 'out-tag out-neutral';
+    noteEl.textContent = '';
+    return;
+  }
+  if(!intInRange(v, 1, 30)){
+    tagEl.textContent = 'Risultato impossibile';
+    tagEl.className = 'out-tag out-fail';
+    noteEl.textContent = 'Inserisci un intero compreso fra 1 e 30.';
+    return;
+  }
+  var successo = Number(v) <= totale;
+  if(successo){
+    tagEl.textContent = 'Successo';
+    tagEl.className = 'out-tag out-ok';
+    noteEl.textContent = 'La Pianta si fida del PG.';
+  } else {
+    tagEl.textContent = 'Fallimento';
+    tagEl.className = 'out-tag out-fail';
+    noteEl.textContent = 'Consulta la tabella delle conseguenze in base alla Fase Vitale della Pianta.';
+  }
+}
+
+/* ---------- TRATTAMENTO ---------- */
+
+var classTrattamento = {X:3, XX:2, XXX:0, XXXX:-2, XXXXX:-3};
+var tabCustodeVoto = {T:0, D:1, S:2, A:3, O:4, E:5};
+var tabCustodeLiv = {1:7, 2:8, 3:9, 4:10, 5:11};
+
+function baseCustode(pg){
+  if(pg.livCustode >= 1){
+    return tabCustodeLiv[pg.livCustode];
+  }
+  if(pg.tipo === 'adulto'){
+    return 6;
+  }
+  return tabCustodeVoto[pg.voto];
+}
+
+function recomputeEsportazione(){
+  var formulaEl = document.getElementById('formulaEsportazione');
+  var codiceEl = document.getElementById('codiceEsportazione');
+  var copiaBtn = document.getElementById('copiaEsportazione');
+  var risultatoInp = document.getElementById('risultatoEsportazione');
+  var tagEl = document.getElementById('tagEsportazione');
+  var noteEl = document.getElementById('noteEsportazione');
+  var bonusMostrato = document.getElementById('bonusCollocazioneMostrato');
+
+  var acquistata = document.getElementById('pianteAcquistata').checked;
+  if(acquistata){
+    formulaEl.textContent = 'Pianta acquistata presso un Negozio Magico.';
+    codiceEl.textContent = 'Autoconclusivo: nessun tiro necessario.';
+    copiaBtn.disabled = true;
+    risultatoInp.disabled = true;
+    tagEl.textContent = 'Automaticamente riuscita';
+    tagEl.className = 'out-tag out-ok';
+    noteEl.textContent = "L'Esportazione riesce senza bisogno di tirare il dado, ma non da il bonus di +3 possibilita per la Collocazione.";
+    bonusMostrato.textContent = 'Bonus/malus da riportare alla Collocazione: 0';
+    return 0;
+  }
+
+  var pg = leggiPG();
+  var base = pg.empatia + baseCustode(pg) + classTrattamento[pg.classificazione];
+  var extra = bonusValore('extraEsportazione');
+  var totale = base + extra;
+  guardFormula('esportazione', totale, 'risultatoEsportazione');
+  formulaEl.textContent = 'Empatia ' + pg.empatia + ' + Base/Custode ' + baseCustode(pg) + ' + Classificazione ' + classTrattamento[pg.classificazione] + ' + Extra ' + extra + ' = ' + totale + ' su 35';
+
+  var malusExtra = bonusValore('malusExtraEsportazione');
+
+  if(totale >= 35){
+    codiceEl.textContent = 'Autoconclusivo: possibilita ' + totale + ' su 35, nessun tiro necessario.';
+    copiaBtn.disabled = true;
+    risultatoInp.disabled = true;
+    tagEl.textContent = 'Automaticamente riuscita';
+    tagEl.className = 'out-tag out-ok';
+    noteEl.textContent = "L'Esportazione riesce automaticamente.";
+    bonusMostrato.textContent = 'Bonus/malus da riportare alla Collocazione: +3';
+    return 3;
+  }
+
+  codiceEl.textContent = '[dice=1d35]Trattamento - Esportazione (Classificazione ' + pg.classificazione + ') - Riesce se 1-' + totale + ' su 35[/dice]';
+  codiceEl.title = formulaEl.textContent;
+  copiaBtn.disabled = false;
+  risultatoInp.disabled = false;
+
+  var v = risultatoInp.value;
+  if(v === ''){
+    tagEl.textContent = 'in attesa';
+    tagEl.className = 'out-tag out-neutral';
+    noteEl.textContent = '';
+    bonusMostrato.textContent = 'Bonus/malus da riportare alla Collocazione: in attesa del risultato';
+    return null;
+  }
+  if(!intInRange(v, 1, 35)){
+    tagEl.textContent = 'Risultato impossibile';
+    tagEl.className = 'out-tag out-fail';
+    noteEl.textContent = 'Inserisci un intero compreso fra 1 e 35.';
+    bonusMostrato.textContent = 'Bonus/malus da riportare alla Collocazione: risultato non valido';
+    return null;
+  }
+  var successo = Number(v) <= totale;
+  var bonus;
+  if(successo){
+    tagEl.textContent = 'Successo';
+    tagEl.className = 'out-tag out-ok';
+    noteEl.textContent = 'La Pianta viene esportata correttamente: +3 possibilita per la Collocazione.';
+    bonus = 3;
+  } else {
+    tagEl.textContent = 'Fallimento';
+    tagEl.className = 'out-tag out-fail';
+    noteEl.textContent = 'Esportazione fallita: -3 possibilita per la Collocazione (usa il campo sotto per ulteriori fallimenti). Malus anche in Coltivazione.';
+    bonus = -3;
+  }
+  bonus = bonus - malusExtra;
+  bonusMostrato.textContent = 'Bonus/malus da riportare alla Collocazione: ' + (bonus >= 0 ? '+' + bonus : bonus);
+  return bonus;
+}
+
+function recomputeCollocazione(bonusEsportazione){
+  var formulaEl = document.getElementById('formulaCollocazione');
+  var codiceEl = document.getElementById('codiceCollocazione');
+  var copiaBtn = document.getElementById('copiaCollocazione');
+  var risultatoInp = document.getElementById('risultatoCollocazione');
+  var tagEl = document.getElementById('tagCollocazione');
+  var noteEl = document.getElementById('noteCollocazione');
+
+  if(bonusEsportazione === null){
+    formulaEl.textContent = 'In attesa del risultato dell Esportazione qui sopra.';
+    codiceEl.textContent = '';
+    copiaBtn.disabled = true;
+    risultatoInp.disabled = true;
+    tagEl.textContent = 'in attesa';
+    tagEl.className = 'out-tag out-neutral';
+    noteEl.textContent = 'Completa prima il Dado 1: Esportazione.';
+    return;
+  }
+
+  var pg = leggiPG();
+  var base = pg.empatia + baseCustode(pg) + classTrattamento[pg.classificazione];
+  var extra = bonusValore('extraCollocazione');
+  var totale = base + bonusEsportazione + extra;
+  guardFormula('collocazione', totale, 'risultatoCollocazione');
+  formulaEl.textContent = 'Empatia ' + pg.empatia + ' + Base/Custode ' + baseCustode(pg) + ' + Classificazione ' + classTrattamento[pg.classificazione] + ' + Bonus/malus Esportazione ' + bonusEsportazione + ' + Extra ' + extra + ' = ' + totale + ' su 35';
+
+  if(totale <= 0){
+    codiceEl.textContent = 'Il totale e zero o negativo: nessun tiro possibile.';
+    copiaBtn.disabled = true;
+    risultatoInp.disabled = true;
+    tagEl.textContent = 'Pianta perduta';
+    tagEl.className = 'out-tag out-fail';
+    noteEl.textContent = 'La Pianta NON puo essere Collocata e muore.';
+    return;
+  }
+
+  if(totale >= 35){
+    codiceEl.textContent = 'Autoconclusivo: possibilita ' + totale + ' su 35, nessun tiro necessario.';
+    copiaBtn.disabled = true;
+    risultatoInp.disabled = true;
+    tagEl.textContent = 'Automaticamente riuscita';
+    tagEl.className = 'out-tag out-ok';
+    noteEl.textContent = 'La Collocazione riesce automaticamente.';
+    return;
+  }
+
+  codiceEl.textContent = '[dice=1d35]Trattamento - Collocazione (Classificazione ' + pg.classificazione + ') - Riesce se 1-' + totale + ' su 35[/dice]';
+  codiceEl.title = formulaEl.textContent;
+  copiaBtn.disabled = false;
+  risultatoInp.disabled = false;
+
+  var v = risultatoInp.value;
+  if(v === ''){
+    tagEl.textContent = 'in attesa';
+    tagEl.className = 'out-tag out-neutral';
+    noteEl.textContent = '';
+    return;
+  }
+  if(!intInRange(v, 1, 35)){
+    tagEl.textContent = 'Risultato impossibile';
+    tagEl.className = 'out-tag out-fail';
+    noteEl.textContent = 'Inserisci un intero compreso fra 1 e 35.';
+    return;
+  }
+  var successo = Number(v) <= totale;
+  if(successo){
+    tagEl.textContent = 'Successo';
+    tagEl.className = 'out-tag out-ok';
+    noteEl.textContent = 'La Pianta viene Collocata correttamente in Serra/Valigia.';
+  } else {
+    tagEl.textContent = 'Fallimento';
+    tagEl.className = 'out-tag out-fail';
+    noteEl.textContent = 'La Pianta subira -1d2 Semi e +5 post in fase di Coltivazione. Tre fallimenti di fila richiedono il tiro 1d5 delle conseguenze.';
+  }
+}
+
+function recomputeTrattamento(){
+  var bonusEsportazione = recomputeEsportazione();
+  recomputeCollocazione(bonusEsportazione);
+}
+
+/* ---------- COLTIVAZIONE ---------- */
+
+var tabColtivatoreVoto = {T:1, D:2, S:3, A:4, O:5, E:6};
+var tabColtivatoreLiv = {1:7, 2:8, 3:9, 4:10, 5:11};
+var classColtivazione = {X:0, XX:2, XXX:3, XXXX:4, XXXXX:5};
+
+var fasceColtivazione = [
+  {min:31, etichetta:'31+', z:'1', tt:'2', ss:'3-4', cc:'5-6-7-8-9-10'},
+  {min:27, etichetta:'27-30', z:'1', tt:'2', ss:'3-4-5', cc:'6-7-8-9-10'},
+  {min:21, etichetta:'21-26', z:'1-2', tt:'3-4', ss:'5-6-7', cc:'8-9-10'},
+  {min:14, etichetta:'14-20', z:'1-2-3', tt:'4-5-6', ss:'6-7', cc:'8-9-10'},
+  {min:7, etichetta:'7-13', z:'1-2-3', tt:'4-5-6', ss:'7-8', cc:'9-10'},
+  {min:0, etichetta:'0-6', z:'1-2-3-4', tt:'5-6-7', ss:'8-9', cc:'10'}
+];
+
+function trovaFascia(totale){
+  var i = 0;
+  while(i < fasceColtivazione.length){
+    if(totale >= fasceColtivazione[i].min){
+      return fasceColtivazione[i];
+    }
+    i = i + 1;
+  }
+  return fasceColtivazione[fasceColtivazione.length - 1];
+}
+
+function inRangeTestuale(rangeStr, valore){
+  var parti = rangeStr.split('-');
+  var testo = String(valore);
+  var i = 0;
+  while(i < parti.length){
+    if(parti[i] === testo){
+      return true;
+    }
+    i = i + 1;
+  }
+  return false;
+}
+
+function percentualeDaFascia(fascia, valore){
+  if(valore > 10){
+    return 100;
+  }
+  if(inRangeTestuale(fascia.z, valore)){
+    return 0;
+  }
+  if(inRangeTestuale(fascia.tt, valore)){
+    return 33;
+  }
+  if(inRangeTestuale(fascia.ss, valore)){
+    return 66;
+  }
+  if(inRangeTestuale(fascia.cc, valore)){
+    return 100;
+  }
+  return null;
+}
+
+function baseColtivatore(pg){
+  if(pg.livColtivatore >= 1){
+    return tabColtivatoreLiv[pg.livColtivatore];
+  }
+  if(pg.tipo === 'adulto'){
+    var v = document.getElementById('baseAdultoRisultato').value;
+    if(intInRange(v, 1, 6)){
+      return Number(v);
+    }
+    return null;
+  }
+  return tabColtivatoreVoto[pg.voto];
+}
+
+function recomputeColtivazione(){
+  var pg = leggiPG();
+  var infoAdulto = document.getElementById('baseAdultoInfo');
+  var rigaAdulto = document.getElementById('rigaBaseAdulto');
+  var codiceAdulto = document.getElementById('codiceBaseAdulto');
+  var copiaAdulto = document.getElementById('copiaBaseAdulto');
+  var inputAdulto = document.getElementById('baseAdultoRisultato');
+
+  var necessitaD6 = false;
+  if(pg.tipo === 'adulto'){
+    if(pg.livColtivatore === 0){
+      necessitaD6 = true;
+    }
+  }
+
+  if(necessitaD6){
+    rigaAdulto.style.display = 'flex';
+    infoAdulto.textContent = 'Adulto senza Coltivatore di Piante Magiche: la base parte da 1d6.';
+    codiceAdulto.textContent = '[dice=1d6]Base Coltivazione Adulto senza Coltivatore[/dice]';
+    codiceAdulto.style.display = 'block';
+    copiaAdulto.style.display = 'inline-block';
+    inputAdulto.style.display = 'inline-block';
+  } else {
+    rigaAdulto.style.display = 'none';
+    infoAdulto.textContent = '';
+  }
+
+  var formulaEl = document.getElementById('formulaColtivazione');
+  var tabellaWrap = document.getElementById('tabellaFasceColtivazione');
+  var codiceEl = document.getElementById('codiceColtivazione');
+  var copiaBtn = document.getElementById('copiaColtivazione');
+  var risultatoInp = document.getElementById('risultatoColtivazione');
+  var tagEl = document.getElementById('tagColtivazione');
+  var noteEl = document.getElementById('noteColtivazione');
+
+  var base = baseColtivatore(pg);
+  if(base === null){
+    formulaEl.textContent = 'In attesa del tiro 1d6 qui sopra.';
+    tabellaWrap.innerHTML = '';
+    codiceEl.textContent = '';
+    copiaBtn.disabled = true;
+    risultatoInp.disabled = true;
+    tagEl.textContent = 'in attesa';
+    tagEl.className = 'out-tag out-neutral';
+    noteEl.textContent = '';
+    return;
+  }
+
+  var deduzione = classColtivazione[pg.classificazione];
+  var totale = base + pg.empatia - deduzione;
+  guardFormula('coltivazione', totale, 'risultatoColtivazione');
+  var fascia = trovaFascia(totale);
+
+  formulaEl.textContent = 'Base/Voto ' + base + ' + Empatia ' + pg.empatia + ' - Classificazione ' + deduzione + ' = ' + totale + ' (fascia ' + fascia.etichetta + ')';
+
+  tabellaWrap.innerHTML = '<table class="fasce"><tr><th>0%</th><th>33%</th><th>66%</th><th>100%</th></tr><tr><td>' + fascia.z + '</td><td>' + fascia.tt + '</td><td>' + fascia.ss + '</td><td>' + fascia.cc + '</td></tr></table>';
+
+  codiceEl.textContent = '[dice=1d10]Coltivazione/Riproduzione (fascia ' + fascia.etichetta + ')[/dice]';
+  codiceEl.title = formulaEl.textContent;
+  copiaBtn.disabled = false;
+  risultatoInp.disabled = false;
+
+  var v = risultatoInp.value;
+  if(v === ''){
+    tagEl.textContent = 'in attesa';
+    tagEl.className = 'out-tag out-neutral';
+    noteEl.textContent = '';
+    return;
+  }
+  if(!intInRange(v, 1, 10)){
+    tagEl.textContent = 'Risultato impossibile';
+    tagEl.className = 'out-tag out-fail';
+    noteEl.textContent = 'Inserisci un intero compreso fra 1 e 10.';
+    return;
+  }
+  var extra = bonusValore('extraColtivazione');
+  var valoreEffettivo = Number(v) + extra;
+  var percentuale = percentualeDaFascia(fascia, valoreEffettivo);
+  if(percentuale === null){
+    tagEl.textContent = 'Fuori tabella';
+    tagEl.className = 'out-tag out-fail';
+    noteEl.textContent = 'Il valore ottenuto (dado + bonus) non rientra nella tabella: verifica i dati inseriti.';
+    return;
+  }
+  tagEl.textContent = 'Riuscita ' + percentuale + '%';
+  if(percentuale === 0){
+    tagEl.className = 'out-tag out-fail';
+    noteEl.textContent = 'Ciclo sprecato: nessun Ingrediente o Seme prodotto per questo ciclo.';
+  } else if(percentuale === 100){
+    tagEl.className = 'out-tag out-ok';
+    noteEl.textContent = 'Riuscita piena: numero minimo di post per completare il ciclo.';
+  } else {
+    tagEl.className = 'out-tag out-neutral';
+    noteEl.textContent = 'Riuscita parziale: consulta la tabella dei post corrispondente alla percentuale ottenuta.';
+  }
+}
+
+/* ---------- TUTTO INSIEME ---------- */
+
+function ricalcolaTutto(){
+  recomputeRiconoscimento();
+  recomputeInterazione();
+  recomputeTrattamento();
+  recomputeColtivazione();
+  salvaStato();
+}
+
+/* ---------- TAB ---------- */
+
+function mostraPannello(nome){
+  var nomi = ['Riconoscimento', 'Interazione', 'Trattamento', 'Coltivazione'];
+  var i = 0;
+  while(i < nomi.length){
+    var pannello = document.getElementById('pannello' + nomi[i]);
+    var tab = document.getElementById('tab' + nomi[i]);
+    if(nomi[i] === nome){
+      pannello.className = 'pannello visibile';
+      tab.className = 'tab-bottone attivo';
+    } else {
+      pannello.className = 'pannello';
+      tab.className = 'tab-bottone';
+    }
+    i = i + 1;
+  }
+}
+
+document.getElementById('tabRiconoscimento').addEventListener(evtClick, function(){ mostraPannello('Riconoscimento'); });
+document.getElementById('tabInterazione').addEventListener(evtClick, function(){ mostraPannello('Interazione'); });
+document.getElementById('tabTrattamento').addEventListener(evtClick, function(){ mostraPannello('Trattamento'); });
+document.getElementById('tabColtivazione').addEventListener(evtClick, function(){ mostraPannello('Coltivazione'); });
+
+attachCopy('copiaRiconoscimento', 'codiceRiconoscimento');
+attachCopy('copiaInterazione', 'codiceInterazione');
+attachCopy('copiaEsportazione', 'codiceEsportazione');
+attachCopy('copiaCollocazione', 'codiceCollocazione');
+attachCopy('copiaBaseAdulto', 'codiceBaseAdulto');
+attachCopy('copiaColtivazione', 'codiceColtivazione');
+
+document.getElementById('bottoneReset').addEventListener(evtClick, function(){
+  if(window.confirm('Vuoi davvero azzerare tutti i dati e ripartire da capo?')){
+    try{
+      window.localStorage.removeItem(CHIAVE_SALVATAGGIO);
+    }catch(e){}
+    window.location.reload();
+  }
+});
+
+/* Ricalcolo reattivo su qualsiasi modifica di campo, come nel tool Creazione Pozione */
+document.addEventListener('input', ricalcolaTutto, true);
+document.addEventListener('change', ricalcolaTutto, true);
+
+/* ---------- AVVIO ---------- */
+ripristinaStato();
+ricalcolaTutto();
+
+</script>
+</body>
+</html>
