@@ -1,9 +1,11 @@
+<!-- Revisione standard Ricerche v1: Firebase multi-sessione, flusso progressivo, BBCode completo, copia stabile, riepilogo/esito, sola lettura e cancellazione protetta -->
 <!DOCTYPE html>
 <html lang="it">
 <head>
 <meta charset="UTF-8">
 <title>Guida all'Erbologia - Strumenti Interattivi</title>
 <style>
+/* v2 - Quote BBCode esplicativi estesi anche alla Guida all'Erbologia: soglie, esiti semantici e formule senza enumerazioni aritmetiche ridondanti. */
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css');
 @font-face {
   font-family:'magic';
@@ -299,7 +301,119 @@ table.fasce td{
   font-size:.82em;
   margin-top:14px;
 }
+
+.blocco-incontro{
+  border:1px solid #596f43;
+  border-radius:8px;
+  padding:14px 18px;
+  margin-bottom:18px;
+}
+.badge-incontro{
+  display:inline-block;
+  padding:3px 10px;
+  border-radius:14px;
+  font-size:11px;
+  letter-spacing:.03em;
+  margin-left:8px;
+  vertical-align:middle;
+}
+.badge-bloccato{
+  background:rgba(201,104,124,.15);
+  color:#d2b38e;
+  border:1px solid #9b7352;
+}
+.badge-sbloccato{
+  background:rgba(159,190,40,.15);
+  color:#d7e4a4;
+  border:1px solid #8fab54;
+}
+.esemplare-riga{
+  border-top:1px dashed #596f43;
+  padding-top:10px;
+  margin-top:10px;
+}
+.blocco-avviso{
+  margin-top:10px;
+  padding:12px;
+  border:1px dashed #9b7352;
+  border-radius:6px;
+  background:rgba(201,104,124,.08);
+  color:#d2b38e;
+  font-size:.9em;
+}
+.modo-sezione{
+  display:none;
+}
+.modo-sezione.visibile{
+  display:block;
+}
+.barra-modo{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin-bottom:22px;
+}
+.modo-bottone{
+  background:#1f2d1b;
+  color:#eee7d1;
+  border:1px solid #765438;
+  padding:11px 22px;
+  border-radius:8px;
+  cursor:pointer;
+  font-family:inherit;
+  font-size:1em;
+  letter-spacing:.02em;
+}
+.modo-bottone.attivo{
+  background:#765438;
+  color:#fff;
+  border-color:#c8ad68;
+}
+
+
+/* ===== STANDARD RICERCHE — Ricerca Piante Magiche ===== */
+.research-session-home,.research-workspace{max-width:920px;margin:0 auto;}
+.session-card,.session-toolbar-card{
+  background:#1f2d1b;border:1px solid #596f43;border-radius:9px;margin:0 0 18px;overflow:hidden;
+}
+.session-card-head{padding:13px 16px;border-bottom:1px solid #596f43;background:rgba(16,24,14,.55);}
+.session-card-head h2{margin:0;border:0;padding:0;color:#c8ad68;}
+.session-card-body{padding:15px 16px;}
+.session-warning,.readonly-banner{
+  margin:10px 0;padding:10px 12px;border:1px solid #765438;border-radius:6px;background:rgba(118,84,56,.16);color:#eee7d1;font-size:.9em;
+}
+.readonly-banner{border-color:#9b7352;background:rgba(201,104,124,.09);color:#f0d7b5;}
+.session-status{margin:7px 0;color:#b9c99e;font-size:.84em;}
+.session-status.ok{color:#d7e4a4}.session-status.bad{color:#efb0a5}
+.session-new-row,.session-topbar,.session-item-row,.session-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+.session-new-row input{flex:1 1 290px;background:#10180e;color:#eee7d1;border:1px solid #596f43;border-radius:5px;padding:9px 10px;font-family:inherit;}
+.session-btn,.flow-page-btn,.flow-action-btn{
+  background:#3d5130;color:#eee7d1;border:1px solid #596f43;border-radius:6px;padding:8px 12px;cursor:pointer;font-family:inherit;
+}
+.session-btn:hover,.flow-page-btn:hover:not(:disabled),.flow-action-btn:hover:not(:disabled){background:#596f43;}
+.session-btn.ghost{background:transparent}.session-btn:disabled,.flow-page-btn:disabled,.flow-action-btn:disabled{opacity:.42;cursor:not-allowed;}
+.session-danger-btn{background:#52251f;color:#f3d8ce;border:1px solid #9b7352;border-radius:6px;padding:8px 12px;cursor:pointer;font-family:inherit;}
+.session-item{border:1px solid #596f43;border-radius:7px;background:#10180e;margin:8px 0;padding:10px 12px;}
+.session-item-row{justify-content:space-between}.session-title{font-weight:700;color:#eee7d1}.session-meta{font-size:.76em;color:#b9c99e;margin-top:2px;}
+.session-owner{display:inline-block;margin-top:5px;font-size:.68em;padding:2px 6px;border:1px solid #596f43;border-radius:12px;color:#b9c99e;}.session-owner.mine{color:#d7e4a4;border-color:#8fab54;}
+.session-topbar{justify-content:space-between}.session-actions{justify-content:flex-end}.session-toolbar-card{margin-bottom:14px;}
+.research-flow-nav{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px;}
+.flow-page-btn.active{background:#765438;border-color:#c8ad68;color:#fff;}.flow-page-btn.locked{opacity:.36;}
+.research-flow-page{display:none;}.research-flow-page.active{display:block;}
+.flow-actions{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:16px;padding-top:12px;border-top:1px dashed #596f43;}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:9px;margin:10px 0;}
+.summary-box{background:#10180e;border:1px solid #596f43;border-radius:6px;padding:10px 12px;}.summary-box b{color:#c8ad68;}
+.research-bbcode{white-space:pre-wrap;overflow-wrap:anywhere;background:#10180e;border:1px solid #596f43;border-radius:6px;padding:10px;color:#d7e4a4;font-family:Consolas,"Courier New",monospace;font-size:12px;}
+.session-modal{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.58);}
+.session-modal.open{display:block}.session-modal-box{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(620px,calc(100vw - 28px));max-height:calc(100vh - 32px);overflow:auto;background:#1f2d1b;border:1px solid #9b7352;border-radius:9px;padding:18px 20px;box-shadow:0 18px 60px rgba(0,0,0,.55);}
+.delete-confirm-line{display:flex;align-items:flex-start;gap:8px;margin:12px 0;padding:10px;border:1px solid #9b7352;border-radius:6px;background:rgba(201,104,124,.08);}
+.outcome-list{margin:8px 0 0;padding-left:20px}.outcome-list li{margin:5px 0;}
+@media(max-width:640px){.session-new-row>*{width:100%}.session-item-row>*{width:100%}.session-actions{justify-content:flex-start}.flow-page-btn{flex:1 1 44%;}}
 </style>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 </head>
 <body>
 <div class="contenitore">
@@ -307,7 +421,16 @@ table.fasce td{
 <div class="sigillo-erbologia" aria-hidden="true"><i class="fa-brands fa-pagelines"></i></div>
 <h1>Guida all'Erbologia</h1>
 <div class="sottotitolo">Strumenti interattivi per Riconoscimento, Interazione, Trattamento e Coltivazione delle Piante Magiche</div>
-<div class="nota-regole" style="text-align:center; margin-bottom:14px;">I tiri vanno eseguiti con il dado del forum: copia il codice, incollalo in un post, poi riporta qui il risultato ottenuto. I dati restano disponibili durante l'uso della pagina, ma un refresh avvia una nuova sessione pulita.</div>
+<div class="nota-regole" style="text-align:center; margin-bottom:14px;">I tiri vanno eseguiti con il dado del forum: copia il codice, incollalo in un post, poi riporta qui il risultato ottenuto. La Guida all’Erbologia resta temporanea; le sessioni di Ricerca Piante Magiche vengono invece salvate automaticamente su Firebase.</div>
+
+<div class="barra-modo">
+  <button class="modo-bottone attivo" id="modoErbologiaBtn">Guida all'Erbologia</button>
+  <button class="modo-bottone" id="modoRicercaBtn">Ricerca Piante Magiche</button>
+</div>
+
+<div id="modoErbologia" class="modo-sezione visibile">
+
+
 
 <div class="scheda">
 <h2>Il tuo Personaggio</h2>
@@ -546,10 +669,201 @@ table.fasce td{
 
 </div>
 
+<div id="modoRicerca" class="modo-sezione">
+
+<div id="piante-session-home" class="research-session-home">
+  <div class="session-card">
+    <div class="session-card-head"><h2>Ricerche Piante Magiche in corso</h2></div>
+    <div class="session-card-body">
+      <p>Crea una sessione per la tua Ricerca Piante Magiche oppure riaprine una già iniziata. Ogni Ricerca viene salvata automaticamente mentre la compili.</p>
+      <div class="session-warning"><b>Le sessioni in corso sono personali.</b> Tutti gli utenti autenticati possono consultarle, ma soltanto chi ha creato la sessione e il Narratore possono modificarla o eliminarla.</div>
+      <div id="rp-firebase-auth-status" class="session-status">Connessione a Firebase…</div>
+      <div class="session-new-row">
+        <input id="rp-new-session-pg" type="text" maxlength="80" placeholder="Nome del PG principale">
+        <button class="session-btn" id="rp-btn-new-session" type="button" data-session-control="1">+ Nuova Ricerca</button>
+        <button class="session-btn ghost" id="rp-btn-refresh-sessions" type="button" data-session-control="1">Aggiorna elenco</button>
+      </div>
+      <div id="rp-session-home-msg" class="session-status"></div>
+      <div id="rp-session-list"></div>
+    </div>
+  </div>
+</div>
+
+<div id="piante-workspace" class="research-workspace" style="display:none">
+  <div class="session-toolbar-card">
+    <div class="session-card-body">
+      <div class="session-topbar">
+        <div>
+          <div id="rp-current-session-title" class="session-title">Ricerca Piante Magiche</div>
+          <div id="rp-current-session-meta" class="session-meta"></div>
+          <div id="rp-save-status" class="session-status"></div>
+        </div>
+        <div class="session-actions">
+          <button class="session-btn ghost" id="rp-btn-back-sessions" type="button" data-session-control="1">← Torna alle Ricerche</button>
+          <button class="session-danger-btn" id="rp-btn-delete-session" type="button" data-session-control="1">Concludi ed elimina Ricerca</button>
+        </div>
+      </div>
+      <div id="rp-readonly-banner" class="readonly-banner" style="display:none">Stai visualizzando la Ricerca di un altro giocatore. Puoi consultarla, navigare fra le fasi e copiare i dadi, ma non puoi modificarla o eliminarla.</div>
+    </div>
+  </div>
+
+  <nav class="research-flow-nav" id="rp-flow-nav">
+    <button type="button" class="flow-page-btn" data-rp-page="config" data-session-control="1">Configurazione</button>
+    <button type="button" class="flow-page-btn" data-rp-page="summary" data-session-control="1">Riepilogo</button>
+    <button type="button" class="flow-page-btn" data-rp-page="enc1" data-session-control="1">Incontro I</button>
+    <button type="button" class="flow-page-btn" data-rp-page="enc2" data-session-control="1">Incontro II</button>
+    <button type="button" class="flow-page-btn" data-rp-page="enc3" data-session-control="1">Incontro III</button>
+    <button type="button" class="flow-page-btn" data-rp-page="outcome" data-session-control="1">Esito</button>
+  </nav>
+
+  <section class="research-flow-page" data-rp-page-panel="config">
+    <div class="scheda">
+      <h2>Configurazione</h2>
+      <div class="riga">
+        <div class="campo"><label>Nome del PG principale</label><input type="text" id="nomePgRicerca" data-key="nomePgRicerca" maxlength="80"></div>
+        <div class="campo"><label>Empatia</label><input type="number" id="empatiaRicerca" data-key="empatiaRicerca" value="10" min="0"></div>
+        <div class="campo"><label>Sapienza Erbologica (0-25)</label><input type="number" id="sapienza" data-key="sapienza" value="0" min="0" max="25"></div>
+      </div>
+      <div class="riga">
+        <div class="campo"><label>Tipo di Ricerca</label><select id="tipoRicerca" data-key="tipoRicerca"><option value="attiva">Attiva (fino a 3 incontri)</option><option value="passiva">Passiva (1 incontro)</option></select></div>
+        <div class="campo"><label>Possiedo la Valigia Magica</label><select id="valigiaMagica" data-key="valigiaMagica"><option value="no">No</option><option value="si">Sì</option></select></div>
+      </div>
+      <div class="nota-regole">Nella Ricerca Passiva non si applica il bonus di Ricerca Attiva e non si può proseguire oltre il Primo Incontro. Nella Ricerca Attiva il bonus di +2 possibilità vale solo per il Primo Incontro. Se catturi una Pianta e non possiedi la Valigia Magica, non puoi proseguire all’Incontro successivo.</div>
+    </div>
+
+    <div class="scheda">
+      <h3 style="margin-top:0">Bolcino d'Oro <span class="out-tag out-neutral">facoltativo · un tiro per ogni post</span></h3>
+      <div class="result-line"><div class="dice-code" id="codiceBolcino"></div><button class="copy-btn" type="button" data-copy-source="codiceBolcino" data-copy-control="1">Copia</button></div>
+      <div class="result-line"><span>Risultato ottenuto:</span><input type="number" id="risultatoBolcino" data-key="risultatoBolcino" min="1" max="100"><span class="out-tag out-neutral" id="tagBolcino">in attesa</span></div>
+    </div>
+
+    <div class="flow-actions"><span></span><button type="button" class="flow-action-btn" data-rp-goto="summary" data-session-control="1">Vai al Riepilogo →</button></div>
+  </section>
+
+  <section class="research-flow-page" data-rp-page-panel="summary">
+    <div class="scheda">
+      <h2>Riepilogo prima della Ricerca</h2>
+      <div id="rp-summary-content"></div>
+      <div class="result-line"><div class="research-bbcode" id="rp-summary-bbcode"></div><button class="copy-btn" type="button" data-copy-source="rp-summary-bbcode" data-copy-control="1">Copia</button></div>
+    </div>
+    <div class="flow-actions"><button type="button" class="flow-action-btn" data-rp-goto="config" data-session-control="1">← Configurazione</button><button type="button" class="flow-action-btn" data-rp-goto="enc1" data-session-control="1">Inizia il Primo Incontro →</button></div>
+  </section>
+
+  <section class="research-flow-page" data-rp-page-panel="enc1">
+    <div class="blocco-incontro" id="blocco1">
+      <h2>Primo Incontro <span class="badge-incontro badge-sbloccato">sempre disponibile</span></h2>
+      <h3>Trovo qualcosa? (1d30)</h3>
+      <div class="formula-tag" id="formulaTrova1"></div>
+      <div class="result-line"><div class="dice-code" id="codiceTrova1"></div><button class="copy-btn" type="button" data-copy-source="codiceTrova1" data-copy-control="1">Copia</button></div>
+      <div class="result-line"><span>Risultato ottenuto sul forum (1-30):</span><input type="number" id="risultatoTrova1" data-key="risultatoTrova1" min="1" max="30"><span class="out-tag out-neutral" id="tagTrova1">in attesa</span></div>
+      <div class="nota-regole">Se non trovi nulla puoi ritentare in un post successivo senza limiti, sostituendo qui il risultato precedente.</div>
+
+      <div id="cascata1" style="display:none">
+        <h3>Classificazione della Pianta (1d15)</h3>
+        <div class="result-line"><div class="dice-code" id="codiceClasse1"></div><button class="copy-btn" type="button" data-copy-source="codiceClasse1" data-copy-control="1">Copia</button></div>
+        <div class="result-line"><span>Risultato (1-15):</span><input type="number" id="risultatoClasse1" data-key="risultatoClasse1" min="1" max="15"><span class="out-tag out-neutral" id="tagClasse1">in attesa</span></div>
+        <div class="nota-regole">Consulta poi la lista delle Piante della Zona di Ricerca scelta per stabilire quale Pianta specifica hai trovato.</div>
+
+        <h3>Fase Vitale (1d9)</h3>
+        <div class="result-line"><div class="dice-code" id="codiceFase1"></div><button class="copy-btn" type="button" data-copy-source="codiceFase1" data-copy-control="1">Copia</button></div>
+        <div class="result-line"><span>Risultato (1-9):</span><input type="number" id="risultatoFase1" data-key="risultatoFase1" min="1" max="9"><span class="out-tag out-neutral" id="tagFase1">in attesa</span></div>
+
+        <h3>Stato di Salute (1d15)</h3>
+        <div class="result-line"><div class="dice-code" id="codiceSalute1"></div><button class="copy-btn" type="button" data-copy-source="codiceSalute1" data-copy-control="1">Copia</button></div>
+        <div class="result-line"><span>Risultato (1-15):</span><input type="number" id="risultatoSalute1" data-key="risultatoSalute1" min="1" max="15"><span class="out-tag out-neutral" id="tagSalute1">in attesa</span></div>
+        <div class="nota-regole" id="noteSalute1"></div>
+
+        <div class="check-riga"><input type="checkbox" id="catturato1" data-key="catturato1"><label for="catturato1">Ho catturato questa Pianta</label></div>
+      </div>
+    </div>
+    <div class="flow-actions"><button type="button" class="flow-action-btn" data-rp-goto="summary" data-session-control="1">← Riepilogo</button><div><button type="button" class="flow-action-btn" data-rp-goto="outcome" data-session-control="1">Concludi qui</button> <button type="button" class="flow-action-btn" data-rp-goto="enc2" data-session-control="1">Secondo Incontro →</button></div></div>
+  </section>
+
+  <section class="research-flow-page" data-rp-page-panel="enc2">
+    <div class="blocco-incontro" id="blocco2">
+      <h2>Secondo Incontro <span class="badge-incontro" id="badge2"></span></h2>
+      <div class="blocco-avviso" id="avviso2" style="display:none"></div>
+      <div id="corpo2">
+        <h3>Trovo qualcosa? (1d30)</h3>
+        <div class="formula-tag" id="formulaTrova2"></div>
+        <div class="result-line"><div class="dice-code" id="codiceTrova2"></div><button class="copy-btn" type="button" data-copy-source="codiceTrova2" data-copy-control="1">Copia</button></div>
+        <div class="result-line"><span>Risultato ottenuto sul forum (1-30):</span><input type="number" id="risultatoTrova2" data-key="risultatoTrova2" min="1" max="30"><span class="out-tag out-neutral" id="tagTrova2">in attesa</span></div>
+        <div class="nota-regole">Se non trovi nulla puoi ritentare in un post successivo senza limiti, sostituendo qui il risultato precedente.</div>
+
+        <div id="cascata2" style="display:none">
+          <h3>Classificazione della Pianta (1d15)</h3>
+          <div class="result-line"><div class="dice-code" id="codiceClasse2"></div><button class="copy-btn" type="button" data-copy-source="codiceClasse2" data-copy-control="1">Copia</button></div>
+          <div class="result-line"><span>Risultato (1-15):</span><input type="number" id="risultatoClasse2" data-key="risultatoClasse2" min="1" max="15"><span class="out-tag out-neutral" id="tagClasse2">in attesa</span></div>
+
+          <h3>Numero di esemplari (1d5)</h3>
+          <div class="result-line"><div class="dice-code" id="codiceEsemplari2"></div><button class="copy-btn" type="button" data-copy-source="codiceEsemplari2" data-copy-control="1">Copia</button></div>
+          <div class="result-line"><span>Risultato (1-5):</span><input type="number" id="risultatoEsemplari2" data-key="risultatoEsemplari2" min="1" max="5"><span class="out-tag out-neutral" id="tagEsemplari2">in attesa</span></div>
+          <div class="nota-regole">Consulta poi la lista delle Piante della Zona di Ricerca scelta per stabilire quale Pianta specifica hai trovato.</div>
+          <div id="esemplariLista2"></div>
+          <div class="check-riga"><input type="checkbox" id="catturato2" data-key="catturato2"><label for="catturato2">Ho catturato una o più Piante di questo incontro</label></div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-actions"><button type="button" class="flow-action-btn" data-rp-goto="enc1" data-session-control="1">← Primo Incontro</button><div><button type="button" class="flow-action-btn" data-rp-goto="outcome" data-session-control="1">Concludi qui</button> <button type="button" class="flow-action-btn" data-rp-goto="enc3" data-session-control="1">Terzo Incontro →</button></div></div>
+  </section>
+
+  <section class="research-flow-page" data-rp-page-panel="enc3">
+    <div class="blocco-incontro" id="blocco3">
+      <h2>Terzo Incontro <span class="badge-incontro" id="badge3"></span></h2>
+      <div class="blocco-avviso" id="avviso3" style="display:none"></div>
+      <div id="corpo3">
+        <h3>Trovo qualcosa? (1d30)</h3>
+        <div class="formula-tag" id="formulaTrova3"></div>
+        <div class="result-line"><div class="dice-code" id="codiceTrova3"></div><button class="copy-btn" type="button" data-copy-source="codiceTrova3" data-copy-control="1">Copia</button></div>
+        <div class="result-line"><span>Risultato ottenuto sul forum (1-30):</span><input type="number" id="risultatoTrova3" data-key="risultatoTrova3" min="1" max="30"><span class="out-tag out-neutral" id="tagTrova3">in attesa</span></div>
+        <div class="nota-regole">Se non trovi nulla puoi ritentare in un post successivo senza limiti, sostituendo qui il risultato precedente.</div>
+
+        <div id="cascata3" style="display:none">
+          <h3>Classificazione della Pianta (1d15)</h3>
+          <div class="result-line"><div class="dice-code" id="codiceClasse3"></div><button class="copy-btn" type="button" data-copy-source="codiceClasse3" data-copy-control="1">Copia</button></div>
+          <div class="result-line"><span>Risultato (1-15):</span><input type="number" id="risultatoClasse3" data-key="risultatoClasse3" min="1" max="15"><span class="out-tag out-neutral" id="tagClasse3">in attesa</span></div>
+
+          <h3>Numero di esemplari (1d10)</h3>
+          <div class="result-line"><div class="dice-code" id="codiceEsemplari3"></div><button class="copy-btn" type="button" data-copy-source="codiceEsemplari3" data-copy-control="1">Copia</button></div>
+          <div class="result-line"><span>Risultato (1-10):</span><input type="number" id="risultatoEsemplari3" data-key="risultatoEsemplari3" min="1" max="10"><span class="out-tag out-neutral" id="tagEsemplari3">in attesa</span></div>
+          <div class="nota-regole">Consulta poi la lista delle Piante della Zona di Ricerca scelta per stabilire quale Pianta specifica hai trovato. Numeri alti di esemplari possono corrispondere a un’Orda: fai attenzione.</div>
+          <div id="esemplariLista3"></div>
+          <div class="check-riga"><input type="checkbox" id="catturato3" data-key="catturato3"><label for="catturato3">Ho catturato una o più Piante di questo incontro</label></div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-actions"><button type="button" class="flow-action-btn" data-rp-goto="enc2" data-session-control="1">← Secondo Incontro</button><button type="button" class="flow-action-btn" data-rp-goto="outcome" data-session-control="1">Vai all’Esito →</button></div>
+  </section>
+
+  <section class="research-flow-page" data-rp-page-panel="outcome">
+    <div class="scheda">
+      <h2>Esito della Ricerca</h2>
+      <div id="rp-outcome-content"></div>
+      <div class="result-line"><div class="research-bbcode" id="rp-outcome-bbcode"></div><button class="copy-btn" type="button" data-copy-source="rp-outcome-bbcode" data-copy-control="1">Copia riepilogo</button></div>
+    </div>
+    <div class="flow-actions"><button type="button" class="flow-action-btn" data-rp-goto="enc1" data-session-control="1">← Torna agli Incontri</button><span class="nota-regole">Per chiudere definitivamente la Ricerca usa «Concludi ed elimina Ricerca» nella barra in alto.</span></div>
+  </section>
+</div>
+
+<div class="session-modal" id="rp-delete-session-modal" aria-hidden="true">
+  <div class="session-modal-box" role="dialog" aria-modal="true" aria-labelledby="rp-delete-session-title">
+    <h3 id="rp-delete-session-title">Attenzione: eliminazione definitiva</h3>
+    <p>Concludendo questa Ricerca, <b>tutti i dati salvati verranno cancellati definitivamente.</b></p>
+    <p><b>La Ricerca non potrà essere recuperata.</b> Se ti servirà ancora dovrai creare una nuova sessione e reinserire da zero configurazione e risultati.</p>
+    <label class="delete-confirm-line"><input type="checkbox" id="rp-delete-session-check" data-session-control="1"><span><b>Ho capito che questa Ricerca verrà cancellata definitivamente e non potrà essere recuperata.</b></span></label>
+    <div class="session-actions"><button class="session-btn ghost" id="rp-btn-cancel-delete" type="button" data-session-control="1">Annulla</button><button class="session-danger-btn" id="rp-btn-confirm-delete" type="button" data-session-control="1" disabled>Elimina definitivamente la Ricerca</button></div>
+    <div id="rp-delete-session-msg" class="session-status bad"></div>
+  </div>
+</div>
+
+</div>
+
+</div>
+
 <script>
 
 var evtClick = 'cli' + 'ck';
-var CHIAVE_SALVATAGGIO = 'erbologia_tool_v1';
+var CHIAVE_ERBOLOGIA = 'erbologia_tool_v1';
 
 /* ---------- HELPERS DI VALIDAZIONE ---------- */
 
@@ -617,18 +931,23 @@ function fallbackCopyText(txt){
   ta.setAttribute('readonly', '');
   ta.style.position = 'fixed';
   ta.style.top = '0';
-  ta.style.left = '-9999px';
+  ta.style.left = '0';
+  ta.style.width = '1px';
+  ta.style.height = '1px';
+  ta.style.opacity = '0';
+  ta.style.pointerEvents = 'none';
+  ta.style.padding = '0';
+  ta.style.border = '0';
   document.body.appendChild(ta);
-  ta.focus();
   ta.select();
+  try{ ta.setSelectionRange(0, ta.value.length); }catch(e){}
   var ok = false;
-  try{
-    ok = document.execCommand('copy');
-  }catch(e){
-    ok = false;
-  }
+  try{ ok = document.execCommand('copy'); }catch(e){ ok = false; }
   document.body.removeChild(ta);
-  window.scrollTo(scrollX, scrollY);
+  function restoreScroll(){ try{ window.scrollTo(scrollX, scrollY); }catch(e){} }
+  restoreScroll();
+  if(window.requestAnimationFrame){ window.requestAnimationFrame(restoreScroll); }
+  setTimeout(restoreScroll, 0);
   return ok;
 }
 
@@ -671,14 +990,14 @@ function attachCopy(btnId, sourceId){
 
 /* ---------- SALVATAGGIO AUTOMATICO ---------- */
 
-function salvaStato(){
+function salvaStatoErbologia(){
   /* v2: nessuna persistenza tra refresh. Lo stato resta solo nella pagina corrente. */
 }
 
-function ripristinaStato(){
+function ripristinaStatoErbologia(){
   /* v2: elimina eventuali salvataggi creati dalle versioni precedenti e riparte dai valori HTML di default. */
   try{
-    window.localStorage.removeItem(CHIAVE_SALVATAGGIO);
+    window.localStorage.removeItem(CHIAVE_ERBOLOGIA);
   }catch(e){}
 }
 
@@ -727,7 +1046,7 @@ function recomputeRiconoscimento(){
     return;
   }
 
-  codiceEl.textContent = '[dice=1d17]Riconoscimento Pianta Magica (Classificazione ' + pg.classificazione + ') - Riesce se 1-' + totale + ' su 17[/dice]';
+  codiceEl.textContent = rpForumDiceBlock('Il PG riconosce la Pianta Magica di Classificazione ' + pg.classificazione + '?', rpThresholdAnswers(totale,17,'Riconoscimento riuscito','Riconoscimento fallito'), '[dice=1d17]Riconoscimento Pianta Magica — Classificazione ' + pg.classificazione + '[/dice]');
   codiceEl.title = formulaEl.textContent;
   copiaBtn.disabled = false;
   risultatoInp.disabled = false;
@@ -822,7 +1141,7 @@ function recomputeInterazione(){
     return;
   }
 
-  codiceEl.textContent = '[dice=1d30]Interazione con la Pianta Magica (Classificazione ' + pg.classificazione + ') - Riesce se 1-' + totale + ' su 30[/dice]';
+  codiceEl.textContent = rpForumDiceBlock('Il PG riesce a interagire correttamente con la Pianta Magica di Classificazione ' + pg.classificazione + '?', rpThresholdAnswers(totale,30,'Interazione riuscita','Interazione fallita'), '[dice=1d30]Interazione Pianta Magica — Classificazione ' + pg.classificazione + '[/dice]');
   codiceEl.title = formulaEl.textContent;
   copiaBtn.disabled = false;
   risultatoInp.disabled = false;
@@ -910,7 +1229,7 @@ function recomputeEsportazione(){
     return 3;
   }
 
-  codiceEl.textContent = '[dice=1d35]Trattamento - Esportazione (Classificazione ' + pg.classificazione + ') - Riesce se 1-' + totale + ' su 35[/dice]';
+  codiceEl.textContent = rpForumDiceBlock('Il PG riesce a esportare correttamente la Pianta Magica di Classificazione ' + pg.classificazione + '?', rpThresholdAnswers(totale,35,'Esportazione riuscita','Esportazione fallita'), '[dice=1d35]Trattamento — Esportazione — Classificazione ' + pg.classificazione + '[/dice]');
   codiceEl.title = formulaEl.textContent;
   copiaBtn.disabled = false;
   risultatoInp.disabled = false;
@@ -994,7 +1313,7 @@ function recomputeCollocazione(bonusEsportazione){
     return;
   }
 
-  codiceEl.textContent = '[dice=1d35]Trattamento - Collocazione (Classificazione ' + pg.classificazione + ') - Riesce se 1-' + totale + ' su 35[/dice]';
+  codiceEl.textContent = rpForumDiceBlock('Il PG riesce a collocare correttamente la Pianta Magica di Classificazione ' + pg.classificazione + '?', rpThresholdAnswers(totale,35,'Collocazione riuscita','Collocazione fallita'), '[dice=1d35]Trattamento — Collocazione — Classificazione ' + pg.classificazione + '[/dice]');
   codiceEl.title = formulaEl.textContent;
   copiaBtn.disabled = false;
   risultatoInp.disabled = false;
@@ -1119,7 +1438,7 @@ function recomputeColtivazione(){
   if(necessitaD6){
     rigaAdulto.style.display = 'flex';
     infoAdulto.textContent = 'Adulto senza Coltivatore di Piante Magiche: la base parte da 1d6.';
-    codiceAdulto.textContent = '[dice=1d6]Base Coltivazione Adulto senza Coltivatore[/dice]';
+    codiceAdulto.textContent = rpForumDiceBlock('Qual è la Base di Coltivazione dell’Adulto senza Coltivatore di Piante Magiche?', 'Il risultato del dado corrisponde direttamente alla Base di Coltivazione.', '[dice=1d6]Base Coltivazione Adulto senza Coltivatore[/dice]');
     codiceAdulto.style.display = 'block';
     copiaAdulto.style.display = 'inline-block';
     inputAdulto.style.display = 'inline-block';
@@ -1158,7 +1477,7 @@ function recomputeColtivazione(){
 
   tabellaWrap.innerHTML = '<table class="fasce"><tr><th>0%</th><th>33%</th><th>66%</th><th>100%</th></tr><tr><td>' + fascia.z + '</td><td>' + fascia.tt + '</td><td>' + fascia.ss + '</td><td>' + fascia.cc + '</td></tr></table>';
 
-  codiceEl.textContent = '[dice=1d10]Coltivazione/Riproduzione (fascia ' + fascia.etichetta + ')[/dice]';
+  codiceEl.textContent = rpForumDiceBlock('Quale percentuale di riuscita ottiene la Coltivazione/Riproduzione?', rpColtivazioneAnswers(fascia,bonusValore('extraColtivazione')), '[dice=1d10]Coltivazione/Riproduzione — fascia ' + fascia.etichetta + '[/dice]');
   codiceEl.title = formulaEl.textContent;
   copiaBtn.disabled = false;
   risultatoInp.disabled = false;
@@ -1200,12 +1519,12 @@ function recomputeColtivazione(){
 
 /* ---------- TUTTO INSIEME ---------- */
 
-function ricalcolaTutto(){
+function ricalcolaErbologia(){
   recomputeRiconoscimento();
   recomputeInterazione();
   recomputeTrattamento();
   recomputeColtivazione();
-  salvaStato();
+  salvaStatoErbologia();
 }
 
 /* ---------- TAB ---------- */
@@ -1232,29 +1551,271 @@ document.getElementById('tabInterazione').addEventListener(evtClick, function(){
 document.getElementById('tabTrattamento').addEventListener(evtClick, function(){ mostraPannello('Trattamento'); });
 document.getElementById('tabColtivazione').addEventListener(evtClick, function(){ mostraPannello('Coltivazione'); });
 
-attachCopy('copiaRiconoscimento', 'codiceRiconoscimento');
-attachCopy('copiaInterazione', 'codiceInterazione');
-attachCopy('copiaEsportazione', 'codiceEsportazione');
-attachCopy('copiaCollocazione', 'codiceCollocazione');
-attachCopy('copiaBaseAdulto', 'codiceBaseAdulto');
-attachCopy('copiaColtivazione', 'codiceColtivazione');
+/* ==================== RICERCA PIANTE MAGICHE — STANDARD RICERCHE ==================== */
 
-document.getElementById('bottoneReset').addEventListener(evtClick, function(){
-  if(window.confirm('Vuoi davvero azzerare tutti i dati e ripartire da capo?')){
-    try{
-      window.localStorage.removeItem(CHIAVE_SALVATAGGIO);
-    }catch(e){}
-    window.location.reload();
+var RP_RESTORING=false;
+var RP_FLOW={page:'config',summaryVisited:false,outcomeVisited:false};
+
+function rpEl(id){return document.getElementById(id);}
+function rpWorkspace(){return rpEl('piante-workspace');}
+function rpNumber(id,min,max){
+  var n=rpEl(id),v=n?n.value:'';
+  if(v==='')return null;
+  var x=Number(v);if(!isFinite(x)||Math.floor(x)!==x||x<min||x>max)return null;return x;
+}
+function rpLookup(tabella,valore){for(var i=0;i<tabella.length;i++){if(valore<=tabella[i].max)return tabella[i].val;}return tabella[tabella.length-1].val;}
+function rpEsc(s){return String(s==null?'':s).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+function rpThresholdAnswers(threshold,faces,okLabel,failLabel){
+  threshold=Math.floor(Number(threshold));faces=Math.floor(Number(faces));okLabel=okLabel||'Successo';failLabel=failLabel||'Fallimento';
+  if(!isFinite(threshold)||!isFinite(faces)||faces<1)return '';
+  if(threshold<1)return '1-'+faces+'. '+failLabel;
+  if(threshold>=faces)return '1-'+faces+'. '+okLabel;
+  return '1-'+threshold+'. '+okLabel+'\n'+(threshold+1)+'-'+faces+'. '+failLabel;
+}
+function rpForumDiceBlock(domanda,risposte,dado){var out='<b>'+domanda+'</b>';if(risposte)out+='\n[quote]'+risposte+'[/quote]';out+='\n\n'+dado;return out;}
+function rpColtivazioneAnswers(fascia,extra){
+  var righe=[];
+  if(extra>0){righe.push('Al risultato del dado aggiungi +'+extra+' prima di determinare la percentuale finale.');}
+  else{righe.push('Usa direttamente il risultato del dado per determinare la percentuale finale.');}
+  righe.push('0%: '+fascia.z);
+  righe.push('33%: '+fascia.tt);
+  righe.push('66%: '+fascia.ss);
+  righe.push('100%: '+fascia.cc);
+  if(extra>0){righe.push('Un valore finale superiore a 10 corrisponde al 100%.');}
+  return righe.join('\n');
+}
+function rpSetCode(id,domanda,risposte,dado){var n=rpEl(id);if(n)n.textContent=rpForumDiceBlock(domanda,risposte,dado);}
+function rpCopyText(txt,btn){
+  var sx=window.scrollX||window.pageXOffset||0,sy=window.scrollY||window.pageYOffset||0;
+  function restore(){try{window.scrollTo(sx,sy);}catch(e){}}
+  function done(ok){flashCopiato(btn,ok);restore();if(window.requestAnimationFrame)window.requestAnimationFrame(restore);setTimeout(restore,0);}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){done(true);}).catch(function(){done(fallbackCopyText(txt));});}
+  else done(fallbackCopyText(txt));
+}
+
+document.addEventListener(evtClick,function(e){
+  var b=e.target&&e.target.closest?e.target.closest('.copy-btn[data-copy-source]'):null;
+  if(!b||!rpEl('modoRicerca')||!rpEl('modoRicerca').contains(b))return;
+  e.preventDefault();var src=rpEl(b.getAttribute('data-copy-source'));if(!src||!src.textContent)return;rpCopyText(src.textContent,b);
+},true);
+
+var rpSapienzaTiers=[{max:0,val:0},{max:5,val:1},{max:10,val:2},{max:15,val:3},{max:20,val:4},{max:25,val:5}];
+var rpFaseVitaleTab=[{max:2,val:'Germinazione'},{max:4,val:'Vegetazione'},{max:6,val:'Riproduzione'},{max:8,val:'Senescenza'},{max:9,val:'Seme'}];
+var rpStatoSaluteTab=[{max:11,val:'In salute'},{max:15,val:'Morente'}];
+var rpClasseTab1=[{max:5,val:'X'},{max:9,val:'XX'},{max:12,val:'XXX'},{max:14,val:'XXXX'},{max:15,val:'XXXXX'}];
+var rpClasseTab2=[{max:2,val:'X'},{max:5,val:'XX'},{max:8,val:'XXX'},{max:12,val:'XXXX'},{max:15,val:'XXXXX'}];
+var rpClasseTab3=[{max:1,val:'X'},{max:3,val:'XX'},{max:6,val:'XXX'},{max:10,val:'XXXX'},{max:15,val:'XXXXX'}];
+var rpClassAnswers1='1-5. X\n6-9. XX\n10-12. XXX\n13-14. XXXX\n15. XXXXX';
+var rpClassAnswers2='1-2. X\n3-5. XX\n6-8. XXX\n9-12. XXXX\n13-15. XXXXX';
+var rpClassAnswers3='1. X\n2-3. XX\n4-6. XXX\n7-10. XXXX\n11-15. XXXXX';
+var rpFaseAnswers='1-2. Germinazione\n3-4. Vegetazione\n5-6. Riproduzione\n7-8. Senescenza\n9. Seme';
+var rpSaluteAnswers='1-11. In salute\n12-15. Morente';
+
+function rpEmpatia(){var v=rpNumber('empatiaRicerca',0,999);return v===null?0:v;}
+function rpSapienza(){var v=rpNumber('sapienza',0,25);return v===null?0:v;}
+function rpBonusSapienza(){return rpLookup(rpSapienzaTiers,rpSapienza());}
+function rpTipo(){return rpEl('tipoRicerca')?rpEl('tipoRicerca').value:'attiva';}
+function rpValigia(){return rpEl('valigiaMagica')?rpEl('valigiaMagica').value:'no';}
+function rpTrovaThreshold(n){return rpEmpatia()+rpBonusSapienza()+((n===1&&rpTipo()==='attiva')?2:0);}
+function rpTrovaEsito(n){var th=rpTrovaThreshold(n);if(th>=30)return true;var v=rpNumber('risultatoTrova'+n,1,30);if(v===null)return null;return v<=th;}
+
+function rpRecomputeBolcino(){
+  rpSetCode('codiceBolcino','Il PG trova un Bolcino d’Oro in questo post?','1-99. Nessun Bolcino d’Oro\n100. Bolcino d’Oro: +1 Popolarità e 1000 Galeoni','[dice=1d100]Ricerca del Bolcino d’Oro[/dice]');
+  var v=rpNumber('risultatoBolcino',1,100),tag=rpEl('tagBolcino');if(!tag)return;
+  if(v===null){tag.textContent=rpEl('risultatoBolcino').value===''?'in attesa':'Risultato impossibile';tag.className='out-tag '+(rpEl('risultatoBolcino').value===''?'out-neutral':'out-fail');return;}
+  tag.textContent=v===100?'Bolcino trovato!':'Niente Bolcino';tag.className='out-tag '+(v===100?'out-ok':'out-neutral');
+}
+
+function rpRecomputeTrova(n){
+  var th=rpTrovaThreshold(n),formula=rpEl('formulaTrova'+n),code=rpEl('codiceTrova'+n),inp=rpEl('risultatoTrova'+n),tag=rpEl('tagTrova'+n);
+  var parts='Empatia '+rpEmpatia()+' + Sapienza Erbologica '+rpBonusSapienza();if(n===1&&rpTipo()==='attiva')parts+=' + Ricerca Attiva 2';parts+=' = '+th+' su 30';if(formula)formula.textContent=parts;
+  var nomi=['','Primo','Secondo','Terzo'],q='Il PG trova una Pianta Magica durante il '+nomi[n]+' Incontro?';
+  if(th>=30){if(code)code.textContent='Autoconclusivo: '+th+' possibilità su 30, la Pianta viene trovata senza tiro.';if(inp){inp.disabled=true;}if(tag){tag.textContent='Trovata automaticamente';tag.className='out-tag out-ok';}return true;}
+  if(inp)inp.disabled=false;
+  rpSetCode('codiceTrova'+n,q,rpThresholdAnswers(th,30,'Pianta trovata','Nessuna Pianta trovata'),'[dice=1d30]Ricerca Piante Magiche — '+nomi[n]+' Incontro[/dice]');
+  var v=rpNumber('risultatoTrova'+n,1,30);if(v===null){if(tag){tag.textContent=inp&&inp.value!==''?'Risultato impossibile':'in attesa';tag.className='out-tag '+(inp&&inp.value!==''?'out-fail':'out-neutral');}return null;}
+  var ok=v<=th;if(tag){tag.textContent=ok?'Pianta trovata':'Niente in questo post';tag.className='out-tag '+(ok?'out-ok':'out-neutral');}return ok;
+}
+
+function rpSetStaticSemanticCodes(){
+  rpSetCode('codiceClasse1','Qual è la Classificazione della Pianta trovata nel Primo Incontro?',rpClassAnswers1,'[dice=1d15]Classificazione Pianta — Primo Incontro[/dice]');
+  rpSetCode('codiceFase1','Qual è la Fase Vitale della Pianta trovata nel Primo Incontro?',rpFaseAnswers,'[dice=1d9]Fase Vitale Pianta — Primo Incontro[/dice]');
+  rpSetCode('codiceSalute1','Qual è lo Stato di Salute della Pianta trovata nel Primo Incontro?',rpSaluteAnswers,'[dice=1d15]Stato di Salute Pianta — Primo Incontro[/dice]');
+  rpSetCode('codiceClasse2','Qual è la Classificazione delle Piante trovate nel Secondo Incontro?',rpClassAnswers2,'[dice=1d15]Classificazione Piante — Secondo Incontro[/dice]');
+  rpSetCode('codiceEsemplari2','Quanti esemplari vengono trovati nel Secondo Incontro?','Il risultato del dado corrisponde direttamente al numero di esemplari trovati.','[dice=1d5]Numero di esemplari — Secondo Incontro[/dice]');
+  rpSetCode('codiceClasse3','Qual è la Classificazione delle Piante trovate nel Terzo Incontro?',rpClassAnswers3,'[dice=1d15]Classificazione Piante — Terzo Incontro[/dice]');
+  rpSetCode('codiceEsemplari3','Quanti esemplari vengono trovati nel Terzo Incontro?','Il risultato del dado corrisponde direttamente al numero di esemplari trovati.','[dice=1d10]Numero di esemplari — Terzo Incontro[/dice]');
+}
+
+function rpRecomputeCascata1(trovato){
+  var c=rpEl('cascata1');if(!c)return;if(!trovato){c.style.display='none';return;}c.style.display='block';
+  var vc=rpNumber('risultatoClasse1',1,15),vf=rpNumber('risultatoFase1',1,9),vs=rpNumber('risultatoSalute1',1,15);
+  var tc=rpEl('tagClasse1'),tf=rpEl('tagFase1'),ts=rpEl('tagSalute1'),ns=rpEl('noteSalute1');
+  if(tc){tc.textContent=vc===null?'in attesa':'Classificazione '+rpLookup(rpClasseTab1,vc);tc.className='out-tag '+(vc===null?'out-neutral':'out-ok');}
+  if(tf){tf.textContent=vf===null?'in attesa':rpLookup(rpFaseVitaleTab,vf);tf.className='out-tag '+(vf===null?'out-neutral':'out-ok');}
+  if(ts){var stato=vs===null?'':rpLookup(rpStatoSaluteTab,vs);ts.textContent=vs===null?'in attesa':stato;ts.className='out-tag '+(vs===null?'out-neutral':(stato==='Morente'?'out-fail':'out-ok'));if(ns)ns.textContent=stato==='Morente'?'Pianta morente: contatta il Narratore prima di procedere.':'';}
+}
+
+function rpBuildEsemplari(n,count){
+  var host=rpEl('esemplariLista'+n);if(!host)return;if(host.getAttribute('data-conteggio')===String(count))return;host.setAttribute('data-conteggio',String(count));host.innerHTML='';
+  for(var i=1;i<=count;i++){
+    var box=document.createElement('div');box.className='esemplare-riga';
+    var h1=document.createElement('h3');h1.textContent='Esemplare '+i+' — Fase Vitale (1d9)';box.appendChild(h1);
+    var rl1=document.createElement('div');rl1.className='result-line';var code1=document.createElement('div');code1.className='dice-code';code1.id='codiceFase'+n+'_'+i;code1.textContent=rpForumDiceBlock('Qual è la Fase Vitale dell’esemplare '+i+' del '+(n===2?'Secondo':'Terzo')+' Incontro?',rpFaseAnswers,'[dice=1d9]Fase Vitale esemplare '+i+' — '+(n===2?'Secondo':'Terzo')+' Incontro[/dice]');rl1.appendChild(code1);var b1=document.createElement('button');b1.type='button';b1.className='copy-btn';b1.setAttribute('data-copy-source',code1.id);b1.setAttribute('data-copy-control','1');b1.textContent='Copia';rl1.appendChild(b1);box.appendChild(rl1);
+    var rr1=document.createElement('div');rr1.className='result-line';rr1.appendChild(document.createTextNode('Risultato (1-9): '));var in1=document.createElement('input');in1.type='number';in1.id='risultatoFase'+n+'_'+i;in1.setAttribute('data-key',in1.id);in1.min='1';in1.max='9';rr1.appendChild(in1);var t1=document.createElement('span');t1.id='tagFase'+n+'_'+i;t1.className='out-tag out-neutral';t1.textContent='in attesa';rr1.appendChild(t1);box.appendChild(rr1);
+    var h2=document.createElement('h3');h2.textContent='Esemplare '+i+' — Stato di Salute (1d15)';box.appendChild(h2);
+    var rl2=document.createElement('div');rl2.className='result-line';var code2=document.createElement('div');code2.className='dice-code';code2.id='codiceSalute'+n+'_'+i;code2.textContent=rpForumDiceBlock('Qual è lo Stato di Salute dell’esemplare '+i+' del '+(n===2?'Secondo':'Terzo')+' Incontro?',rpSaluteAnswers,'[dice=1d15]Stato di Salute esemplare '+i+' — '+(n===2?'Secondo':'Terzo')+' Incontro[/dice]');rl2.appendChild(code2);var b2=document.createElement('button');b2.type='button';b2.className='copy-btn';b2.setAttribute('data-copy-source',code2.id);b2.setAttribute('data-copy-control','1');b2.textContent='Copia';rl2.appendChild(b2);box.appendChild(rl2);
+    var rr2=document.createElement('div');rr2.className='result-line';rr2.appendChild(document.createTextNode('Risultato (1-15): '));var in2=document.createElement('input');in2.type='number';in2.id='risultatoSalute'+n+'_'+i;in2.setAttribute('data-key',in2.id);in2.min='1';in2.max='15';rr2.appendChild(in2);var t2=document.createElement('span');t2.id='tagSalute'+n+'_'+i;t2.className='out-tag out-neutral';t2.textContent='in attesa';rr2.appendChild(t2);box.appendChild(rr2);
+    host.appendChild(box);
   }
-});
+}
+function rpUpdateEsemplari(n,count){for(var i=1;i<=count;i++){var vf=rpNumber('risultatoFase'+n+'_'+i,1,9),vs=rpNumber('risultatoSalute'+n+'_'+i,1,15),tf=rpEl('tagFase'+n+'_'+i),ts=rpEl('tagSalute'+n+'_'+i);if(tf){tf.textContent=vf===null?'in attesa':rpLookup(rpFaseVitaleTab,vf);tf.className='out-tag '+(vf===null?'out-neutral':'out-ok');}if(ts){var st=vs===null?'':rpLookup(rpStatoSaluteTab,vs);ts.textContent=vs===null?'in attesa':st;ts.className='out-tag '+(vs===null?'out-neutral':(st==='Morente'?'out-fail':'out-ok'));}}}
 
-/* Ricalcolo reattivo su qualsiasi modifica di campo, come nel tool Creazione Pozione */
-document.addEventListener('input', ricalcolaTutto, true);
-document.addEventListener('change', ricalcolaTutto, true);
+function rpRecomputeCascataMultipla(n,trovato){
+  var c=rpEl('cascata'+n);if(!c)return;if(!trovato){c.style.display='none';return;}c.style.display='block';
+  var tab=n===2?rpClasseTab2:rpClasseTab3,max=n===2?5:10,vc=rpNumber('risultatoClasse'+n,1,15),ve=rpNumber('risultatoEsemplari'+n,1,max),tc=rpEl('tagClasse'+n),te=rpEl('tagEsemplari'+n);
+  if(tc){tc.textContent=vc===null?'in attesa':'Classificazione '+rpLookup(tab,vc);tc.className='out-tag '+(vc===null?'out-neutral':'out-ok');}
+  if(te){te.textContent=ve===null?'in attesa':ve+(ve===1?' esemplare':' esemplari')+(ve>=4?' — possibile Orda':'');te.className='out-tag '+(ve===null?'out-neutral':'out-ok');}
+  rpBuildEsemplari(n,ve===null?0:ve);if(ve!==null)rpUpdateEsemplari(n,ve);
+}
 
-/* ---------- AVVIO ---------- */
-ripristinaStato();
-ricalcolaTutto();
+function rpEncounterComplete(n){
+  if(rpTrovaEsito(n)!==true)return false;
+  if(rpNumber('risultatoClasse'+n,1,15)===null)return false;
+  if(n===1)return rpNumber('risultatoFase1',1,9)!==null&&rpNumber('risultatoSalute1',1,15)!==null;
+  var max=n===2?5:10,count=rpNumber('risultatoEsemplari'+n,1,max);if(count===null)return false;
+  for(var i=1;i<=count;i++){if(rpNumber('risultatoFase'+n+'_'+i,1,9)===null||rpNumber('risultatoSalute'+n+'_'+i,1,15)===null)return false;}
+  return true;
+}
+function rpBlockedAfter(n){return !!(rpEl('catturato'+n)&&rpEl('catturato'+n).checked&&rpValigia()!=='si');}
+function rpConfigReady(){var name=rpEl('nomePgRicerca')?rpEl('nomePgRicerca').value.trim():'';return !!name&&rpNumber('empatiaRicerca',0,999)!==null&&rpNumber('sapienza',0,25)!==null;}
+function rpPageUnlocked(page){
+  if(page==='config')return true;if(page==='summary')return rpConfigReady();if(page==='enc1')return rpConfigReady()&&RP_FLOW.summaryVisited;
+  if(page==='enc2')return rpTipo()==='attiva'&&rpEncounterComplete(1)&&!rpBlockedAfter(1);
+  if(page==='enc3')return rpTipo()==='attiva'&&rpEncounterComplete(2)&&!rpBlockedAfter(2);
+  if(page==='outcome')return rpEncounterComplete(1);return false;
+}
+function rpGating(){
+  var g2=rpPageUnlocked('enc2'),g3=rpPageUnlocked('enc3'),b2=rpEl('badge2'),b3=rpEl('badge3'),a2=rpEl('avviso2'),a3=rpEl('avviso3');
+  if(b2){b2.textContent=g2?'sbloccato':'bloccato';b2.className='badge-incontro '+(g2?'badge-sbloccato':'badge-bloccato');}
+  if(a2){a2.style.display=g2?'none':'block';a2.textContent=rpTipo()!=='attiva'?'Disponibile solo con Ricerca Attiva.':(!rpEncounterComplete(1)?'Completa prima il Primo Incontro.':(rpBlockedAfter(1)?'Hai catturato la Pianta del Primo Incontro: ti serve la Valigia Magica per proseguire.':'Secondo Incontro non ancora disponibile.'));}
+  if(b3){b3.textContent=g3?'sbloccato':'bloccato';b3.className='badge-incontro '+(g3?'badge-sbloccato':'badge-bloccato');}
+  if(a3){a3.style.display=g3?'none':'block';a3.textContent=rpTipo()!=='attiva'?'Disponibile solo con Ricerca Attiva.':(!rpEncounterComplete(2)?'Completa prima il Secondo Incontro.':(rpBlockedAfter(2)?'Hai catturato Piante del Secondo Incontro: ti serve la Valigia Magica per proseguire.':'Terzo Incontro non ancora disponibile.'));}
+  return {g2:g2,g3:g3};
+}
+
+function rpPercent(th){var v=Math.max(0,Math.min(30,th));return Math.round(v/30*100);}
+function rpRenderSummary(){
+  var host=rpEl('rp-summary-content'),bb=rpEl('rp-summary-bbcode');if(!host||!bb)return;
+  var name=rpEl('nomePgRicerca')?rpEl('nomePgRicerca').value.trim():'',first=rpTrovaThreshold(1),later=rpEmpatia()+rpBonusSapienza();
+  host.innerHTML='<div class="summary-grid">'+
+    '<div class="summary-box"><b>PG</b><br>'+rpEsc(name||'—')+'</div>'+
+    '<div class="summary-box"><b>Tipo</b><br>'+(rpTipo()==='attiva'?'Ricerca Attiva':'Ricerca Passiva')+'</div>'+
+    '<div class="summary-box"><b>Empatia</b><br>'+rpEmpatia()+'</div>'+
+    '<div class="summary-box"><b>Sapienza Erbologica</b><br>'+rpSapienza()+' → bonus +'+rpBonusSapienza()+'</div>'+
+    '<div class="summary-box"><b>Primo Incontro</b><br>'+first+'/30 · '+rpPercent(first)+'%</div>'+
+    '<div class="summary-box"><b>Incontri successivi</b><br>'+(rpTipo()==='attiva'?(later+'/30 · '+rpPercent(later)+'%'):'non disponibili')+'</div>'+
+    '<div class="summary-box"><b>Valigia Magica</b><br>'+(rpValigia()==='si'?'Sì':'No')+'</div></div>'+
+    '<div class="nota-regole">La percentuale indica la probabilità di trovare una Pianta con il tiro 1d30. Un totale di 30 o più rende il ritrovamento autoconclusivo.</div>';
+  bb.textContent='<b>Riepilogo Ricerca Piante Magiche — '+(name||'PG')+'</b>\n[quote]Tipo: '+(rpTipo()==='attiva'?'Ricerca Attiva':'Ricerca Passiva')+'\nEmpatia: '+rpEmpatia()+'\nSapienza Erbologica: '+rpSapienza()+' (bonus +'+rpBonusSapienza()+')\nPrimo Incontro: '+first+'/30 ('+rpPercent(first)+'%)\n'+(rpTipo()==='attiva'?'Incontri successivi: '+later+'/30 ('+rpPercent(later)+'%)\n':'')+'Valigia Magica: '+(rpValigia()==='si'?'Sì':'No')+'[/quote]';
+}
+function rpEncounterSummary(n){
+  if(!rpEncounterComplete(n))return null;var tab=n===1?rpClasseTab1:(n===2?rpClasseTab2:rpClasseTab3),cls=rpLookup(tab,rpNumber('risultatoClasse'+n,1,15));
+  if(n===1)return {html:'Classificazione '+cls+' · '+rpLookup(rpFaseVitaleTab,rpNumber('risultatoFase1',1,9))+' · '+rpLookup(rpStatoSaluteTab,rpNumber('risultatoSalute1',1,15)),bb:'Classificazione '+cls+'; Fase Vitale '+rpLookup(rpFaseVitaleTab,rpNumber('risultatoFase1',1,9))+'; Salute '+rpLookup(rpStatoSaluteTab,rpNumber('risultatoSalute1',1,15))+(rpEl('catturato1').checked?'; catturata':'')};
+  var max=n===2?5:10,count=rpNumber('risultatoEsemplari'+n,1,max),parts=[];for(var i=1;i<=count;i++)parts.push('Esemplare '+i+': '+rpLookup(rpFaseVitaleTab,rpNumber('risultatoFase'+n+'_'+i,1,9))+' · '+rpLookup(rpStatoSaluteTab,rpNumber('risultatoSalute'+n+'_'+i,1,15)));
+  return {html:'Classificazione '+cls+' · '+count+' esemplari<br>'+parts.map(rpEsc).join('<br>'),bb:'Classificazione '+cls+'; '+count+' esemplari; '+parts.join('; ')+(rpEl('catturato'+n).checked?'; almeno una Pianta catturata':'')};
+}
+function rpRenderOutcome(){
+  var host=rpEl('rp-outcome-content'),bb=rpEl('rp-outcome-bbcode');if(!host||!bb)return;var name=rpEl('nomePgRicerca')?rpEl('nomePgRicerca').value.trim():'PG',items=[],bbs=[];
+  for(var n=1;n<=3;n++){var s=rpEncounterSummary(n);if(s){items.push('<li><b>Incontro '+(['','I','II','III'][n])+':</b> '+s.html+'</li>');bbs.push('Incontro '+(['','I','II','III'][n])+': '+s.bb);}}
+  if(!items.length){host.innerHTML='<div class="nota-regole">Completa almeno il Primo Incontro per ottenere il riepilogo finale.</div>';bb.textContent='';return;}
+  var stop='';if(rpTipo()==='passiva')stop='Ricerca Passiva conclusa dopo il Primo Incontro.';else if(rpBlockedAfter(1)&&!rpEncounterComplete(2))stop='Ricerca interrotta dopo il Primo Incontro: Valigia Magica necessaria per proseguire dopo la cattura.';else if(rpBlockedAfter(2)&&!rpEncounterComplete(3))stop='Ricerca interrotta dopo il Secondo Incontro: Valigia Magica necessaria per proseguire dopo la cattura.';else stop='Ricerca conclusa dopo '+items.length+' Incontro'+(items.length===1?'':'i')+'.';
+  host.innerHTML='<ul class="outcome-list">'+items.join('')+'</ul><div class="nota-regole" style="margin-top:12px">'+rpEsc(stop)+'</div>';
+  bb.textContent='<b>Esito Ricerca Piante Magiche — '+name+'</b>\n[quote]'+bbs.join('\n')+'\n'+stop+'[/quote]';
+}
+
+function rpApplyFlow(){
+  var panels=document.querySelectorAll('#piante-workspace [data-rp-page-panel]');for(var i=0;i<panels.length;i++){var p=panels[i],name=p.getAttribute('data-rp-page-panel');p.classList.toggle('active',name===RP_FLOW.page);}
+  var btns=document.querySelectorAll('#rp-flow-nav [data-rp-page]');for(var j=0;j<btns.length;j++){var b=btns[j],page=b.getAttribute('data-rp-page'),un=rpPageUnlocked(page);b.disabled=!un;b.classList.toggle('active',page===RP_FLOW.page);b.classList.toggle('locked',!un);}
+  var gotos=document.querySelectorAll('#piante-workspace [data-rp-goto]');for(var k=0;k<gotos.length;k++){var g=gotos[k],pg=g.getAttribute('data-rp-goto');g.disabled=!rpPageUnlocked(pg);}
+}
+function rpGoto(page,scroll){
+  if(page==='summary'&&rpConfigReady())RP_FLOW.summaryVisited=true;
+  if(page==='outcome'&&rpPageUnlocked('outcome'))RP_FLOW.outcomeVisited=true;
+  if(page==='enc2'||page==='enc3')RP_FLOW.outcomeVisited=false;
+  if(!rpPageUnlocked(page))return;RP_FLOW.page=page;rpRenderSummary();rpRenderOutcome();rpApplyFlow();rpScheduleSave();
+  if(scroll!==false){var p=document.querySelector('#piante-workspace [data-rp-page-panel="'+page+'"]');if(p)setTimeout(function(){try{p.scrollIntoView({behavior:'auto',block:'start'});}catch(e){}},0);}
+}
+function rpResumeFlow(readonly){
+  var page='config';if(!rpConfigReady())page='config';else if(!RP_FLOW.summaryVisited)page='summary';else if(!rpEncounterComplete(1))page='enc1';else if(RP_FLOW.outcomeVisited)page='outcome';else if(rpTipo()==='attiva'&&rpPageUnlocked('enc2')&&!rpEncounterComplete(2))page='enc2';else if(rpTipo()==='attiva'&&rpPageUnlocked('enc3')&&!rpEncounterComplete(3))page='enc3';else page='outcome';
+  RP_FLOW.page=page;rpApplyFlow();var p=document.querySelector('#piante-workspace [data-rp-page-panel="'+page+'"]');if(p)setTimeout(function(){try{p.scrollIntoView({behavior:'auto',block:'start'});}catch(e){}},80);
+}
+
+function ricalcolaRicerca(){
+  if(!rpEl('piante-workspace'))return;rpRecomputeBolcino();rpSetStaticSemanticCodes();var t1=rpRecomputeTrova(1);rpRecomputeCascata1(t1);var t2=rpRecomputeTrova(2);rpRecomputeCascataMultipla(2,t2);var t3=rpRecomputeTrova(3);rpRecomputeCascataMultipla(3,t3);rpGating();rpRenderSummary();rpRenderOutcome();rpApplyFlow();
+}
+
+function rpCollectState(){
+  var state={summaryVisited:!!RP_FLOW.summaryVisited,outcomeVisited:!!RP_FLOW.outcomeVisited,flowPage:RP_FLOW.page};var fields=document.querySelectorAll('#piante-workspace [data-key]');for(var i=0;i<fields.length;i++){var f=fields[i],k=f.getAttribute('data-key');state[k]=f.type==='checkbox'?!!f.checked:f.value;}return state;
+}
+function rpApplyState(state){
+  state=state||{};RP_RESTORING=true;try{
+    RP_FLOW.summaryVisited=!!state.summaryVisited;RP_FLOW.outcomeVisited=!!state.outcomeVisited;RP_FLOW.page=state.flowPage||'config';
+    var fields=document.querySelectorAll('#piante-workspace [data-key]');for(var i=0;i<fields.length;i++){var f=fields[i],k=f.getAttribute('data-key');if(state[k]===undefined)continue;if(f.type==='checkbox')f.checked=!!state[k];else f.value=state[k];}
+    ricalcolaRicerca();
+    fields=document.querySelectorAll('#piante-workspace [data-key]');for(var j=0;j<fields.length;j++){var g=fields[j],kg=g.getAttribute('data-key');if(state[kg]===undefined)continue;if(g.type==='checkbox')g.checked=!!state[kg];else g.value=state[kg];}
+    ricalcolaRicerca();
+  }finally{RP_RESTORING=false;}
+}
+
+/* ---------- Firebase multi-sessione ---------- */
+var RP_FIREBASE_CONFIG={apiKey:"AIzaSyCvd56bSEL02s2OY2PSk7uyFX-CYRB4Vz0",authDomain:"conteggi-eee1b.firebaseapp.com",projectId:"conteggi-eee1b",storageBucket:"conteggi-eee1b.firebasestorage.app",messagingSenderId:"481320219586",appId:"1:481320219586:web:87e974d618a302adfadc5b",measurementId:"G-EFHVL4H1XW"};
+var RP_COLLECTION='ricerca_piante_magiche';
+var RP_NARRATOR_UID='TFgqfVrFLjW5SwqRFXmEi8tDhtM2';
+var RP_FB={auth:null,db:null,user:null};
+var RP_CURRENT_ID='',RP_CURRENT_DATA=null,RP_READONLY=false,RP_SAVE_TIMER=null,RP_SAVE_BUSY=false,RP_SAVE_PENDING=false;
+function rpSessionCanEdit(data){return !!(RP_FB.user&&data&&(data.ownerUid===RP_FB.user.uid||RP_FB.user.uid===RP_NARRATOR_UID));}
+function rpStatus(id,txt,kind){var n=rpEl(id);if(!n)return;n.textContent=txt||'';n.className='session-status'+(kind?' '+kind:'');}
+function rpFormatTs(ts){try{var d=ts&&typeof ts.toDate==='function'?ts.toDate():null;return d?d.toLocaleString('it-IT',{dateStyle:'short',timeStyle:'short'}):'';}catch(e){return '';}}
+function rpSessionIdFromHash(){var h=String(window.location.hash||'').replace(/^#/,'');if(h.indexOf('session=')!==0)return '';try{return decodeURIComponent(h.slice(8));}catch(e){return h.slice(8);}}
+function rpNavigateSession(id){window.location.hash='session='+encodeURIComponent(id);window.location.reload();}
+function rpNavigateDashboard(){window.location.hash='ricerca';window.location.reload();}
+function rpCurrentName(){var n=rpEl('nomePgRicerca'),v=n?n.value.trim():'';return v||(RP_CURRENT_DATA&&(RP_CURRENT_DATA.pgName||RP_CURRENT_DATA.initialPgName))||'PG';}
+function rpUpdateToolbar(){if(!RP_CURRENT_DATA)return;var mine=RP_FB.user&&RP_CURRENT_DATA.ownerUid===RP_FB.user.uid,narr=RP_FB.user&&RP_FB.user.uid===RP_NARRATOR_UID,parts=[];rpEl('rp-current-session-title').textContent=rpCurrentName()+' — '+(rpTipo()==='attiva'?'Ricerca Attiva':'Ricerca Passiva');parts.push(mine?'Sessione creata da questo browser':(narr?'Gestione Narratore':'Sessione di un altro giocatore'));var t=rpFormatTs(RP_CURRENT_DATA.updatedAt);if(t)parts.push('ultimo salvataggio '+t);rpEl('rp-current-session-meta').textContent=parts.join(' · ');rpEl('rp-readonly-banner').style.display=RP_READONLY?'block':'none';rpEl('rp-btn-delete-session').style.display=rpSessionCanEdit(RP_CURRENT_DATA)?'inline-block':'none';}
+function rpSetReadonly(ro){RP_READONLY=!!ro;var w=rpWorkspace();if(!w)return;var fields=w.querySelectorAll('input,select,textarea');for(var i=0;i<fields.length;i++)fields[i].disabled=RP_READONLY;var buttons=w.querySelectorAll('button');for(var j=0;j<buttons.length;j++){var b=buttons[j];if(!RP_READONLY)continue;if(b.getAttribute('data-session-control')==='1'||b.classList.contains('copy-btn')||b.classList.contains('flow-page-btn')||b.classList.contains('flow-action-btn'))b.disabled=false;else b.disabled=true;}rpApplyFlow();rpUpdateToolbar();}
+function rpPayload(){var st=rpCollectState();return {ownerUid:RP_CURRENT_DATA.ownerUid,initialPgName:RP_CURRENT_DATA.initialPgName||rpCurrentName(),pgName:rpCurrentName(),tipoRicerca:rpTipo(),createdAt:RP_CURRENT_DATA.createdAt||null,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),toolVersion:'standard-ricerca-v1',state:st};}
+function rpScheduleSave(){if(RP_RESTORING||!RP_CURRENT_ID||RP_READONLY||!rpSessionCanEdit(RP_CURRENT_DATA))return;rpStatus('rp-save-status','Salvataggio automatico…','');if(RP_SAVE_TIMER)clearTimeout(RP_SAVE_TIMER);RP_SAVE_TIMER=setTimeout(rpSaveNow,850);}
+function rpSaveNow(){if(!RP_CURRENT_ID||RP_READONLY||!rpSessionCanEdit(RP_CURRENT_DATA))return Promise.resolve();if(RP_SAVE_BUSY){RP_SAVE_PENDING=true;return Promise.resolve();}RP_SAVE_BUSY=true;RP_SAVE_PENDING=false;var p=rpPayload();return RP_FB.db.collection(RP_COLLECTION).doc(RP_CURRENT_ID).set(p,{merge:true}).then(function(){Object.keys(p).forEach(function(k){if(k!=='updatedAt')RP_CURRENT_DATA[k]=p[k];});rpStatus('rp-save-status','Ricerca salvata automaticamente ✓','ok');rpUpdateToolbar();}).catch(function(err){console.error(err);rpStatus('rp-save-status','Errore di salvataggio: non chiudere la pagina.','bad');}).finally(function(){RP_SAVE_BUSY=false;if(RP_SAVE_PENDING){RP_SAVE_PENDING=false;rpScheduleSave();}});}
+function rpOpenSession(id,data){RP_CURRENT_ID=id;RP_CURRENT_DATA=data;RP_READONLY=!rpSessionCanEdit(data);rpEl('piante-session-home').style.display='none';rpWorkspace().style.display='block';var state=data.state||{};if(state.nomePgRicerca===undefined)state.nomePgRicerca=data.pgName||data.initialPgName||'';rpApplyState(state);rpSetReadonly(RP_READONLY);rpUpdateToolbar();rpStatus('rp-save-status',RP_READONLY?'Modalità sola lettura.':'Ricerca caricata · autosalvataggio attivo',RP_READONLY?'':'ok');rpResumeFlow(RP_READONLY);}
+function rpLoadSession(id){rpStatus('rp-session-home-msg','Caricamento Ricerca…','');return RP_FB.db.collection(RP_COLLECTION).doc(id).get().then(function(doc){if(!doc.exists)throw new Error('La Ricerca non esiste più.');rpOpenSession(doc.id,doc.data());rpStatus('rp-session-home-msg','','');}).catch(function(err){console.error(err);rpStatus('rp-session-home-msg','Impossibile aprire la Ricerca: '+err.message,'bad');rpEl('piante-session-home').style.display='block';rpWorkspace().style.display='none';});}
+function rpLoadSessions(){var host=rpEl('rp-session-list');if(!host||!RP_FB.db||!RP_FB.user)return;host.innerHTML='<div class="session-status">Caricamento sessioni…</div>';RP_FB.db.collection(RP_COLLECTION).get().then(function(snap){var rows=[];snap.forEach(function(doc){rows.push({id:doc.id,data:doc.data()});});rows.sort(function(a,b){var at=a.data.updatedAt&&a.data.updatedAt.seconds?a.data.updatedAt.seconds:0,bt=b.data.updatedAt&&b.data.updatedAt.seconds?b.data.updatedAt.seconds:0;return bt-at;});host.innerHTML='';if(!rows.length){host.innerHTML='<div class="session-status">Non ci sono Ricerche Piante Magiche in corso.</div>';return;}rows.forEach(function(r){var d=r.data,mine=d.ownerUid===RP_FB.user.uid,narr=RP_FB.user.uid===RP_NARRATOR_UID,box=document.createElement('div');box.className='session-item';var row=document.createElement('div');row.className='session-item-row';var left=document.createElement('div'),title=document.createElement('div');title.className='session-title';title.textContent=(d.pgName||d.initialPgName||'PG')+' — '+(d.tipoRicerca==='passiva'?'Ricerca Passiva':'Ricerca Attiva');left.appendChild(title);var meta=document.createElement('div');meta.className='session-meta';var dt=rpFormatTs(d.updatedAt);meta.textContent=dt?'Aggiornata '+dt:'';left.appendChild(meta);var own=document.createElement('span');own.className='session-owner'+(mine?' mine':'');own.textContent=mine?'Tua Ricerca':(narr?'Gestibile dal Narratore':'Altro giocatore');left.appendChild(own);var b=document.createElement('button');b.type='button';b.className='session-btn'+((mine||narr)?'':' ghost');b.textContent=(mine||narr)?'Riprendi':'Visualizza';b.addEventListener(evtClick,function(){rpNavigateSession(r.id);});row.appendChild(left);row.appendChild(b);box.appendChild(row);host.appendChild(box);});}).catch(function(err){console.error(err);host.innerHTML='<div class="session-status bad">Non riesco a leggere le Ricerche in corso: '+rpEsc(err.message||err)+'</div>';});}
+function rpCreateSession(){var inp=rpEl('rp-new-session-pg'),name=inp?inp.value.trim():'';if(!name){rpStatus('rp-session-home-msg','Inserisci prima il nome del PG principale.','bad');return;}if(!RP_FB.user){rpStatus('rp-session-home-msg','Firebase non è ancora pronto. Riprova tra un momento.','bad');return;}var state={nomePgRicerca:name,empatiaRicerca:'10',sapienza:'0',tipoRicerca:'attiva',valigiaMagica:'no',summaryVisited:false,outcomeVisited:false,flowPage:'config'};var data={ownerUid:RP_FB.user.uid,initialPgName:name,pgName:name,tipoRicerca:'attiva',createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp(),toolVersion:'standard-ricerca-v1',state:state};rpStatus('rp-session-home-msg','Creazione della Ricerca…','');RP_FB.db.collection(RP_COLLECTION).add(data).then(function(ref){rpNavigateSession(ref.id);}).catch(function(err){console.error(err);rpStatus('rp-session-home-msg','Impossibile creare la Ricerca: '+err.message,'bad');});}
+function rpPositionDelete(ev){var modal=rpEl('rp-delete-session-modal'),box=modal?modal.querySelector('.session-modal-box'):null;if(!box)return;var y=ev&&typeof ev.clientY==='number'?ev.clientY:Math.max(120,(window.innerHeight||600)/2);requestAnimationFrame(function(){var h=box.getBoundingClientRect().height||300,vh=window.innerHeight||600,min=Math.min(vh/2,20+h/2),max=Math.max(min,vh-20-h/2);box.style.top=Math.max(min,Math.min(max,y))+'px';});}
+function rpOpenDelete(ev){if(!RP_CURRENT_ID||!rpSessionCanEdit(RP_CURRENT_DATA))return;rpEl('rp-delete-session-check').checked=false;rpEl('rp-btn-confirm-delete').disabled=true;rpEl('rp-delete-session-msg').textContent='';var m=rpEl('rp-delete-session-modal');m.classList.add('open');m.setAttribute('aria-hidden','false');rpPositionDelete(ev);}
+function rpCloseDelete(){var m=rpEl('rp-delete-session-modal');if(!m)return;m.classList.remove('open');m.setAttribute('aria-hidden','true');var box=m.querySelector('.session-modal-box');if(box)box.style.top='50%';}
+function rpDelete(){if(!RP_CURRENT_ID||!rpSessionCanEdit(RP_CURRENT_DATA)||!rpEl('rp-delete-session-check').checked)return;rpEl('rp-btn-confirm-delete').disabled=true;rpEl('rp-delete-session-msg').textContent='Eliminazione definitiva in corso…';RP_FB.db.collection(RP_COLLECTION).doc(RP_CURRENT_ID).delete().then(function(){RP_CURRENT_ID='';RP_CURRENT_DATA=null;rpCloseDelete();try{sessionStorage.setItem('rp_deleted_notice','1');}catch(e){}rpNavigateDashboard();}).catch(function(err){console.error(err);rpEl('rp-delete-session-msg').textContent='Eliminazione non riuscita: '+err.message;rpEl('rp-btn-confirm-delete').disabled=false;});}
+function rpBack(){var p=RP_CURRENT_ID&&rpSessionCanEdit(RP_CURRENT_DATA)?rpSaveNow():Promise.resolve();p.finally(rpNavigateDashboard);}
+
+function rpSetupControls(){
+  rpEl('rp-btn-new-session').addEventListener(evtClick,rpCreateSession);rpEl('rp-new-session-pg').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();rpCreateSession();}});rpEl('rp-btn-refresh-sessions').addEventListener(evtClick,rpLoadSessions);rpEl('rp-btn-back-sessions').addEventListener(evtClick,rpBack);rpEl('rp-btn-delete-session').addEventListener(evtClick,rpOpenDelete);rpEl('rp-btn-cancel-delete').addEventListener(evtClick,rpCloseDelete);rpEl('rp-delete-session-check').addEventListener('change',function(){rpEl('rp-btn-confirm-delete').disabled=!this.checked;});rpEl('rp-btn-confirm-delete').addEventListener(evtClick,rpDelete);rpEl('rp-delete-session-modal').addEventListener(evtClick,function(e){if(e.target===this)rpCloseDelete();});
+  document.querySelectorAll('#piante-workspace [data-rp-page]').forEach(function(b){b.addEventListener(evtClick,function(){rpGoto(b.getAttribute('data-rp-page'));});});
+  document.querySelectorAll('#piante-workspace [data-rp-goto]').forEach(function(b){b.addEventListener(evtClick,function(){rpGoto(b.getAttribute('data-rp-goto'));});});
+  rpWorkspace().addEventListener('input',function(e){if(RP_RESTORING||RP_READONLY)return;ricalcolaRicerca();rpUpdateToolbar();rpScheduleSave();},true);rpWorkspace().addEventListener('change',function(e){if(RP_RESTORING||RP_READONLY)return;ricalcolaRicerca();rpUpdateToolbar();rpScheduleSave();},true);
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden'&&RP_CURRENT_ID&&!RP_READONLY)rpSaveNow();});window.addEventListener('pagehide',function(){if(RP_CURRENT_ID&&!RP_READONLY)rpSaveNow();});
+}
+function rpSetupFirebase(){
+  rpSetupControls();rpWorkspace().style.display='none';rpEl('piante-session-home').style.display='block';var st=rpEl('rp-firebase-auth-status');
+  try{if(typeof firebase==='undefined')throw new Error('SDK Firebase non caricato');if(!firebase.apps.length)firebase.initializeApp(RP_FIREBASE_CONFIG);RP_FB.auth=firebase.auth();RP_FB.db=firebase.firestore();RP_FB.auth.onAuthStateChanged(function(user){if(user){RP_FB.user=user;st.textContent=user.uid===RP_NARRATOR_UID?'Firebase connesso · modalità Narratore':'Firebase connesso · sessione anonima attiva';st.className='session-status ok';var sid=rpSessionIdFromHash();if(sid){mostraModo('Ricerca');rpLoadSession(sid);}else{rpLoadSessions();try{if(sessionStorage.getItem('rp_deleted_notice')==='1'){sessionStorage.removeItem('rp_deleted_notice');rpStatus('rp-session-home-msg','Ricerca eliminata definitivamente. Per giocarla di nuovo dovrà essere ricreata da zero.','ok');}}catch(e){}if(String(window.location.hash||'')==='#ricerca')mostraModo('Ricerca');}return;}RP_FB.auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(function(){return RP_FB.auth.signInAnonymously();}).catch(function(err){console.error(err);st.textContent='Errore autenticazione Firebase: '+err.message;st.className='session-status bad';});});}catch(err){console.error(err);st.textContent='Firebase non disponibile: '+err.message;st.className='session-status bad';}
+}
+
+/* ---------- Guida + modalità ---------- */
+attachCopy('copiaRiconoscimento','codiceRiconoscimento');attachCopy('copiaInterazione','codiceInterazione');attachCopy('copiaEsportazione','codiceEsportazione');attachCopy('copiaCollocazione','codiceCollocazione');attachCopy('copiaBaseAdulto','codiceBaseAdulto');attachCopy('copiaColtivazione','codiceColtivazione');
+rpEl('bottoneReset').addEventListener(evtClick,function(){if(window.confirm('Vuoi davvero azzerare tutti i dati della Guida all’Erbologia e ripartire da capo?'))window.location.reload();});
+function mostraModo(nome){var nomi=['Erbologia','Ricerca'];for(var i=0;i<nomi.length;i++){var s=rpEl('modo'+nomi[i]),b=rpEl('modo'+nomi[i]+'Btn');if(nomi[i]===nome){s.className='modo-sezione visibile';b.className='modo-bottone attivo';}else{s.className='modo-sezione';b.className='modo-bottone';}}}
+rpEl('modoErbologiaBtn').addEventListener(evtClick,function(){mostraModo('Erbologia');});rpEl('modoRicercaBtn').addEventListener(evtClick,function(){if(!RP_CURRENT_ID&&String(window.location.hash||'')!=='#ricerca'){try{history.replaceState(null,'',window.location.pathname+window.location.search+'#ricerca');}catch(e){}}mostraModo('Ricerca');});
+document.addEventListener('input',function(e){if(rpEl('modoErbologia').contains(e.target))ricalcolaErbologia();},true);document.addEventListener('change',function(e){if(rpEl('modoErbologia').contains(e.target))ricalcolaErbologia();},true);
+ripristinaStatoErbologia();ricalcolaErbologia();ricalcolaRicerca();
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',rpSetupFirebase);else rpSetupFirebase();
 
 </script>
 </body>
