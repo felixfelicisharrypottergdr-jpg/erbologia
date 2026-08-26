@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Erbologia - Strumenti Interattivi</title>
+<!-- v58: voto della singola Pianta richiesto solo dopo il ritrovamento / nella Guida -->
 <!-- v53: apertura Ricerca immediata + aggancio Firebase del PG durante la compilazione -->
 <style>
 /* v38 allineata alla Magizoologia - Quote BBCode esplicativi estesi anche alla Guida all'Erbologia: soglie, esiti semantici e formule senza enumerazioni aritmetiche ridondanti. */
@@ -1451,6 +1452,25 @@ table.fasce th,table.fasce td{padding:8px 9px!important;line-height:1.3}
 }
 
 </style>
+
+<style id="specific-vote-v58">
+/* ===== v58 — voto specifico solo dopo l'identificazione della specie ===== */
+.specific-knowledge-note{margin:10px 0 0;padding:10px 12px;border:1px solid var(--ux-border,#8b6d37);border-left:4px solid var(--ux-accent,#c79d44);border-radius:7px;background:rgba(255,255,255,.04);line-height:1.45}
+.specific-knowledge-note.ok{border-left-color:#6f9b55;background:rgba(95,137,73,.10)}
+.specific-knowledge-note.warn{border-left-color:#c58b42;background:rgba(181,119,47,.10)}
+.research-guide-bridge{display:none;margin:13px 0 2px;padding:13px 14px;border:1px solid var(--ux-border,#8b6d37);border-left:5px solid var(--ux-accent,#c79d44);border-radius:8px;background:rgba(255,255,255,.045)}
+.research-guide-bridge.show{display:block}
+.research-guide-bridge-title{margin-bottom:9px;font-weight:800;line-height:1.45}
+.research-guide-bridge .riga{margin:8px 0!important}
+.research-guide-bridge-status{margin-top:8px;font-size:.9em;line-height:1.45;opacity:.92}
+.research-guide-bridge-status.ok{font-weight:700}
+.research-guide-open{margin-top:10px!important}
+.research-guide-vote-wrap{display:none}
+.research-guide-vote-wrap.show{display:block}
+#campoVotoStudente .numeric-note{margin-top:5px}
+@media(max-width:620px){.research-guide-bridge .campo{flex-basis:100%!important}}
+</style>
+
 </head>
 <body>
 <div class="contenitore">
@@ -1467,7 +1487,7 @@ table.fasce th,table.fasce td{padding:8px 9px!important;line-height:1.3}
 <div id="modoPersonaggio" class="modo-sezione visibile">
 <div class="scheda">
 <h2>Il tuo Personaggio</h2>
-<div class="profilo-condiviso-note">Compila il PG una volta: <b>nome, Empatia e Sapienza Erbologica</b> vengono riutilizzati automaticamente. Gli <b>Studenti</b> usano il voto nella singola Pianta; l’eventuale Conoscenza Avanzata di Livello I applica automaticamente il <b>+2</b> previsto.</div>
+<div class="profilo-condiviso-note">Compila qui soltanto i <b>dati generici del PG</b>: nome, tipo, Empatia, Sapienza Erbologica e Conoscenze Avanzate. Per gli <b>Studenti</b> il voto della singola Pianta viene richiesto solo quando la Pianta è stata identificata dalla Ricerca oppure quando la inserisci manualmente nella Guida.</div>
 <div class="profile-section-label">Dati del Personaggio</div>
 <div class="riga">
   <div class="campo" style="flex:1 1 100%">
@@ -1492,18 +1512,6 @@ table.fasce th,table.fasce td{padding:8px 9px!important;line-height:1.3}
       <option value="no">No — usa i valori del voto Troll</option>
     </select>
     <div class="numeric-note">Se non segue Erbologia, il voto effettivo usato dal tool è sempre T (Troll).</div>
-  </div>
-  <div class="campo" id="campoVotoStudente">
-    <label>Voto nella Conoscenza della Pianta</label>
-    <select id="pgVoto" data-key="pgVoto">
-      <option value="T">T (Troll)</option>
-      <option value="D">D (Deludente)</option>
-      <option value="S">S (Scarso)</option>
-      <option value="A">A (Accettabile)</option>
-      <option value="O">O (Oltre le Aspettative)</option>
-      <option value="E">E (Eccezionale)</option>
-    </select>
-    <div class="erb-effective-line" id="erbVotoEffettivo"></div>
   </div>
   <div class="campo">
     <label>Empatia</label>
@@ -1571,7 +1579,7 @@ table.fasce th,table.fasce td{padding:8px 9px!important;line-height:1.3}
   <input type="checkbox" id="pgErbologoMestiere" data-key="pgErbologoMestiere">
   <label for="pgErbologoMestiere"><b>Erbologo di mestiere</b> — per i controlli di scoperta durante Collocazione e Coltivazione di Piante illegali nella propria Serra</label>
 </div>
-<div class="nota-regole" id="notaLivelliStudente">Per i PG Studenti i dadi della Guida usano il <b>voto nella singola Pianta</b>. Se possiedono al Livello I la Conoscenza Avanzata della fase, il tool aggiunge automaticamente <b>+2 possibilità</b>, rispettando il tetto previsto per quel Livello I.</div>
+<div class="nota-regole" id="notaLivelliStudente">Per i PG Studenti il <b>voto della singola Pianta non va inserito qui</b>: verrà richiesto dopo che la Ricerca ha stabilito quale Pianta è stata trovata, oppure direttamente nella Guida se la Pianta era già conosciuta/acquistata in passato.</div>
 </div>
 </div>
 
@@ -1601,6 +1609,28 @@ table.fasce th,table.fasce td{padding:8px 9px!important;line-height:1.3}
     </select>
   </div>
 </div>
+<div class="riga">
+  <div class="campo" style="flex:2 1 320px">
+    <label>Pianta che stai gestendo</label>
+    <input type="text" id="speciePiantaGuida" data-key="speciePiantaGuida" maxlength="120" placeholder="Es. Geranio Zannuto">
+    <div class="numeric-note">Se arrivi dalla Ricerca, viene compilata automaticamente. Se la Pianta era già posseduta o acquistata, inseriscila manualmente.</div>
+  </div>
+  <div class="campo" id="campoVotoStudente">
+    <label>Voto nella singola Pianta</label>
+    <select id="pgVoto" data-key="pgVoto">
+      <option value="">— Seleziona il voto —</option>
+      <option value="T">T (Troll)</option>
+      <option value="D">D (Deludente)</option>
+      <option value="S">S (Scarso)</option>
+      <option value="A">A (Accettabile)</option>
+      <option value="O">O (Oltre le Aspettative)</option>
+      <option value="E">E (Eccezionale)</option>
+    </select>
+    <div class="numeric-note">È il voto relativo proprio alla Pianta indicata qui accanto.</div>
+    <div class="erb-effective-line" id="erbVotoEffettivo"></div>
+  </div>
+</div>
+<div id="erbSpecificVoteHint" class="specific-knowledge-note"></div>
 </div>
 
 <div class="check-riga" style="margin-top:12px">
@@ -1634,7 +1664,6 @@ table.fasce th,table.fasce td{padding:8px 9px!important;line-height:1.3}
   <div class="nota-regole">Non modificano i dadi: servono soltanto a preparare una scheda ordinata da riportare nella <b>Serra</b>.</div>
   <div class="riga">
     <div class="campo"><label>Nome della Pianta</label><input type="text" id="nomePiantaGuida" data-key="nomePiantaGuida" maxlength="120" placeholder="Es. Mandragola"></div>
-    <div class="campo"><label>Specie</label><input type="text" id="speciePiantaGuida" data-key="speciePiantaGuida" maxlength="120" placeholder="Es. Mandragola"></div>
     <div class="campo"><label>Data / riferimento temporale</label><input type="text" id="dataPiantaGuida" data-key="dataPiantaGuida" maxlength="80" placeholder="Es. Agosto 2026"></div>
   </div>
   <div class="riga">
@@ -2167,7 +2196,13 @@ table.fasce th,table.fasce td{padding:8px 9px!important;line-height:1.3}
         <h3>Classificazione della Pianta (1d15)</h3>
         <div class="result-line"><div class="dice-code" id="codiceClasse1"></div><button class="copy-btn" type="button" data-copy-source="codiceClasse1" data-copy-control="1">Copia</button></div>
         <div class="result-line"><span>Risultato (1-15):</span><input type="number" id="risultatoClasse1" data-key="risultatoClasse1" min="1" max="15"><span class="out-tag out-neutral" id="tagClasse1">in attesa</span></div>
-        <div class="ebx-species-box" id="ebxSpecieBox1"><h3 style="margin-top:0">Pianta specifica della Zona</h3><div class="nota-regole" id="ebxSpecieNota1">Dopo la Classificazione viene generato il dado corrispondente alla lista della Zona.</div><div class="riga"><div class="campo"><label>Facce del dado specie</label><input type="number" id="dadoSpecie1" data-key="dadoSpecie1" min="1" max="999"></div></div><div class="result-line"><div class="dice-code" id="codiceSpecie1"></div><button class="copy-btn" type="button" data-copy-source="codiceSpecie1" data-copy-control="1">Copia</button></div><div class="result-line"><span>Risultato del dado specie:</span><input type="number" id="risultatoSpecie1" data-key="risultatoSpecie1" min="1"><span class="out-tag out-neutral" id="tagSpecie1">in attesa</span></div><div class="riga"><div class="campo" style="flex:1 1 100%"><label for="speciePianta1">Pianta specifica trovata</label><input type="text" id="speciePianta1" data-key="speciePianta1" maxlength="120" placeholder=""></div></div><div class="spec-sheet-link empty" id="rpSpecieLink1"></div></div>
+        <div class="ebx-species-box" id="ebxSpecieBox1"><h3 style="margin-top:0">Pianta specifica della Zona</h3><div class="nota-regole" id="ebxSpecieNota1">Dopo la Classificazione viene generato il dado corrispondente alla lista della Zona.</div><div class="riga"><div class="campo"><label>Facce del dado specie</label><input type="number" id="dadoSpecie1" data-key="dadoSpecie1" min="1" max="999"></div></div><div class="result-line"><div class="dice-code" id="codiceSpecie1"></div><button class="copy-btn" type="button" data-copy-source="codiceSpecie1" data-copy-control="1">Copia</button></div><div class="result-line"><span>Risultato del dado specie:</span><input type="number" id="risultatoSpecie1" data-key="risultatoSpecie1" min="1"><span class="out-tag out-neutral" id="tagSpecie1">in attesa</span></div><div class="riga"><div class="campo" style="flex:1 1 100%"><label for="speciePianta1">Pianta specifica trovata</label><input type="text" id="speciePianta1" data-key="speciePianta1" maxlength="120" placeholder=""></div></div><div class="spec-sheet-link empty" id="rpSpecieLink1"></div><div class="research-guide-bridge" id="rpGuideBridge1" data-v58-species=""><div class="research-guide-bridge-title">Hai trovato <b id="rpGuideSpeciesLabel1">questa Pianta</b>. Vuoi gestirla subito nella Guida all’Erbologia?</div><div class="riga"><div class="campo"><label>Continuare subito nella Guida?</label><select id="rpInteragisciSubito1" data-key="interagisciSubito1"><option value="">— Scegli —</option><option value="si">Sì</option><option value="no">No, continuo la Ricerca</option></select></div><div class="campo research-guide-vote-wrap" id="rpResearchVoteWrap1"><label id="rpResearchVoteLabel1">Voto nella Pianta</label><select id="rpVotoRicerca1" data-key="votoRicerca1"><option value="">— Seleziona il voto —</option>
+      <option value="T">T (Troll)</option>
+      <option value="D">D (Deludente)</option>
+      <option value="S">S (Scarso)</option>
+      <option value="A">A (Accettabile)</option>
+      <option value="O">O (Oltre le Aspettative)</option>
+      <option value="E">E (Eccezionale)</option></select><div class="numeric-note">Il voto viene riportato automaticamente nella Guida.</div></div></div><div class="research-guide-bridge-status" id="rpGuideBridgeStatus1"></div><button type="button" class="bottone-azione bottone-secondario research-guide-open" id="rpOpenGuide1" style="display:none">Apri questa Pianta nella Guida</button></div></div>
         <div class="nota-regole">Se la specie risultante è <b>sempre ostile</b>, <span class="erb-narratore-call">ATTENZIONE</span> <a class="erb-narratore-link" href="https://felixfelicisharrypottergdr.forumfree.it/?f=65091943" target="_blank" rel="noopener">contatta il Narratore</a> prima di procedere all’Interazione. Se scegli di interagire con una specie normale, usa la Guida all’Erbologia e applica la Fatica prevista.</div>
 
         <h3>Fase Vitale (1d9)</h3>
@@ -2212,7 +2247,13 @@ table.fasce th,table.fasce td{padding:8px 9px!important;line-height:1.3}
           <div class="result-line"><div class="dice-code" id="codiceClasse2"></div><button class="copy-btn" type="button" data-copy-source="codiceClasse2" data-copy-control="1">Copia</button></div>
           <div class="result-line"><span>Risultato (1-15):</span><input type="number" id="risultatoClasse2" data-key="risultatoClasse2" min="1" max="15"><span class="out-tag out-neutral" id="tagClasse2">in attesa</span></div>
 
-          <div class="ebx-species-box" id="ebxSpecieBox2"><h3 style="margin-top:0">Pianta specifica della Zona</h3><div class="nota-regole" id="ebxSpecieNota2">Dopo la Classificazione viene generato il dado corrispondente alla lista della Zona.</div><div class="riga"><div class="campo"><label>Facce del dado specie</label><input type="number" id="dadoSpecie2" data-key="dadoSpecie2" min="1" max="999"></div></div><div class="result-line"><div class="dice-code" id="codiceSpecie2"></div><button class="copy-btn" type="button" data-copy-source="codiceSpecie2" data-copy-control="1">Copia</button></div><div class="result-line"><span>Risultato del dado specie:</span><input type="number" id="risultatoSpecie2" data-key="risultatoSpecie2" min="1"><span class="out-tag out-neutral" id="tagSpecie2">in attesa</span></div><div class="riga"><div class="campo" style="flex:1 1 100%"><label for="speciePianta2">Pianta specifica trovata (stessa specie per gli esemplari dell’incontro)</label><input type="text" id="speciePianta2" data-key="speciePianta2" maxlength="120" placeholder=""></div></div><div class="spec-sheet-link empty" id="rpSpecieLink2"></div></div>
+          <div class="ebx-species-box" id="ebxSpecieBox2"><h3 style="margin-top:0">Pianta specifica della Zona</h3><div class="nota-regole" id="ebxSpecieNota2">Dopo la Classificazione viene generato il dado corrispondente alla lista della Zona.</div><div class="riga"><div class="campo"><label>Facce del dado specie</label><input type="number" id="dadoSpecie2" data-key="dadoSpecie2" min="1" max="999"></div></div><div class="result-line"><div class="dice-code" id="codiceSpecie2"></div><button class="copy-btn" type="button" data-copy-source="codiceSpecie2" data-copy-control="1">Copia</button></div><div class="result-line"><span>Risultato del dado specie:</span><input type="number" id="risultatoSpecie2" data-key="risultatoSpecie2" min="1"><span class="out-tag out-neutral" id="tagSpecie2">in attesa</span></div><div class="riga"><div class="campo" style="flex:1 1 100%"><label for="speciePianta2">Pianta specifica trovata (stessa specie per gli esemplari dell’incontro)</label><input type="text" id="speciePianta2" data-key="speciePianta2" maxlength="120" placeholder=""></div></div><div class="spec-sheet-link empty" id="rpSpecieLink2"></div><div class="research-guide-bridge" id="rpGuideBridge2" data-v58-species=""><div class="research-guide-bridge-title">Hai trovato <b id="rpGuideSpeciesLabel2">questa Pianta</b>. Vuoi gestirla subito nella Guida all’Erbologia?</div><div class="riga"><div class="campo"><label>Continuare subito nella Guida?</label><select id="rpInteragisciSubito2" data-key="interagisciSubito2"><option value="">— Scegli —</option><option value="si">Sì</option><option value="no">No, continuo la Ricerca</option></select></div><div class="campo research-guide-vote-wrap" id="rpResearchVoteWrap2"><label id="rpResearchVoteLabel2">Voto nella Pianta</label><select id="rpVotoRicerca2" data-key="votoRicerca2"><option value="">— Seleziona il voto —</option>
+      <option value="T">T (Troll)</option>
+      <option value="D">D (Deludente)</option>
+      <option value="S">S (Scarso)</option>
+      <option value="A">A (Accettabile)</option>
+      <option value="O">O (Oltre le Aspettative)</option>
+      <option value="E">E (Eccezionale)</option></select><div class="numeric-note">Il voto viene riportato automaticamente nella Guida.</div></div></div><div class="research-guide-bridge-status" id="rpGuideBridgeStatus2"></div><button type="button" class="bottone-azione bottone-secondario research-guide-open" id="rpOpenGuide2" style="display:none">Apri questa Pianta nella Guida</button></div></div>
           <h3>Numero di esemplari (1d5)</h3>
           <div class="result-line"><div class="dice-code" id="codiceEsemplari2"></div><button class="copy-btn" type="button" data-copy-source="codiceEsemplari2" data-copy-control="1">Copia</button></div>
           <div class="result-line"><span>Risultato (1-5):</span><input type="number" id="risultatoEsemplari2" data-key="risultatoEsemplari2" min="1" max="5"><span class="out-tag out-neutral" id="tagEsemplari2">in attesa</span></div>
@@ -2253,7 +2294,13 @@ table.fasce th,table.fasce td{padding:8px 9px!important;line-height:1.3}
           <div class="result-line"><div class="dice-code" id="codiceClasse3"></div><button class="copy-btn" type="button" data-copy-source="codiceClasse3" data-copy-control="1">Copia</button></div>
           <div class="result-line"><span>Risultato (1-15):</span><input type="number" id="risultatoClasse3" data-key="risultatoClasse3" min="1" max="15"><span class="out-tag out-neutral" id="tagClasse3">in attesa</span></div>
 
-          <div class="ebx-species-box" id="ebxSpecieBox3"><h3 style="margin-top:0">Pianta specifica della Zona</h3><div class="nota-regole" id="ebxSpecieNota3">Dopo la Classificazione viene generato il dado corrispondente alla lista della Zona.</div><div class="riga"><div class="campo"><label>Facce del dado specie</label><input type="number" id="dadoSpecie3" data-key="dadoSpecie3" min="1" max="999"></div></div><div class="result-line"><div class="dice-code" id="codiceSpecie3"></div><button class="copy-btn" type="button" data-copy-source="codiceSpecie3" data-copy-control="1">Copia</button></div><div class="result-line"><span>Risultato del dado specie:</span><input type="number" id="risultatoSpecie3" data-key="risultatoSpecie3" min="1"><span class="out-tag out-neutral" id="tagSpecie3">in attesa</span></div><div class="riga"><div class="campo" style="flex:1 1 100%"><label for="speciePianta3">Pianta specifica trovata (stessa specie per gli esemplari dell’incontro)</label><input type="text" id="speciePianta3" data-key="speciePianta3" maxlength="120" placeholder=""></div></div><div class="spec-sheet-link empty" id="rpSpecieLink3"></div></div>
+          <div class="ebx-species-box" id="ebxSpecieBox3"><h3 style="margin-top:0">Pianta specifica della Zona</h3><div class="nota-regole" id="ebxSpecieNota3">Dopo la Classificazione viene generato il dado corrispondente alla lista della Zona.</div><div class="riga"><div class="campo"><label>Facce del dado specie</label><input type="number" id="dadoSpecie3" data-key="dadoSpecie3" min="1" max="999"></div></div><div class="result-line"><div class="dice-code" id="codiceSpecie3"></div><button class="copy-btn" type="button" data-copy-source="codiceSpecie3" data-copy-control="1">Copia</button></div><div class="result-line"><span>Risultato del dado specie:</span><input type="number" id="risultatoSpecie3" data-key="risultatoSpecie3" min="1"><span class="out-tag out-neutral" id="tagSpecie3">in attesa</span></div><div class="riga"><div class="campo" style="flex:1 1 100%"><label for="speciePianta3">Pianta specifica trovata (stessa specie per gli esemplari dell’incontro)</label><input type="text" id="speciePianta3" data-key="speciePianta3" maxlength="120" placeholder=""></div></div><div class="spec-sheet-link empty" id="rpSpecieLink3"></div><div class="research-guide-bridge" id="rpGuideBridge3" data-v58-species=""><div class="research-guide-bridge-title">Hai trovato <b id="rpGuideSpeciesLabel3">questa Pianta</b>. Vuoi gestirla subito nella Guida all’Erbologia?</div><div class="riga"><div class="campo"><label>Continuare subito nella Guida?</label><select id="rpInteragisciSubito3" data-key="interagisciSubito3"><option value="">— Scegli —</option><option value="si">Sì</option><option value="no">No, continuo la Ricerca</option></select></div><div class="campo research-guide-vote-wrap" id="rpResearchVoteWrap3"><label id="rpResearchVoteLabel3">Voto nella Pianta</label><select id="rpVotoRicerca3" data-key="votoRicerca3"><option value="">— Seleziona il voto —</option>
+      <option value="T">T (Troll)</option>
+      <option value="D">D (Deludente)</option>
+      <option value="S">S (Scarso)</option>
+      <option value="A">A (Accettabile)</option>
+      <option value="O">O (Oltre le Aspettative)</option>
+      <option value="E">E (Eccezionale)</option></select><div class="numeric-note">Il voto viene riportato automaticamente nella Guida.</div></div></div><div class="research-guide-bridge-status" id="rpGuideBridgeStatus3"></div><button type="button" class="bottone-azione bottone-secondario research-guide-open" id="rpOpenGuide3" style="display:none">Apri questa Pianta nella Guida</button></div></div>
           <h3>Numero di esemplari (1d10)</h3>
           <div class="result-line"><div class="dice-code" id="codiceEsemplari3"></div><button class="copy-btn" type="button" data-copy-source="codiceEsemplari3" data-copy-control="1">Copia</button></div>
           <div class="result-line"><span>Risultato (1-10):</span><input type="number" id="risultatoEsemplari3" data-key="risultatoEsemplari3" min="1" max="10"><span class="out-tag out-neutral" id="tagEsemplari3">in attesa</span></div>
@@ -2536,7 +2583,8 @@ var ultimoContestoPiantaGuida = null;
 function resetStoricoSeCambiaPianta(){
   var classe=document.getElementById('classificazione').value;
   var provenienza=getProvenienzaPianta();
-  var ctx=classe+'|'+provenienza;
+  var specieCtx=(document.getElementById('speciePiantaGuida')||{}).value||'';
+  var ctx=classe+'|'+provenienza+'|'+specieCtx;
   if(ultimoContestoPiantaGuida===null){ ultimoContestoPiantaGuida=ctx; return; }
   if(ultimoContestoPiantaGuida===ctx) return;
   ultimoContestoPiantaGuida=ctx;
@@ -5312,11 +5360,11 @@ function erbGuideFields(){var o={};document.querySelectorAll('#modoPersonaggio [
 function erbGuideResolverState(row){var r=row.querySelector('.erb-knowledge-resolver');if(!r)return null;var e=r.querySelector('[data-erb-resolver-eff]'),b=r.querySelector('[data-erb-resolver-bonus]');return {eff:e?e.value:'',bonus:b?b.value:''};}
 function erbGuideRows(){var a=[];Object.keys(ERB_PHASE_CONTAINERS||{}).forEach(function(ph){erbPhaseRows(ph).forEach(function(row){function v(sel){var e=row.querySelector(sel);return e?e.value:'';}var ap=row.querySelector('.erb-apply');a.push({phase:ph,preset:row.getAttribute('data-ebx-preset')||'',source:v('.erb-source'),condition:v('.erb-condition'),type:v('.erb-type'),target:v('.erb-target'),value:v('.erb-value'),fatigue:v('.erb-fatigue'),total:v('.erb-uses-total'),used:v('.erb-uses-used'),apply:!!(ap&&ap.checked),autoApplied:row.dataset.autoApplied||'',sharedAvailable:row.dataset.sharedAvailable||'',resolver:erbGuideResolverState(row)});});});return a;}
 function e44Clone(v){try{return JSON.parse(JSON.stringify(v));}catch(e){return v;}}
-function erbGuideCollectState(){return {fields:erbGuideFields(),activePanel:erbGuideActivePanel(),bonusRows:erbGuideRows(),globals:{history:e44Clone(typeof ERB_V38_HISTORY!=='undefined'?ERB_V38_HISTORY:{}),paxSuccess:!!(typeof EBX_PAX_SUCCESS!=='undefined'&&EBX_PAX_SUCCESS),paxData:e44Clone(typeof EBX_PAX_DATA!=='undefined'?EBX_PAX_DATA:null),paxAutocheck:!!(typeof EBX_PAX_AUTOCHECK!=='undefined'&&EBX_PAX_AUTOCHECK),illegalSig:e44Clone(typeof EBX_ILLEGAL_SIG!=='undefined'?EBX_ILLEGAL_SIG:{})}};}
+function erbGuideCollectState(){return {specificVoteV58:1,fields:erbGuideFields(),activePanel:erbGuideActivePanel(),bonusRows:erbGuideRows(),globals:{history:e44Clone(typeof ERB_V38_HISTORY!=='undefined'?ERB_V38_HISTORY:{}),paxSuccess:!!(typeof EBX_PAX_SUCCESS!=='undefined'&&EBX_PAX_SUCCESS),paxData:e44Clone(typeof EBX_PAX_DATA!=='undefined'?EBX_PAX_DATA:null),paxAutocheck:!!(typeof EBX_PAX_AUTOCHECK!=='undefined'&&EBX_PAX_AUTOCHECK),illegalSig:e44Clone(typeof EBX_ILLEGAL_SIG!=='undefined'?EBX_ILLEGAL_SIG:{})}};}
 function erbGuideSetFields(fields,restoreProfile){fields=fields||{};document.querySelectorAll((restoreProfile?'#modoPersonaggio [data-key],':'')+'#modoErbologia [data-key]').forEach(function(f){var k=f.getAttribute('data-key');if(fields[k]===undefined)return;if(f.type==='checkbox'||f.type==='radio')f.checked=!!fields[k];else f.value=fields[k];});}
 function erbGuideRebuildSharedAvailable(row){if(!row||row.dataset.sharedAvailable!=='1')return;var wrap=row.querySelector('.erb-apply-wrap');if(!wrap)return;wrap.innerHTML='<input type="checkbox" class="erb-apply" tabindex="-1"><span class="erb-auto-state erb-shared-wait">Disponibile, non ancora usato</span><button type="button" class="erb-use-shared">Usa in questa fase</button>';var use=wrap.querySelector('.erb-use-shared');if(use)use.addEventListener('click',function(){row.dataset.sharedAvailable='';use.remove();if(typeof erbV38AutoApply==='function')erbV38AutoApply(row);if(typeof ricalcolaErbologia==='function')ricalcolaErbologia();});}
 function erbGuideRestoreRows(rows){Object.keys(ERB_PHASE_CONTAINERS||{}).forEach(function(ph){var h=document.getElementById(ERB_PHASE_CONTAINERS[ph]);if(h)h.innerHTML='';});(rows||[]).forEach(function(d){var host=document.getElementById(ERB_PHASE_CONTAINERS[d.phase]||'');if(!host)return;var before=host.children.length,row;if(d.preset&&typeof ebxAddPhasePreset==='function'){ebxAddPhasePreset(d.phase,d.preset);row=host.children[before];}else{row=erbMakeBonusRow(d.phase,false);host.appendChild(row);}if(!row)return;function set(sel,val){var e=row.querySelector(sel);if(e&&val!==undefined)e.value=val;}set('.erb-source',d.source);set('.erb-condition',d.condition);set('.erb-type',d.type);if(typeof erbUpdateTarget==='function')erbUpdateTarget(row);set('.erb-target',d.target);set('.erb-value',d.value);set('.erb-fatigue',d.fatigue);set('.erb-uses-total',d.total);set('.erb-uses-used',d.used);if(d.sharedAvailable){row.dataset.sharedAvailable=d.sharedAvailable;erbGuideRebuildSharedAvailable(row);}var rr=row.querySelector('.erb-knowledge-resolver');if(rr&&d.resolver){var eff=rr.querySelector('[data-erb-resolver-eff]'),bon=rr.querySelector('[data-erb-resolver-bonus]');if(eff)eff.value=d.resolver.eff||'';if(bon)bon.value=d.resolver.bonus||'';if(typeof erbV39RefreshResolver==='function')erbV39RefreshResolver(row);}var ap=row.querySelector('.erb-apply');if(ap&&!d.sharedAvailable){ap.checked=!!d.apply;ap.disabled=false;}row.dataset.autoApplied=d.autoApplied||'';if(typeof erbV39AddShareControl==='function')erbV39AddShareControl(row);});if(typeof setupNumericInputs==='function')setupNumericInputs();if(typeof erbRefreshBonuses==='function')erbRefreshBonuses();if(typeof erbV39RefreshUseLabels==='function')erbV39RefreshUseLabels();}
-function erbGuideApplyState(st){if(!st)return;ERB_GUIDE_RESTORING=true;try{var restoreProfile=true;erbGuideSetFields(st.fields,restoreProfile);if(typeof aggiornaCampiTipoPG==='function')aggiornaCampiTipoPG();erbGuideRestoreRows(st.bonusRows||[]);var g=st.globals||{};ERB_V38_HISTORY=e44Clone(g.history||{riconoscimento:[],interazione:[],esportazione:[],collocazione:[]});EBX_PAX_SUCCESS=!!g.paxSuccess;EBX_PAX_DATA=e44Clone(g.paxData||null);EBX_PAX_AUTOCHECK=!!g.paxAutocheck;EBX_ILLEGAL_SIG=e44Clone(g.illegalSig||{});if(typeof ricalcolaErbologia==='function')ricalcolaErbologia();if(st.activePanel&&document.getElementById('pannello'+st.activePanel))mostraPannello(st.activePanel);}finally{ERB_GUIDE_RESTORING=false;}if(typeof rpEnsureProfileSession==='function'&&RP_FB&&RP_FB.user&&rpProfileName())setTimeout(function(){rpEnsureProfileSession(RP_PROFILE_PENDING_CREATE).catch(function(){});},0);}
+function erbGuideApplyState(st){if(!st)return;if(!st.specificVoteV58&&st.fields){st=e44Clone(st);st.fields=st.fields||{};st.fields.pgVoto='';}ERB_GUIDE_RESTORING=true;try{var restoreProfile=true;erbGuideSetFields(st.fields,restoreProfile);if(typeof aggiornaCampiTipoPG==='function')aggiornaCampiTipoPG();erbGuideRestoreRows(st.bonusRows||[]);var g=st.globals||{};ERB_V38_HISTORY=e44Clone(g.history||{riconoscimento:[],interazione:[],esportazione:[],collocazione:[]});EBX_PAX_SUCCESS=!!g.paxSuccess;EBX_PAX_DATA=e44Clone(g.paxData||null);EBX_PAX_AUTOCHECK=!!g.paxAutocheck;EBX_ILLEGAL_SIG=e44Clone(g.illegalSig||{});if(typeof ricalcolaErbologia==='function')ricalcolaErbologia();if(st.activePanel&&document.getElementById('pannello'+st.activePanel))mostraPannello(st.activePanel);}finally{ERB_GUIDE_RESTORING=false;}if(typeof rpEnsureProfileSession==='function'&&RP_FB&&RP_FB.user&&rpProfileName())setTimeout(function(){rpEnsureProfileSession(RP_PROFILE_PENDING_CREATE).catch(function(){});},0);}
 function erbGuideSaveNow(){var ref=erbGuideDoc();if(!ref||ERB_GUIDE_RESTORING)return Promise.resolve();if(ERB_GUIDE_SAVE_TIMER){clearTimeout(ERB_GUIDE_SAVE_TIMER);ERB_GUIDE_SAVE_TIMER=null;}var payload={recordType:'guide',ownerUid:RP_FB.user.uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),toolVersion:'erbologia-guide-v45',state:erbGuideCollectState()};erbGuideStatus('Guida: salvataggio automatico su Firebase…','saving');var task=ERB_GUIDE_SAVE_CHAIN.catch(function(){}).then(function(){return ref.set(payload,{merge:true});}).then(function(){erbGuideStatus('Guida salvata automaticamente su Firebase ✓','ok');}).catch(function(err){console.error(err);erbGuideStatus('Guida: errore di salvataggio Firebase — '+(err.message||err),'bad');});ERB_GUIDE_SAVE_CHAIN=task;return task;}
 function erbGuideScheduleSave(){
   if(ERB_GUIDE_RESTORING)return;
@@ -5380,9 +5428,9 @@ var GEN='https://felixfelicisharrypottergdr.forumfree.it/?pag=riuscitaconoscenze
 function id(){return 'erb_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,9);}
 function profile(){
   var pg=typeof leggiPG==='function'?leggiPG():null;
-  if(!pg)return {pgType:'studente',studentVote:'T',sapienzaScore:0,hasSapienza:false};
+  if(!pg)return {pgType:'studente',studentVote:'',sapienzaScore:0,hasSapienza:false};
   var sap=pg.tipo==='adulto'?Number(pg.sapienzaErbologica||0):0;
-  return {pgType:pg.tipo||'studente',studentVote:pg.tipo==='studente'?(pg.voto||'T'):'',sapienzaScore:sap,hasSapienza:pg.tipo==='adulto'&&sap>0};
+  return {pgType:pg.tipo||'studente',studentVote:pg.tipo==='studente'?(pg.voto||''):'',sapienzaScore:sap,hasSapienza:pg.tipo==='adulto'&&sap>0};
 }
 function cleanup(){var now=Date.now(),rm=[];try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i)||'';if(k.indexOf(REQ)!==0&&k.indexOf(RESP)!==0)continue;var o=null;try{o=JSON.parse(localStorage.getItem(k)||'');}catch(x){}if(!o||!o.createdAt||now-Number(o.createdAt)>2*60*60*1000)rm.push(k);}rm.forEach(function(k){localStorage.removeItem(k);});}catch(x){}}
 function statusHost(row){
@@ -5536,6 +5584,88 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   }
   window.addEventListener('focus',refreshIfHome);
   document.addEventListener('visibilitychange',function(){if(!document.hidden)refreshIfHome();});
+})();
+</script>
+
+
+<script id="erbologia-specific-vote-v58">
+(function(){
+'use strict';
+var VOTES={T:'T (Troll)',D:'D (Deludente)',S:'S (Scarso)',A:'A (Accettabile)',O:'O (Oltre le Aspettative)',E:'E (Eccezionale)'};
+function E(id){return document.getElementById(id);}
+function student(){return !!(E('pgTipo')&&E('pgTipo').value==='studente');}
+function species(n){var e=E('speciePianta'+n);return e?e.value.trim():'';}
+function cls(n){try{return typeof ebxClass==='function'?ebxClass(n):'';}catch(e){return '';}}
+function fire(el,type){if(!el)return;try{el.dispatchEvent(new Event(type||'change',{bubbles:true}));}catch(e){}}
+function clearGuideResults(){
+  document.querySelectorAll('#modoErbologia input[id^="risultato"],#modoErbologia input[id^="baseAdultoRisultato"],#modoErbologia input[id^="postBaseColtivazione"]').forEach(function(x){if(x.type!=='checkbox'&&x.type!=='radio')x.value='';});
+  ['tentativiRiconoscimentoFalliti','tentativiInterazioneFallitiPrecedenti','fallimentiEsportazionePrecedenti','fallimentiCollocazionePrecedenti'].forEach(function(id){var x=E(id);if(x)x.value='0';});
+  if(typeof ERB_V38_HISTORY!=='undefined')ERB_V38_HISTORY={riconoscimento:[],interazione:[],esportazione:[],collocazione:[]};
+  if(typeof formulaSignatures!=='undefined')formulaSignatures={};
+}
+function renderVoteGate(){
+  var hint=E('erbSpecificVoteHint'),vote=E('pgVoto'),sp=E('speciePiantaGuida');
+  if(!hint)return;
+  if(!student()){hint.style.display='none';return;}
+  hint.style.display='block';
+  if(vote&&vote.value){hint.className='specific-knowledge-note ok';hint.innerHTML='<b>Voto specifico impostato:</b> '+(VOTES[vote.value]||vote.value)+(sp&&sp.value?' per <b>'+sp.value.replace(/[<>&]/g,'')+'</b>.':'')+' Il tool lo usa in tutte le fasi previste.';return;}
+  hint.className='specific-knowledge-note warn';hint.innerHTML='<b>Prima di calcolare i dadi:</b> seleziona il voto dello Studente nella singola Pianta'+(sp&&sp.value?' <b>'+sp.value.replace(/[<>&]/g,'')+'</b>':'')+'. Se sei arrivato dalla Ricerca e hai scelto di gestirla subito, il campo viene compilato automaticamente.';
+  ['risultatoRiconoscimento','risultatoInterazione','risultatoEsportazione','risultatoCollocazione','risultatoColtivazione'].forEach(function(id){var x=E(id);if(x){x.value='';x.disabled=true;}});
+  ['copiaRiconoscimento','copiaInterazione','copiaEsportazione','copiaCollocazione','copiaColtivazione'].forEach(function(id){var x=E(id);if(x)x.disabled=true;});
+  var map=[['formulaRiconoscimento','codiceRiconoscimento'],['formulaInterazione','codiceInterazione'],['formulaEsportazione','codiceEsportazione'],['formulaCollocazione','codiceCollocazione'],['formulaColtivazione','codiceColtivazione']];
+  map.forEach(function(pair){var a=E(pair[0]),b=E(pair[1]);if(a)a.textContent='Seleziona prima il voto nella singola Pianta.';if(b)b.textContent='Il dado verrà generato dopo aver indicato il voto specifico.';});
+}
+var oldCalc=window.ricalcolaErbologia;
+window.ricalcolaErbologia=function(){
+  if(student() && E('pgVoto') && !E('pgVoto').value){
+    if(typeof aggiornaCampiTipoPG==='function')aggiornaCampiTipoPG();
+    if(typeof erbRefreshBonuses==='function')erbRefreshBonuses();
+    renderVoteGate();
+    return;
+  }
+  var r=oldCalc?oldCalc.apply(this,arguments):undefined;renderVoteGate();return r;
+};
+function transfer(n){
+  var sp=species(n),c=cls(n);if(!sp)return false;
+  var vote=E('rpVotoRicerca'+n),current=E('speciePiantaGuida');
+  if(current&&current.value.trim()!==sp&&typeof resetGuidaErbologia==='function')resetGuidaErbologia();
+  var spec=E('speciePiantaGuida'),nome=E('nomePiantaGuida'),cl=E('classificazione'),prov=E('provenienzaPianta'),gv=E('pgVoto');
+  if(spec)spec.value=sp;if(nome&&!nome.value)nome.value=sp;if(cl&&/^(X|XX|XXX|XXXX|XXXXX)$/.test(c))cl.value=c;if(prov)prov.value='normale';
+  if(n===1&&typeof rpNumber==='function'&&typeof rpLookup==='function'&&typeof rpFaseVitaleTab!=='undefined'){
+    var fv=rpNumber('risultatoFase1',1,9),phase=fv===null?'':rpLookup(rpFaseVitaleTab,fv),map={'Germinazione':'germinazione','Vegetazione':'vegetazione','Riproduzione':'riproduzione','Senescenza':'senescenza','Seme':'seme'},fe=E('faseInterazione');if(fe&&map[phase])fe.value=map[phase];
+  }
+  lastSpec=sp;[spec,nome,cl,prov].forEach(function(x){if(x)fire(x,'change');});
+  if(student()&&gv&&vote){gv.value=vote.value;fire(gv,'change');}
+  window.ricalcolaErbologia();
+  var syncBox=E('rpGuideBridge'+n);if(syncBox)syncBox.setAttribute('data-v58-synced',sp+'|'+(student()&&vote?vote.value:'adult'));
+  return true;
+}
+function updateBridge(n){
+  var box=E('rpGuideBridge'+n),sp=species(n),choice=E('rpInteragisciSubito'+n),vote=E('rpVotoRicerca'+n),wrap=E('rpResearchVoteWrap'+n),status=E('rpGuideBridgeStatus'+n),open=E('rpOpenGuide'+n),label=E('rpGuideSpeciesLabel'+n),vlabel=E('rpResearchVoteLabel'+n);
+  if(!box)return;
+  if(!sp){box.classList.remove('show');return;}
+  box.classList.add('show');if(label)label.textContent=sp;if(vlabel)vlabel.textContent='Voto nella Conoscenza di '+sp;
+  var old=box.getAttribute('data-v58-species')||'';
+  if(old&&old!==sp&&!(typeof RP_RESTORING!=='undefined'&&RP_RESTORING)){if(choice)choice.value='';if(vote)vote.value='';box.removeAttribute('data-v58-synced');}
+  box.setAttribute('data-v58-species',sp);
+  if(!choice||choice.value===''){if(wrap)wrap.classList.remove('show');if(open)open.style.display='none';if(status){status.className='research-guide-bridge-status';status.textContent='Scegli se vuoi passare subito alla Guida oppure continuare la Ricerca.';}return;}
+  if(choice.value==='no'){if(wrap)wrap.classList.remove('show');if(open)open.style.display='none';if(status){status.className='research-guide-bridge-status';status.textContent='Nessun dato della Guida viene modificato: puoi continuare la Ricerca.';}return;}
+  if(student()){
+    if(wrap)wrap.classList.add('show');
+    if(!vote||!vote.value){if(open)open.style.display='none';if(status){status.className='research-guide-bridge-status';status.textContent='Indica il voto dello Studente in '+sp+'; verrà riportato automaticamente nella Guida.';}return;}
+  }else if(wrap)wrap.classList.remove('show');
+  var sig=sp+'|'+(student()&&vote?vote.value:'adult'),synced=box.getAttribute('data-v58-synced')===sig;
+  if(open)open.style.display='inline-flex';
+  if(status){status.className='research-guide-bridge-status'+(synced?' ok':'');status.textContent=synced?('Dati trasferiti nella Guida ✓'+(student()?' Voto compreso.':'')):'Dati pronti: verranno trasferiti automaticamente nella Guida.';}
+}
+var oldResearch=window.ricalcolaRicerca;
+window.ricalcolaRicerca=function(){var r=oldResearch?oldResearch.apply(this,arguments):undefined;for(var n=1;n<=3;n++)updateBridge(n);return r;};
+for(var n=1;n<=3;n++)(function(i){var b=E('rpOpenGuide'+i),choice=E('rpInteragisciSubito'+i),vote=E('rpVotoRicerca'+i);if(choice)choice.addEventListener('change',function(){if(choice.value==='si'&&(!student()||(vote&&vote.value))){transfer(i);}updateBridge(i);});if(vote)vote.addEventListener('change',function(){if(choice&&choice.value==='si'&&vote.value){transfer(i);}updateBridge(i);});if(b)b.addEventListener('click',function(){if(transfer(i)){updateBridge(i);if(typeof mostraModo==='function')mostraModo('Erbologia');if(typeof mostraPannello==='function')mostraPannello('Riconoscimento');var p=E('modoErbologia');if(p&&p.scrollIntoView)p.scrollIntoView({behavior:'smooth',block:'start'});}});})(n);
+var specGuide=E('speciePiantaGuida'),lastSpec=specGuide?specGuide.value:'';
+if(specGuide){specGuide.addEventListener('change',function(){var now=specGuide.value.trim();if(now!==lastSpec){lastSpec=now;var v=E('pgVoto');if(student()&&v)v.value='';clearGuideResults();window.ricalcolaErbologia();}});}
+var pgVote=E('pgVoto');if(pgVote)pgVote.addEventListener('change',function(){window.ricalcolaErbologia();});
+if(student()&&pgVote&&!E('speciePiantaGuida').value)pgVote.value='';
+window.ricalcolaErbologia();window.ricalcolaRicerca();
 })();
 </script>
 
