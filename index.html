@@ -1559,6 +1559,7 @@ function ebxEl(id){ return document.getElementById(id); }
 </style>
 
 <!-- v60: performance input/iframe + azzeramento profilo/guida per cambio PG -->
+<!-- v61 performance: nessun MutationObserver/ResizeObserver permanente -->
 </head>
 <body>
 <div class="contenitore">
@@ -5600,10 +5601,19 @@ function importResponse(raw){var resp=null;try{resp=typeof raw==='string'?JSON.p
   status(row,'Riuscita importata automaticamente dal Generatore: '+pct+'%. Completa qui soltanto l’eventuale dado secondario mostrato dal tool.','ok');row.dataset.erbBridgeImported='1';try{localStorage.removeItem(RESP+resp.requestId);}catch(x){}return true;
 }
 function check(){cleanup();document.querySelectorAll('.erb-bonus-row,.ebx-search-bonus-row,#ebxPaxBox').forEach(function(r){var rid=r.dataset.erbBridgeRequestId;if(!rid)return;var raw=null;try{raw=localStorage.getItem(RESP+rid);}catch(x){}if(raw)importResponse(raw);});try{var l=localStorage.getItem(LEG_RESP);if(l&&importResponse(l))localStorage.removeItem(LEG_RESP);}catch(x){}}
-document.addEventListener('click',function(ev){var a=ev.target&&ev.target.closest?ev.target.closest('a[data-erb-bridge-open]'):null;if(!a)return;var row=a.closest('.erb-bonus-row,.ebx-search-bonus-row,#ebxPaxBox'),info=infoForRow(row);if(!info)return;makeRequest(row,info);a.href=GEN;},true);
+document.addEventListener('click',function(ev){
+  var a=ev.target&&ev.target.closest?ev.target.closest('a[href*="?pag=riuscitaconoscenze"],a[data-erb-bridge-open]'):null;
+  if(!a)return;
+  var row=a.closest('.erb-bonus-row,.ebx-search-bonus-row,#ebxPaxBox'),info=infoForRow(row);
+  if(!info)return;
+  a.setAttribute('data-erb-bridge-open','1');
+  makeRequest(row,info);
+  a.href=GEN;
+},true);
 window.addEventListener('storage',function(ev){if(ev.key&&ev.key.indexOf(RESP)===0&&ev.newValue)importResponse(ev.newValue);else if(ev.key===LEG_RESP&&ev.newValue)importResponse(ev.newValue);});
 window.addEventListener('focus',check);document.addEventListener('visibilitychange',function(){if(!document.hidden)check();});
-function init(){tagAll(document);check();if(window.MutationObserver){new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(function(n){if(n.nodeType===1)tagAll(n);});});}).observe(document.body,{childList:true,subtree:true});}}
+/* Nessun MutationObserver permanente: le righe dinamiche vengono preparate al click. */
+function init(){tagAll(document);check();}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else setTimeout(init,0);
 })();
 </script>
@@ -5624,7 +5634,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function init(){wire(document);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
   document.addEventListener('click',function(e){var a=e.target&&e.target.closest?e.target.closest('a[href*="?pag=riuscitaconoscenze"]'):null;if(a){rememberReturn();a.href=a.hasAttribute('data-erb-bridge-open')?(BASE+'&from=erbologia&bridge=erbologia#riuscitaFrame'):targetUrl();}},true);
-  if(window.MutationObserver){try{new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(function(n){if(n.nodeType===1)wire(n);});});}).observe(document.documentElement,{subtree:true,childList:true});}catch(e){}}
+  /* I link creati dopo il caricamento vengono sistemati al click: niente observer continuo sul DOM. */
 })();
 </script>
 
@@ -5646,21 +5656,21 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
-<script id="erbologia-v60-height-fix">
+<script id="erbologia-v61-height-fix">
 (function(){
   'use strict';
-  var lastSent=0,raf=0,settleTimer=0;
+  var lastSent=0,raf=0,timer=0;
   function pageBottom(){
     var de=document.documentElement,b=document.body,sc=document.scrollingElement||de||b;
     var vals=[sc?sc.scrollHeight:0,de?de.scrollHeight:0,de?de.offsetHeight:0,b?b.scrollHeight:0,b?b.offsetHeight:0];
     var c=document.querySelector('.contenitore');
     if(c&&c.offsetParent!==null){var r=c.getBoundingClientRect();vals.push(Math.ceil(r.bottom+(window.pageYOffset||0)));}
-    /* Margine per la cornice/decoro del forum, senza scandire continuamente il DOM. */
     return Math.ceil(Math.max.apply(Math,vals)+190);
   }
-  function postHeight(force){
-    var h=pageBottom();if(!isFinite(h)||h<300)return;
-    if(!force&&Math.abs(h-lastSent)<6)return;
+  function send(force){
+    var h=pageBottom();
+    if(!isFinite(h)||h<300)return;
+    if(!force&&Math.abs(h-lastSent)<8)return;
     lastSent=h;
     var msgs=[
       {tipo:'altezzaErbologia',altezza:h},
@@ -5668,30 +5678,33 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       {type:'resize',tool:'erbologia',height:h},
       {type:'setHeight',tool:'erbologia',height:h}
     ];
-    msgs.forEach(function(m){try{window.parent.postMessage(m,'*');}catch(e){}});
+    for(var i=0;i<msgs.length;i++){try{window.parent.postMessage(msgs[i],'*');}catch(e){}}
   }
-  function schedule(force){
-    if(raf)return;
-    raf=requestAnimationFrame(function(){raf=0;postHeight(!!force);});
+  function schedule(force,delay){
+    clearTimeout(timer);
+    timer=setTimeout(function(){
+      timer=0;
+      if(raf)cancelAnimationFrame(raf);
+      raf=requestAnimationFrame(function(){raf=0;send(!!force);});
+    },typeof delay==='number'?delay:60);
   }
-  function settle(){
-    schedule(false);
-    clearTimeout(settleTimer);
-    settleTimer=setTimeout(function(){postHeight(false);},220);
-  }
-  window.erbNotifyHeight=settle;
-  window.addEventListener('load',function(){postHeight(true);setTimeout(settle,350);setTimeout(settle,1100);});
-  window.addEventListener('resize',settle);
-  window.addEventListener('hashchange',settle);
-  /* Digitare nei campi non deve innescare misurazioni continue dell'iframe. */
-  document.addEventListener('change',settle,true);
-  document.addEventListener('click',function(e){if(e.target&&e.target.closest&&e.target.closest('button,summary,a,.check-riga'))settle();},true);
-  document.addEventListener('toggle',function(e){if(e.target&&e.target.tagName==='DETAILS')settle();},true);
-  if(window.ResizeObserver){try{var ro=new ResizeObserver(function(){schedule(false);});ro.observe(document.querySelector('.contenitore')||document.documentElement);}catch(e){}}
-  /* Solo inserimenti/rimozioni di nodi: niente attributes/characterData durante la digitazione. */
-  if(window.MutationObserver){try{new MutationObserver(function(ms){for(var i=0;i<ms.length;i++){if(ms[i].addedNodes.length||ms[i].removedNodes.length){schedule(false);break;}}}).observe(document.body,{subtree:true,childList:true});}catch(e){}}
-  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){postHeight(true);});}
-  postHeight(true);
+  /* Chiamato esplicitamente dai punti che cambiano davvero il layout. */
+  window.erbNotifyHeight=function(){schedule(false,70);};
+  window.erbForceHeight=function(){schedule(true,40);};
+
+  window.addEventListener('load',function(){send(true);schedule(false,350);schedule(false,1200);});
+  window.addEventListener('hashchange',function(){schedule(false,100);});
+  document.addEventListener('toggle',function(e){if(e.target&&e.target.tagName==='DETAILS')schedule(false,90);},true);
+  document.addEventListener('click',function(e){
+    var t=e.target&&e.target.closest?e.target.closest('button,summary,[data-rp-nav],[data-erb-go],.tab-bottone,.check-riga'):null;
+    if(t)schedule(false,110);
+  },true);
+  document.addEventListener('change',function(e){
+    /* change scatta a modifica conclusa, non a ogni carattere digitato. */
+    if(e.target&&e.target.id!=='pgNomeSessione')schedule(false,110);
+  },true);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){schedule(true,50);});}
+  send(true);
 })();
 </script>
 
@@ -5858,9 +5871,20 @@ for(var i=1;i<=3;i++)(function(n){var s=document.getElementById('speciePianta'+n
 
 /* Il resolver deve essere una CTA evidente ogni volta che compare. */
 function reinforceResolverLinks(){
-  document.querySelectorAll('.erb-knowledge-tool a[href*="pag=riuscitaconoscenze"]').forEach(function(a){a.textContent='Apri il Generatore di Riuscita ↗';a.setAttribute('title','Determina prima la riuscita della Conoscenza o dell’Incantesimo');});
+  document.querySelectorAll('.erb-knowledge-tool a[href*="pag=riuscitaconoscenze"]').forEach(function(a){
+    if(a.textContent!=='Apri il Generatore di Riuscita ↗')a.textContent='Apri il Generatore di Riuscita ↗';
+    a.setAttribute('title','Determina prima la riuscita della Conoscenza o dell’Incantesimo');
+  });
 }
-var mo=window.MutationObserver?new MutationObserver(function(){reinforceResolverLinks();}):null;if(mo)mo.observe(document.body,{subtree:true,childList:true});reinforceResolverLinks();
+/* Prima c'era un MutationObserver che riscriveva textContent e si riattivava da solo in loop.
+   Ora la CTA viene aggiornata solo quando l'utente modifica/aggiunge un bonus. */
+document.addEventListener('change',function(e){
+  if(e.target&&e.target.closest&&e.target.closest('.erb-bonus-row,.ebx-search-bonus-row,#ebxPaxBox'))setTimeout(reinforceResolverLinks,0);
+},true);
+document.addEventListener('click',function(e){
+  if(e.target&&e.target.closest&&e.target.closest('.erb-add,.erb-remove,[data-ebx-add],button'))setTimeout(reinforceResolverLinks,0);
+},true);
+reinforceResolverLinks();
 
 /* Reinforce profession lock also after Firestore/profile restore. */
 function professionGuard(){var st=document.getElementById('pgTipo')&&document.getElementById('pgTipo').value==='studente',c=document.getElementById('pgErbologoMestiere'),r=document.getElementById('rigaErbologoMestiere');if(c){c.disabled=st;if(st)c.checked=false;}if(r)r.style.display=st?'none':'flex';}
