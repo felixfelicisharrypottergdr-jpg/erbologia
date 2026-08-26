@@ -1560,6 +1560,33 @@ function ebxEl(id){ return document.getElementById(id); }
 
 <!-- v64: bridge altezza dinamica ForumFree bidirezionale + performance/reset PG -->
 <!-- v63: fix runtime completo + interfaccia stabile -->
+
+<style id="erbologia-v66-auto-traits-style">
+.erb-auto-traits{margin:12px 0;padding:12px 14px;border:1px solid #89a965;border-left:5px solid #9fbd72;border-radius:8px;background:#dcebc9;color:#1d3016;box-shadow:0 1px 0 rgba(255,255,255,.45) inset}
+.erb-auto-traits-title{font-weight:900;margin-bottom:7px;color:#233d19}
+.erb-auto-trait{padding:6px 0;line-height:1.42;color:#25381f}
+.erb-auto-trait+.erb-auto-trait{border-top:1px solid rgba(62,91,47,.2)}
+.erb-auto-trait strong{color:#18330f}
+.erb-auto-trait.auto-ok{color:#254d16}
+.erb-auto-trait.auto-warn{color:#752a20;font-weight:800}
+.erb-auto-trait.auto-neutral{color:#394638}
+</style>
+
+<style id="erbologia-v66-pax-ux">
+/* v66 — Pax è davvero opzionale e il suo stato di collegamento resta leggibile. */
+#modoErbologia .erb-pax-details{padding:0!important;overflow:hidden;}
+#modoErbologia .erb-pax-details>summary{cursor:pointer;list-style:none;padding:11px 13px;background:#263d1d;color:#f1f8ea;font-weight:800;}
+#modoErbologia .erb-pax-details>summary::-webkit-details-marker{display:none;}
+#modoErbologia .erb-pax-details>summary::before{content:'▸';display:inline-block;margin-right:8px;transition:transform .15s ease;}
+#modoErbologia .erb-pax-details[open]>summary::before{transform:rotate(90deg);}
+#modoErbologia .erb-pax-summary-note{font-weight:500;opacity:.82;margin-left:5px;font-size:.88em;}
+#modoErbologia .erb-pax-body{padding:12px 14px;}
+#modoErbologia .erb-pax-body h3{margin:0 0 8px;color:#d7e4a4;}
+#modoErbologia .erb-knowledge-tool .erb-bridge-status{background:#eef5e5!important;color:#20351a!important;border:1px solid #9bb782!important;border-left:4px solid #729653!important;opacity:1!important;}
+#modoErbologia .erb-knowledge-tool .erb-bridge-status.ok{background:#e1efd6!important;color:#1f4219!important;border-left-color:#5d8c43!important;}
+#modoErbologia .erb-knowledge-tool .erb-bridge-status.warn{background:#f5ead1!important;color:#5a3a12!important;border-left-color:#b77b31!important;}
+@media(max-width:720px){#modoErbologia .erb-pax-summary-note{display:block;margin:4px 0 0 23px;}}
+</style>
 </head>
 <body>
 <div class="contenitore">
@@ -1697,6 +1724,7 @@ function ebxEl(id){ return document.getElementById(id); }
     <label>Provenienza della Pianta</label>
     <select id="provenienzaPianta" data-key="provenienzaPianta">
       <option value="normale">Trovata / già posseduta</option>
+      <option value="seme_coltivato">Cresciuta da un Seme coltivato dal PG</option>
       <option value="acquistata">Acquistata presso un Negozio Magico</option>
       <option value="donata">Ricevuta in dono da un altro PG</option>
     </select>
@@ -1840,27 +1868,24 @@ function ebxEl(id){ return document.getElementById(id); }
   <input type="hidden" id="extraInterazione" value="0">
 </div>
 <div class="nota-regole erb-short-note"><b>Fase Vitale automatica:</b> Studente con voto E; Adulto con Sapienza Erbologica 1+. Con Sapienza 20-25 riconosce anche l’età esatta.</div>
-<div class="check-riga">
-  <input type="checkbox" id="interazioneMaiOstile" data-key="interazioneMaiOstile">
-  <label for="interazioneMaiOstile">Pianta indicata nel regolamento come mai ostile (autoconclusivo)</label>
-</div>
-<div class="check-riga">
-  <input type="checkbox" id="interazioneSempreOstile" data-key="interazioneSempreOstile">
-  <label for="interazioneSempreOstile">Pianta indicata nel regolamento come sempre ostile (la normale Interazione non è disponibile)</label>
-</div>
-<div class="check-riga">
-  <input type="checkbox" id="piantaDaSemeColtivato" data-key="piantaDaSemeColtivato">
-  <label for="piantaDaSemeColtivato">Pianta cresciuta da un Seme coltivato dal PG (+3 possibilità in Interazione; vale anche per Semi acquistati e poi coltivati)</label>
+<input type="checkbox" id="interazioneMaiOstile" data-key="interazioneMaiOstile" hidden>
+<input type="checkbox" id="interazioneSempreOstile" data-key="interazioneSempreOstile" hidden>
+<input type="checkbox" id="piantaDaSemeColtivato" data-key="piantaDaSemeColtivato" hidden>
+<div class="erb-auto-traits" id="erbAutoTraits" role="status" aria-live="polite">
+  <div class="erb-auto-traits-title">Dati ricavati automaticamente</div>
+  <div class="erb-auto-trait" id="erbAutoHostility">Inserisci la specie della Pianta: il tool controllerà automaticamente il comportamento in Interazione.</div>
+  <div class="erb-auto-trait" id="erbAutoSeedOrigin">Il bonus da Seme coltivato viene ricavato dalla Provenienza della Pianta.</div>
 </div>
 <div class="check-riga">
   <input type="checkbox" id="interazioneRisoltaEsternamente" data-key="interazioneRisoltaEsternamente">
-  <label for="interazioneRisoltaEsternamente">Interazione già riuscita tramite tecnica/incantesimo/gestione esterna al dado standard (es. Pax): considera la fase superata</label>
+  <label for="interazioneRisoltaEsternamente">Ho già risolto l’Interazione fuori dal tiro standard (tecnica/incantesimo/gestione esterna). Pax compilato in questo tool la imposta automaticamente</label>
 </div>
 <div class="nota-regole" id="notaInterazioneEsterna" style="display:none">Se la Pianta è stata placata con <b>Pax</b>, riporta il relativo malus nei modificatori di Esportazione/Collocazione. Se una Pianta placata non viene poi Trattata, Pax causa al PG <b>-2 Empatia al successivo utilizzo</b>. Se Pax viene usato su una Pianta già Trattata, il suo malus riguarda invece i <b>post della prima successiva Produzione di Ingredienti</b>. Una Pianta <b>sempre ostile</b> resta comunque non trattabile con la procedura standard.</div>
 <div class="check-riga">
   <input type="checkbox" id="interazioneOrda" data-key="interazioneOrda">
-  <label for="interazioneOrda">Sto interagendo contemporaneamente con un'Orda (2-10 esemplari)</label>
+  <label for="interazioneOrda">Sto interagendo contemporaneamente con un'Orda</label>
 </div>
+<div class="nota-regole erb-short-note" id="erbOrdaResearchHint" style="display:none"></div>
 <div id="opzioniOrdaInterazione" style="display:none; margin:8px 0 12px">
   <div class="riga">
     <div class="campo">
@@ -1883,11 +1908,14 @@ function ebxEl(id){ return document.getElementById(id); }
   <label for="secondoTentativoInterazione">Secondo tentativo per placare la Pianta ostile (-3 possibilità; se fallisce non si può ritentare)</label>
 </div>
 <div class="erb-bonus-box"><h3>Bonus specifici — Interazione</h3><div class="nota-regole">Un bonus a <b>Empatia</b> modifica prima il Parametro e solo dopo viene calcolato Empatia/2. Un bonus alle <b>possibilità</b> si aggiunge invece dopo la conversione.</div><div class="ebx-picker"><div class="campo"><label>Scegli un Oggetto / Tecnica / Conoscenza</label><select id="ebxPresetInterazione" data-ebx-preset-phase="interazione"><option value="">— Seleziona —</option></select></div><button type="button" class="bottone-azione bottone-secondario ebx-add-phase-preset" data-ebx-phase="interazione" data-ebx-select="ebxPresetInterazione">+ Inserisci</button></div><div id="bonusInterazioneRows"></div><button type="button" class="bottone-azione bottone-secondario erb-add-bonus" data-erb-phase="interazione">+ Aggiungi bonus</button><div class="erb-bonus-summary" id="bonusInterazioneSummary"></div></div>
-<div class="ebx-special" id="ebxPaxBox">
-  <h3>Pax — alternativa al normale tiro di Interazione</h3>
-  <div class="riga"><div class="campo"><label>Uso di Pax</label><select id="ebxPaxPreset" data-key="ebxPaxPreset"><option value="">Non usato</option><option value="s33">Studente · 33%</option><option value="s66">Studente · 66%</option><option value="s100">Studente · 100%</option><option value="a33">Adulto senza Sapienza Erbologica · 33%</option><option value="a66">Adulto senza Sapienza Erbologica · 66%</option><option value="a100">Adulto senza Sapienza Erbologica · 100%</option><option value="sap33">Adulto con Sapienza Erbologica 1+ · 33%</option><option value="sap66">Adulto con Sapienza Erbologica 1+ · 66%</option><option value="sap100">Adulto con Sapienza Erbologica 1+ · 100%</option></select></div></div>
-  <div id="ebxPaxActive" style="display:none"><div class="result-line"><div class="dice-code" id="codicePax"></div><button type="button" class="copy-btn" id="copiaPax">Copia</button></div><div class="result-line"><span>Risultato Pax (1-15):</span><input type="number" id="risultatoPax" data-key="risultatoPax" min="1" max="15"><span class="out-tag out-neutral" id="tagPax">in attesa</span></div><div class="nota-regole" id="notePax"></div></div>
-</div>
+<details class="ebx-special erb-pax-details" id="ebxPaxBox">
+  <summary><b>Pax — opzionale</b> <span class="erb-pax-summary-note">Usalo solo se vuoi sostituire il normale tiro di Interazione</span></summary>
+  <div class="erb-pax-body">
+    <h3>Usare Pax</h3>
+    <div class="riga"><div class="campo"><label>Esito ottenuto con Pax</label><select id="ebxPaxPreset" data-key="ebxPaxPreset"><option value="">— Non sto usando Pax —</option><option value="s33">Studente · 33%</option><option value="s66">Studente · 66%</option><option value="s100">Studente · 100%</option><option value="a33">Adulto senza Sapienza Erbologica · 33%</option><option value="a66">Adulto senza Sapienza Erbologica · 66%</option><option value="a100">Adulto senza Sapienza Erbologica · 100%</option><option value="sap33">Adulto con Sapienza Erbologica 1+ · 33%</option><option value="sap66">Adulto con Sapienza Erbologica 1+ · 66%</option><option value="sap100">Adulto con Sapienza Erbologica 1+ · 100%</option></select></div></div>
+    <div id="ebxPaxActive" style="display:none"><div class="result-line"><div class="dice-code" id="codicePax"></div><button type="button" class="copy-btn" id="copiaPax">Copia</button></div><div class="result-line"><span>Risultato Pax (1-15):</span><input type="number" id="risultatoPax" data-key="risultatoPax" min="1" max="15"><span class="out-tag out-neutral" id="tagPax">in attesa</span></div><div class="nota-regole" id="notePax"></div></div>
+  </div>
+</details>
 <div class="formula-tag" id="formulaInterazione"></div>
 <div class="result-line">
   <div class="dice-code" id="codiceInterazione"></div>
@@ -5324,7 +5352,7 @@ function erbV38Init(){
   /* Knowledge-success helper, without replacing domain-specific catalogs. */
   document.querySelectorAll('#modoErbologia .erb-bonus-box').forEach(function(box){if(box.querySelector('.erb-knowledge-tool'))return;var n=document.createElement('div');n.className='erb-knowledge-tool';n.innerHTML='<b>Riuscita:</b> apri il <a href="https://felixfelicisharrypottergdr.forumfree.it/?pag=riuscitaconoscenze" target="_blank" rel="noopener">Generatore ↗</a>, poi usa qui l’esito ottenuto.';var h=box.querySelector('h3');if(h)h.insertAdjacentElement('afterend',n);else box.prepend(n);});
   var searchBonus=erbV38El('ebxResearchBonusRows');if(searchBonus&&!searchBonus.parentNode.querySelector('.erb-search-knowledge-tool')){var sk=document.createElement('div');sk.className='erb-knowledge-tool erb-search-knowledge-tool';sk.innerHTML='<b>Riuscita:</b> apri il <a href="https://felixfelicisharrypottergdr.forumfree.it/?pag=riuscitaconoscenze" target="_blank" rel="noopener">Generatore ↗</a>, poi usa qui l’esito ottenuto.';searchBonus.parentNode.insertBefore(sk,searchBonus);}
-  var paxBox=erbV38El('ebxPaxBox');if(paxBox&&!paxBox.querySelector('.erb-knowledge-tool')){var pk=document.createElement('div');pk.className='erb-knowledge-tool';pk.innerHTML='<b>Prima di usare Pax:</b> determina la riuscita nel <a href="https://felixfelicisharrypottergdr.forumfree.it/?pag=riuscitaconoscenze" target="_blank" rel="noopener">Generatore ↗</a>.';var ph=paxBox.querySelector('h3');if(ph)ph.insertAdjacentElement('afterend',pk);}
+  var paxBox=erbV38El('ebxPaxBox');if(paxBox&&!paxBox.querySelector('.erb-knowledge-tool')){var pk=document.createElement('div');pk.className='erb-knowledge-tool';pk.innerHTML='<b>Se vuoi usare Pax:</b> determina prima la riuscita nel <a href="https://felixfelicisharrypottergdr.forumfree.it/?pag=riuscitaconoscenze" target="_blank" rel="noopener">Generatore ↗</a>.';var ph=paxBox.querySelector('h3');if(ph)ph.insertAdjacentElement('afterend',pk);else{var body=paxBox.querySelector('.erb-pax-body');if(body)body.insertBefore(pk,body.firstChild);}}
   /* Existing rows become automatic too. */
   document.querySelectorAll('#modoErbologia .erb-bonus-row').forEach(function(r){var wrap=r.querySelector('.erb-apply-wrap');if(wrap)wrap.innerHTML='<input type="checkbox" class="erb-apply" tabindex="-1"><span class="erb-auto-state pending">Applicazione automatica</span>';erbV38AutoApply(r);});
   document.addEventListener('input',function(e){var row=e.target&&e.target.closest?e.target.closest('#modoErbologia .erb-bonus-row'):null;if(row&&!row.getAttribute('data-ebx-preset'))erbV38AutoApply(row);},true);
@@ -5473,7 +5501,7 @@ function erbGuideSetFields(fields,restoreProfile){fields=fields||{};document.que
 function erbGuideRebuildSharedAvailable(row){if(!row||row.dataset.sharedAvailable!=='1')return;var wrap=row.querySelector('.erb-apply-wrap');if(!wrap)return;wrap.innerHTML='<input type="checkbox" class="erb-apply" tabindex="-1"><span class="erb-auto-state erb-shared-wait">Disponibile, non ancora usato</span><button type="button" class="erb-use-shared">Usa in questa fase</button>';var use=wrap.querySelector('.erb-use-shared');if(use)use.addEventListener('click',function(){row.dataset.sharedAvailable='';use.remove();if(typeof erbV38AutoApply==='function')erbV38AutoApply(row);if(typeof ricalcolaErbologia==='function')ricalcolaErbologia();});}
 function erbGuideRestoreRows(rows){Object.keys(ERB_PHASE_CONTAINERS||{}).forEach(function(ph){var h=document.getElementById(ERB_PHASE_CONTAINERS[ph]);if(h)h.innerHTML='';});(rows||[]).forEach(function(d){var host=document.getElementById(ERB_PHASE_CONTAINERS[d.phase]||'');if(!host)return;var before=host.children.length,row;if(d.preset&&typeof ebxAddPhasePreset==='function'){ebxAddPhasePreset(d.phase,d.preset);row=host.children[before];}else{row=erbMakeBonusRow(d.phase,false);host.appendChild(row);}if(!row)return;function set(sel,val){var e=row.querySelector(sel);if(e&&val!==undefined)e.value=val;}set('.erb-source',d.source);set('.erb-condition',d.condition);set('.erb-type',d.type);if(typeof erbUpdateTarget==='function')erbUpdateTarget(row);set('.erb-target',d.target);set('.erb-value',d.value);set('.erb-fatigue',d.fatigue);set('.erb-uses-total',d.total);set('.erb-uses-used',d.used);if(d.sharedAvailable){row.dataset.sharedAvailable=d.sharedAvailable;erbGuideRebuildSharedAvailable(row);}var rr=row.querySelector('.erb-knowledge-resolver');if(rr&&d.resolver){var eff=rr.querySelector('[data-erb-resolver-eff]'),bon=rr.querySelector('[data-erb-resolver-bonus]');if(eff)eff.value=d.resolver.eff||'';if(bon)bon.value=d.resolver.bonus||'';if(typeof erbV39RefreshResolver==='function')erbV39RefreshResolver(row);}var ap=row.querySelector('.erb-apply');if(ap&&!d.sharedAvailable){ap.checked=!!d.apply;ap.disabled=false;}row.dataset.autoApplied=d.autoApplied||'';if(typeof erbV39AddShareControl==='function')erbV39AddShareControl(row);});if(typeof setupNumericInputs==='function')setupNumericInputs();if(typeof erbRefreshBonuses==='function')erbRefreshBonuses();if(typeof erbV39RefreshUseLabels==='function')erbV39RefreshUseLabels();}
 function erbGuideApplyState(st){if(!st)return;if(!st.specificVoteV58&&st.fields){st=e44Clone(st);st.fields=st.fields||{};st.fields.pgVoto='';}ERB_GUIDE_RESTORING=true;try{var restoreProfile=true;erbGuideSetFields(st.fields,restoreProfile);if(typeof aggiornaCampiTipoPG==='function')aggiornaCampiTipoPG();erbGuideRestoreRows(st.bonusRows||[]);var g=st.globals||{};ERB_V38_HISTORY=e44Clone(g.history||{riconoscimento:[],interazione:[],esportazione:[],collocazione:[]});EBX_PAX_SUCCESS=!!g.paxSuccess;EBX_PAX_DATA=e44Clone(g.paxData||null);EBX_PAX_AUTOCHECK=!!g.paxAutocheck;EBX_ILLEGAL_SIG=e44Clone(g.illegalSig||{});if(typeof ricalcolaErbologia==='function')ricalcolaErbologia();if(st.activePanel&&document.getElementById('pannello'+st.activePanel))mostraPannello(st.activePanel);}finally{ERB_GUIDE_RESTORING=false;}if(typeof rpEnsureProfileSession==='function'&&RP_FB&&RP_FB.user&&rpProfileName())setTimeout(function(){rpEnsureProfileSession(RP_PROFILE_PENDING_CREATE).catch(function(){});},0);}
-function erbGuideSaveNow(){var ref=erbGuideDoc();if(!ref||ERB_GUIDE_RESTORING)return Promise.resolve();if(ERB_GUIDE_SAVE_TIMER){clearTimeout(ERB_GUIDE_SAVE_TIMER);ERB_GUIDE_SAVE_TIMER=null;}var payload={recordType:'guide',ownerUid:RP_FB.user.uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),toolVersion:'erbologia-guide-v63',state:erbGuideCollectState()};erbGuideStatus('Guida: salvataggio automatico su Firebase…','saving');var task=ERB_GUIDE_SAVE_CHAIN.catch(function(){}).then(function(){return ref.set(payload,{merge:true});}).then(function(){erbGuideStatus('Guida salvata automaticamente su Firebase ✓','ok');}).catch(function(err){console.error(err);erbGuideStatus('Guida: errore di salvataggio Firebase — '+(err.message||err),'bad');});ERB_GUIDE_SAVE_CHAIN=task;return task;}
+function erbGuideSaveNow(){var ref=erbGuideDoc();if(!ref||ERB_GUIDE_RESTORING)return Promise.resolve();if(ERB_GUIDE_SAVE_TIMER){clearTimeout(ERB_GUIDE_SAVE_TIMER);ERB_GUIDE_SAVE_TIMER=null;}var payload={recordType:'guide',ownerUid:RP_FB.user.uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),toolVersion:'erbologia-guide-v65',state:erbGuideCollectState()};erbGuideStatus('Guida: salvataggio automatico su Firebase…','saving');var task=ERB_GUIDE_SAVE_CHAIN.catch(function(){}).then(function(){return ref.set(payload,{merge:true});}).then(function(){erbGuideStatus('Guida salvata automaticamente su Firebase ✓','ok');}).catch(function(err){console.error(err);erbGuideStatus('Guida: errore di salvataggio Firebase — '+(err.message||err),'bad');});ERB_GUIDE_SAVE_CHAIN=task;return task;}
 function erbGuideScheduleSave(){
   if(ERB_GUIDE_RESTORING)return;
   if(!ERB_GUIDE_READY||!RP_FB.user){
@@ -5915,6 +5943,75 @@ var tipo=document.getElementById('pgTipo');if(tipo)tipo.addEventListener('change
 
 if(typeof ricalcolaRicerca==='function')ricalcolaRicerca();
 if(window.erbNotifyHeight)window.erbNotifyHeight();
+})();
+</script>
+
+
+<script id="erbologia-v65-auto-traits">
+(function(){
+'use strict';
+function E(id){return document.getElementById(id);}
+function norm(v){v=String(v||'');try{v=v.normalize('NFD').replace(/[\u0300-\u036f]/g,'');}catch(e){}return v.toLowerCase().replace(/[’‘]/g,"'").replace(/\s+/g,' ').trim();}
+var NEVER=[
+ 'Algabranchia','Amarantacea','Bacche di Balzar','Frullobulbo','Giaggiolo Puzzolente',
+ 'Grinzafico','Menta Tibetana','Moly','Muschio del Sud','Radigorda','Ruta'
+];
+var NEVER_MAP={};NEVER.forEach(function(n){NEVER_MAP[norm(n)]=true;});
+window.rpIsNeverHostileSpecies=function(name){return !!NEVER_MAP[norm(name)];};
+
+function syncAutoTraits(){
+ var specie=E('speciePiantaGuida'),name=specie?specie.value.trim():'',mai=E('interazioneMaiOstile'),sempre=E('interazioneSempreOstile');
+ var host=E('erbAutoHostility'),seed=E('erbAutoSeedOrigin'),prov=E('provenienzaPianta'),seedCheck=E('piantaDaSemeColtivato');
+ var isAlways=!!(name&&typeof window.rpIsAlwaysHostileSpecies==='function'&&window.rpIsAlwaysHostileSpecies(name));
+ var isNever=!!(name&&window.rpIsNeverHostileSpecies(name));
+ if(mai)mai.checked=isNever&&!isAlways;
+ if(sempre)sempre.checked=isAlways;
+ if(host){
+   host.className='erb-auto-trait '+(isAlways?'auto-warn':(isNever?'auto-ok':'auto-neutral'));
+   if(!name) host.innerHTML='Inserisci la specie della Pianta: <strong>mai ostile / sempre ostile</strong> verrà ricavato automaticamente.';
+   else if(isAlways) host.innerHTML='<strong>'+name+': sempre ostile.</strong> La normale Interazione non è disponibile; applica le regole specifiche della specie.';
+   else if(isNever) host.innerHTML='<strong>'+name+': mai ostile.</strong> L’Interazione è autoconclusiva: non devi inserire un risultato del dado.';
+   else host.innerHTML='<strong>'+name+':</strong> non è indicata dal regolamento come mai ostile o sempre ostile; si applica la normale procedura di Interazione.';
+ }
+ var fromSeed=!!(prov&&prov.value==='seme_coltivato');
+ if(seedCheck)seedCheck.checked=fromSeed;
+ if(seed){seed.className='erb-auto-trait '+(fromSeed?'auto-ok':'auto-neutral');seed.innerHTML=fromSeed?'<strong>Origine da Seme coltivato:</strong> +3 possibilità in Interazione applicate automaticamente.':'Bonus da Seme coltivato: non applicato. Se serve, scegli <strong>“Cresciuta da un Seme coltivato dal PG”</strong> nella Provenienza.';}
+}
+window.erbSyncAutoTraits=syncAutoTraits;
+
+var specie=E('speciePiantaGuida'),prov=E('provenienzaPianta');
+if(specie){specie.addEventListener('change',function(){syncAutoTraits();if(typeof window.ricalcolaErbologia==='function')window.ricalcolaErbologia();});}
+if(prov){prov.addEventListener('change',function(){syncAutoTraits();if(typeof window.ricalcolaErbologia==='function')window.ricalcolaErbologia();});}
+
+/* Se la Pianta arriva dalla Ricerca, anche l'Orda e il numero di esemplari sono già noti. */
+window.erbApplyResearchEncounterMeta=function(n){
+ var orda=E('interazioneOrda'),num=E('numeroPianteOrda'),hint=E('erbOrdaResearchHint');if(!orda||!num)return;
+ if(n===2||n===3){
+   var src=E('risultatoEsemplari'+n),count=src?Number(src.value):NaN;
+   if(Number.isInteger(count)&&count>=1){
+     /* La Ricerca sa quanti esemplari sono stati trovati, ma non può sapere se il PG
+        sceglierà di interagire con tutti contemporaneamente. Quella resta una scelta. */
+     if(count>1){num.value=String(count);if(hint){hint.style.display='block';hint.innerHTML='<b>Dato dalla Ricerca:</b> hai trovato '+count+' esemplari della stessa specie. Spunta “Sto interagendo contemporaneamente con un’Orda” solo se vuoi gestirli insieme; se interagisci con un solo esemplare, lasciala vuota.';}}
+     else if(hint){hint.style.display='none';hint.textContent='';}
+   }
+ } else if(n===1){if(hint){hint.style.display='none';hint.textContent='';}}
+};
+
+/* Aggancia il trasferimento Ricerca -> Guida senza riscrivere il flusso esistente. */
+for(var n=1;n<=3;n++)(function(i){
+ var b=E('rpOpenGuide'+i),choice=E('rpInteragisciSubito'+i),vote=E('rpVotoRicerca'+i);
+ function applySoon(){setTimeout(function(){if(typeof window.erbApplyResearchEncounterMeta==='function')window.erbApplyResearchEncounterMeta(i);syncAutoTraits();if(typeof window.ricalcolaErbologia==='function')window.ricalcolaErbologia();},0);}
+ if(b)b.addEventListener('click',applySoon);
+ if(choice)choice.addEventListener('change',function(){if(choice.value==='si')applySoon();});
+ if(vote)vote.addEventListener('change',applySoon);
+})(n);
+
+/* Mantieni lo stato automatico corretto anche dopo ripristino Firebase/reset. */
+var oldCalc=window.ricalcolaErbologia;
+if(oldCalc&&!oldCalc.__v65auto){
+ var wrapped=function(){syncAutoTraits();return oldCalc.apply(this,arguments);};wrapped.__v65auto=true;window.ricalcolaErbologia=wrapped;
+}
+syncAutoTraits();
 })();
 </script>
 
