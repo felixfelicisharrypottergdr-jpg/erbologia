@@ -2504,7 +2504,7 @@ function ebxEl(id){ return document.getElementById(id); }
     <div class="scheda">
       <h2>Esito della Ricerca</h2>
       <div id="rp-outcome-content"></div>
-      <div class="result-line"><div class="research-bbcode" id="rp-outcome-bbcode"></div><button class="copy-btn" type="button" data-copy-source="rp-outcome-bbcode" data-copy-control="1">Copia riepilogo</button></div>
+      
     </div>
     <div class="flow-actions"><button type="button" class="flow-action-btn" data-rp-goto="enc1" data-session-control="1">← Torna agli Incontri</button><span class="nota-regole">Per chiudere definitivamente la Ricerca usa «Concludi ed elimina Ricerca» nella barra in alto.</span></div>
   </section>
@@ -4763,12 +4763,23 @@ function rpEncounterSummary(n){
   return {html:'<b>'+rpEsc(rpSpecie(n))+'</b> · Classificazione '+cls+' · '+count+' esemplari'+(count>1?' · Orda':'')+'<br>'+parts.map(rpEsc).join('<br>'),bb:'Pianta '+rpSpecie(n)+'; Classificazione '+cls+'; '+count+' esemplari'+(count>1?' (Orda)':'')+'; '+parts.join('; ')+(rpEl('catturato'+n).checked?'; almeno una Pianta catturata':'')};
 }
 function rpRenderOutcome(){
-  var host=rpEl('rp-outcome-content'),bb=rpEl('rp-outcome-bbcode');if(!host||!bb)return;var name=rpEl('nomePgRicerca')?rpEl('nomePgRicerca').value.trim():'PG',items=[],bbs=[];
-  var maxIncontri=rpTipo()==='passiva'?1:3;for(var n=1;n<=maxIncontri;n++){var s=rpEncounterSummary(n);if(s){items.push('<li><b>Incontro '+(['','I','II','III'][n])+':</b> '+s.html+'</li>');bbs.push('Incontro '+(['','I','II','III'][n])+': '+s.bb);}}
-  if(!items.length){host.innerHTML='<div class="nota-regole">Completa almeno il Primo Incontro per ottenere il riepilogo finale.</div>';bb.textContent='';return;}
-  var stop='';if(rpTipo()==='passiva')stop='Ricerca Passiva conclusa dopo il Primo Incontro.';else if(rpBlockedAfter(1)&&!rpEncounterComplete(2))stop='Ricerca interrotta dopo il Primo Incontro: Valigia Magica necessaria per proseguire dopo la cattura.';else if(rpBlockedAfter(2)&&!rpEncounterComplete(3))stop='Ricerca interrotta dopo il Secondo Incontro: Valigia Magica necessaria per proseguire dopo la cattura.';else stop='Ricerca conclusa dopo '+items.length+' Incontro'+(items.length===1?'':'i')+'.';
+  var host=rpEl('rp-outcome-content');if(!host)return;
+  var name=rpEl('nomePgRicerca')?rpEl('nomePgRicerca').value.trim():'PG',items=[];
+  var maxIncontri=rpTipo()==='passiva'?1:3;
+  for(var n=1;n<=maxIncontri;n++){
+    var s=rpEncounterSummary(n);
+    if(s)items.push('<li><b>Incontro '+(['','I','II','III'][n])+':</b> '+s.html+'</li>');
+  }
+  if(!items.length){
+    host.innerHTML='<div class="nota-regole">Completa almeno il Primo Incontro per ottenere il riepilogo finale.</div>';
+    return;
+  }
+  var stop='';
+  if(rpTipo()==='passiva')stop='Ricerca Passiva conclusa dopo il Primo Incontro.';
+  else if(rpBlockedAfter(1)&&!rpEncounterComplete(2))stop='Ricerca interrotta dopo il Primo Incontro: Valigia Magica necessaria per proseguire dopo la cattura.';
+  else if(rpBlockedAfter(2)&&!rpEncounterComplete(3))stop='Ricerca interrotta dopo il Secondo Incontro: Valigia Magica necessaria per proseguire dopo la cattura.';
+  else stop='Ricerca conclusa dopo '+items.length+' Incontro'+(items.length===1?'':'i')+'.';
   host.innerHTML='<ul class="outcome-list">'+items.join('')+'</ul><div class="nota-regole" style="margin-top:12px"><b>PG lanciatore:</b> '+rpEsc(name)+'<br><b>Zona:</b> '+rpEsc(rpZona()==='storica'?'':rpZona())+'<br><b>Role di gruppo:</b> tutti i dadi della Ricerca devono essere lanciati dallo stesso PG; il ritrovamento è condiviso con i PG presenti, ma la Fiducia non è automaticamente condivisa; la stessa role non può essere divisa fra ricerche diverse. PG con bassa Empatia o senza Sapienza Erbologica possono affidare tutti i lanci a un compagno Animus/Erbologo.<br><br>'+rpEsc(stop)+'</div>';
-  bb.textContent='<b>Esito Ricerca Piante Magiche — '+name+'</b>\n[quote]PG lanciatore: '+name+'\nZona: '+(rpZona()==='storica'?'':rpZona())+'\nNota role di gruppo: tutti i dadi della Ricerca devono essere lanciati dallo stesso PG; il ritrovamento è disponibile a tutti i PG presenti, ma la Fiducia della Pianta non è automaticamente condivisa e ogni PG deve seguire personalmente la propria Interazione quando necessaria; la stessa role non può essere divisa fra ricerche diverse. PG con bassa Empatia o senza Sapienza Erbologica possono affidare tutti i lanci a un compagno Animus/Erbologo.\n'+bbs.join('\n')+'\n'+stop+'[/quote]';
 }
 
 function rpEnsureValidFlowPage(){
