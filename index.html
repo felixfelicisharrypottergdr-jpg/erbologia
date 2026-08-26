@@ -996,6 +996,10 @@ table.fasce td{
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
+<style id="erb-advanced-bridge-v46">
+.erb-bridge-status{margin-top:7px;padding:7px 9px;border-radius:5px;background:rgba(25,55,18,.08);color:#29431f;font-size:.80em;line-height:1.4}.erb-bridge-status.ok{border-left:3px solid #668c48;color:#234218}.erb-bridge-status.warn{border-left:3px solid #b87b35;color:#684019}.erb-knowledge-tool a[data-erb-bridge-open]{display:inline-flex;align-items:center;gap:6px}
+</style>
 </head>
 <body>
 <div class="contenitore">
@@ -4756,7 +4760,52 @@ if(typeof ricalcolaRicerca==='function')ricalcolaRicerca();
 })();
 </script>
 
-
+\n<script id="erb-advanced-bridge-v46-script">
+/* ===== PONTE AVANZATO ERBOLOGIA ↔ RIUSCITA DELLE CONOSCENZE v2 ===== */
+(function(){
+'use strict';
+var REQ='ffgdr_erb_knowledge_request_v2_', RESP='ffgdr_erb_knowledge_response_v2_';
+var LEG_REQ='ffgdr_erb_knowledge_request_v1', LEG_RESP='ffgdr_erb_knowledge_response_v1';
+var GEN='https://felixfelicisharrypottergdr.forumfree.it/?pag=riuscitaconoscenze&from=erbologia&bridge=erbologia#riuscitaFrame';
+function id(){return 'erb_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,9);}
+function profile(){
+  var pg=typeof leggiPG==='function'?leggiPG():null;
+  if(!pg)return {pgType:'studente',studentVote:'T',sapienzaScore:0,hasSapienza:false};
+  var sap=pg.tipo==='adulto'?Number(pg.sapienzaErbologica||0):0;
+  return {pgType:pg.tipo||'studente',studentVote:pg.tipo==='studente'?(pg.voto||'T'):'',sapienzaScore:sap,hasSapienza:pg.tipo==='adulto'&&sap>0};
+}
+function cleanup(){var now=Date.now(),rm=[];try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i)||'';if(k.indexOf(REQ)!==0&&k.indexOf(RESP)!==0)continue;var o=null;try{o=JSON.parse(localStorage.getItem(k)||'');}catch(x){}if(!o||!o.createdAt||now-Number(o.createdAt)>2*60*60*1000)rm.push(k);}rm.forEach(function(k){localStorage.removeItem(k);});}catch(x){}}
+function statusHost(row){
+  if(!row)return null;var host=row.querySelector('[data-erb-bridge-status]');if(host)return host;
+  var box=row.querySelector('.erb-knowledge-tool')||row;host=document.createElement('div');host.className='erb-bridge-status';host.setAttribute('data-erb-bridge-status','1');host.textContent='In attesa di aprire il Generatore.';box.appendChild(host);return host;
+}
+function status(row,msg,kind){var h=statusHost(row);if(!h)return;h.className='erb-bridge-status'+(kind?' '+kind:'');h.textContent=msg||'';}
+function infoForRow(row){
+  if(!row)return null;
+  if(row.id==='ebxPaxBox'||row.closest&&row.closest('#ebxPaxBox'))return {knowledge:'Pax',label:'Pax',phase:'interazione',context:'pax'};
+  if(row.classList&&row.classList.contains('ebx-search-bonus-row')){var s=row.querySelector('.ebx-search-preset'),k=s?s.value:'',p=window.EBX_SEARCH_PRESETS&&EBX_SEARCH_PRESETS[k];if(p&&p.resolver)return {knowledge:p.source||p.label,label:p.label||p.source,phase:'ricerca',context:'ricerca'};return null;}
+  if(row.classList&&row.classList.contains('erb-bonus-row')){var key=row.getAttribute('data-ebx-preset')||'',q=window.EBX_PHASE_PRESETS&&EBX_PHASE_PRESETS[key];if(q&&q.resolver)return {knowledge:q.source||q.label,label:q.label||q.source,phase:row.getAttribute('data-phase')||'',context:'guida'};}
+  return null;
+}
+function makeRequest(row,info){if(!row||!info)return false;var p=profile(),rid=id();row.dataset.erbBridgeRequestId=rid;var req={version:1,requestId:rid,knowledge:info.knowledge,label:info.label,phase:info.phase||'',context:info.context||'guida',pgType:p.pgType,studentVote:p.studentVote,sapienzaScore:p.sapienzaScore,hasSapienza:p.hasSapienza,returnUrl:window.location.href,createdAt:Date.now()};try{cleanup();localStorage.setItem(REQ+rid,JSON.stringify(req));status(row,'Richiesta '+rid+' preparata: il Generatore aprirà '+info.knowledge+' già selezionata e userà i dati compatibili del PG.','');return true;}catch(x){status(row,'Collegamento automatico non disponibile: usa comunque il Generatore e riporta qui manualmente la riuscita.','warn');return false;}}
+function tagRow(row){var info=infoForRow(row);if(!info)return;var link=row.querySelector('a[href*="?pag=riuscitaconoscenze"]');if(!link)return;link.setAttribute('data-erb-bridge-open','1');link.href=GEN;statusHost(row);}
+function tagAll(root){var r=root||document;if(r.matches&&r.matches('.erb-bonus-row,.ebx-search-bonus-row,#ebxPaxBox'))tagRow(r);if(r.querySelectorAll)r.querySelectorAll('.erb-bonus-row,.ebx-search-bonus-row,#ebxPaxBox').forEach(tagRow);}
+function waiting(rid){var found=null;document.querySelectorAll('.erb-bonus-row,.ebx-search-bonus-row,#ebxPaxBox').forEach(function(r){if(!found&&r.dataset.erbBridgeRequestId===rid)found=r;});return found;}
+function paxPresetForPct(pct){var pg=profile(),n=Number(pct);if(n===0)return '';if([33,66,100].indexOf(n)<0)return '';if(pg.pgType==='studente')return 's'+n;return (pg.hasSapienza?'sap':'a')+n;}
+function importResponse(raw){var resp=null;try{resp=typeof raw==='string'?JSON.parse(raw):raw;}catch(x){}if(!resp||!resp.requestId||[0,33,66,100].indexOf(Number(resp.pct))<0)return false;if(resp.createdAt&&Date.now()-Number(resp.createdAt)>2*60*60*1000)return false;var row=waiting(resp.requestId);if(!row)return false;var pct=Number(resp.pct),eff=null;
+  if(row.id==='ebxPaxBox'){var p=document.getElementById('ebxPaxPreset');if(p){p.value=paxPresetForPct(pct);try{p.dispatchEvent(new Event('change',{bubbles:true}));}catch(x){} if(typeof ricalcolaErbologia==='function')ricalcolaErbologia();}}
+  else if(row.classList.contains('ebx-search-bonus-row')){eff=row.querySelector('[data-erb-search-eff]');if(eff){eff.value=String(pct);try{eff.dispatchEvent(new Event('change',{bubbles:true}));}catch(x){if(typeof ebxUpdateSearchRow==='function')ebxUpdateSearchRow(row);}}}
+  else{eff=row.querySelector('[data-erb-resolver-eff]');if(eff){eff.value=String(pct);try{eff.dispatchEvent(new Event('change',{bubbles:true}));}catch(x){if(typeof erbV39RefreshResolver==='function')erbV39RefreshResolver(row);}}}
+  status(row,'Riuscita importata automaticamente dal Generatore: '+pct+'%. Completa qui soltanto l’eventuale dado secondario mostrato dal tool.','ok');row.dataset.erbBridgeImported='1';try{localStorage.removeItem(RESP+resp.requestId);}catch(x){}return true;
+}
+function check(){cleanup();document.querySelectorAll('.erb-bonus-row,.ebx-search-bonus-row,#ebxPaxBox').forEach(function(r){var rid=r.dataset.erbBridgeRequestId;if(!rid)return;var raw=null;try{raw=localStorage.getItem(RESP+rid);}catch(x){}if(raw)importResponse(raw);});try{var l=localStorage.getItem(LEG_RESP);if(l&&importResponse(l))localStorage.removeItem(LEG_RESP);}catch(x){}}
+document.addEventListener('click',function(ev){var a=ev.target&&ev.target.closest?ev.target.closest('a[data-erb-bridge-open]'):null;if(!a)return;var row=a.closest('.erb-bonus-row,.ebx-search-bonus-row,#ebxPaxBox'),info=infoForRow(row);if(!info)return;makeRequest(row,info);a.href=GEN;},true);
+window.addEventListener('storage',function(ev){if(ev.key&&ev.key.indexOf(RESP)===0&&ev.newValue)importResponse(ev.newValue);else if(ev.key===LEG_RESP&&ev.newValue)importResponse(ev.newValue);});
+window.addEventListener('focus',check);document.addEventListener('visibilitychange',function(){if(!document.hidden)check();});
+function init(){tagAll(document);check();if(window.MutationObserver){new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(function(n){if(n.nodeType===1)tagAll(n);});});}).observe(document.body,{childList:true,subtree:true});}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else setTimeout(init,0);
+})();
+</script>\n
 <script>
 /* v45 — collegamento contestuale Erbologia ↔ Riuscita delle Conoscenze. */
 (function(){
@@ -4768,11 +4817,11 @@ if(typeof ricalcolaRicerca==='function')ricalcolaRicerca();
     return BASE+'&from=erbologia';
   }
   function wire(root){
-    (root||document).querySelectorAll('a[href*="?pag=riuscitaconoscenze"]').forEach(function(a){a.href=targetUrl();});
+    (root||document).querySelectorAll('a[href*="?pag=riuscitaconoscenze"]').forEach(function(a){a.href=a.hasAttribute('data-erb-bridge-open')?(BASE+'&from=erbologia&bridge=erbologia#riuscitaFrame'):targetUrl();});
   }
   function init(){wire(document);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
-  document.addEventListener('click',function(e){var a=e.target&&e.target.closest?e.target.closest('a[href*="?pag=riuscitaconoscenze"]'):null;if(a){rememberReturn();a.href=targetUrl();}},true);
+  document.addEventListener('click',function(e){var a=e.target&&e.target.closest?e.target.closest('a[href*="?pag=riuscitaconoscenze"]'):null;if(a){rememberReturn();a.href=a.hasAttribute('data-erb-bridge-open')?(BASE+'&from=erbologia&bridge=erbologia#riuscitaFrame'):targetUrl();}},true);
   if(window.MutationObserver){try{new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(function(n){if(n.nodeType===1)wire(n);});});}).observe(document.documentElement,{subtree:true,childList:true});}catch(e){}}
 })();
 </script>
