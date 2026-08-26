@@ -1109,23 +1109,366 @@ table.fasce td{
 }
 </style>
 
+<style id="uxui-v57">
+
+/* ===== UX/UI v57 — gerarchia, leggibilità e flusso coerente ===== */
+:root{
+--ux-accent:#78a94f;
+  --ux-accent-strong:#3e6c2a;
+  --ux-accent-deep:#27491c;
+  --ux-surface:#14200f;
+  --ux-surface-2:#1d2d17;
+  --ux-border:#4c7338;
+  --ux-soft:#a8c886;
+  --ux-text:#eef6e9;
+  --ux-muted:#b7c8aa;
+  --ux-ink:#18300f;
+  --ux-ink-muted:#355027;
+  --ux-card:#8fb864;
+  --ux-card-2:#7da653;
+  --ux-link:#f1f7eb;
+  --ux-radius:12px;
+  --ux-shadow:0 10px 28px rgba(0,0,0,.18);
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{padding:14px;line-height:1.46}
+.contenitore{
+  max-width:1040px;
+  padding:24px 28px 30px;
+  border-radius:16px;
+  box-shadow:0 18px 55px rgba(0,0,0,.34);
+}
+
+h1{margin-bottom:7px!important;line-height:1.05}
+.sottotitolo{
+  max-width:760px;
+  margin:0 auto 24px!important;
+  font-size:.94em;
+  line-height:1.4;
+  letter-spacing:.01em;
+}
+
+/* Navigazione principale: tre scelte subito leggibili. */
+.barra-modo{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:7px!important;
+  margin:0 0 24px!important;
+  padding:6px;
+  border:1px solid var(--ux-border);
+  border-radius:13px;
+  background:rgba(0,0,0,.16);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035);
+}
+.modo-bottone{
+  min-width:0;
+  min-height:52px;
+  margin:0!important;
+  padding:9px 12px!important;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  border:1px solid transparent!important;
+  border-radius:9px!important;
+  background:transparent!important;
+  color:var(--ux-muted)!important;
+  font-size:.91em!important;
+  font-weight:700;
+  letter-spacing:.01em!important;
+  text-align:center;
+  transition:background .16s ease,border-color .16s ease,color .16s ease,transform .16s ease;
+}
+.modo-bottone i{font-size:1.05em;opacity:.9}
+.modo-bottone:hover{background:rgba(255,255,255,.055)!important;color:var(--ux-text)!important}
+.modo-bottone.attivo{
+  background:var(--ux-accent-strong)!important;
+  color:#fff!important;
+  border-color:var(--ux-accent)!important;
+  box-shadow:0 4px 14px rgba(0,0,0,.20),inset 0 1px 0 rgba(255,255,255,.12);
+}
+
+.modo-sezione.visibile{animation:uxFade .16s ease-out}
+@keyframes uxFade{from{opacity:.45;transform:translateY(2px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.modo-sezione.visibile{animation:none}.modo-bottone,.session-btn,.flow-page-btn,.flow-action-btn,.copy-btn{transition:none!important}}
+
+/* Card e spaziatura. */
+.scheda,.blocco-incontro,.session-card,.session-toolbar-card{
+  border-radius:var(--ux-radius)!important;
+  box-shadow:var(--ux-shadow);
+}
+.scheda,.blocco-incontro{padding:18px 20px!important}
+.scheda>h2:first-child,.blocco-incontro>h2:first-child{margin-top:0}
+.riga{gap:16px!important;margin-bottom:14px!important}
+.campo{gap:5px;min-width:170px}
+#modoPersonaggio .campo label{min-height:auto!important;display:block!important;line-height:1.25!important}
+.campo label{margin-bottom:1px!important;font-size:.79em!important;line-height:1.25;font-weight:700;letter-spacing:.012em}
+
+select,input[type=number],input[type=text],textarea{
+  min-height:42px;
+  border-radius:8px!important;
+  padding:8px 10px!important;
+  font-size:.94em;
+  line-height:1.25;
+  transition:border-color .15s ease,box-shadow .15s ease,background .15s ease;
+}
+select:hover,input[type=number]:hover,input[type=text]:hover,textarea:hover{border-color:var(--ux-accent)!important}
+select:focus-visible,input:focus-visible,textarea:focus-visible,button:focus-visible,summary:focus-visible{
+  outline:2px solid var(--ux-accent)!important;
+  outline-offset:2px!important;
+}
+input[readonly]{opacity:1!important;cursor:default!important}
+.numeric-note,.profilo-session-hint{margin-top:4px!important;font-size:.72em!important;line-height:1.35!important}
+
+/* Profilo: testo più breve e campi divisi per funzione. */
+.profilo-condiviso-note{
+  margin:0 0 18px!important;
+  padding:11px 13px!important;
+  border:1px solid rgba(0,0,0,.18)!important;
+  border-left:4px solid var(--ux-accent-deep)!important;
+  border-radius:8px!important;
+  background:rgba(255,255,255,.16)!important;
+  color:var(--ux-ink)!important;
+  font-size:.86em!important;
+  line-height:1.5!important;
+}
+.profile-section-label{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:18px 0 10px;
+  color:var(--ux-ink)!important;
+  font-size:.76em;
+  font-weight:800;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+}
+.profile-section-label:after{content:"";height:1px;flex:1;background:rgba(0,0,0,.22)}
+#modoPersonaggio .session-status{
+  display:inline-flex;
+  width:auto;
+  min-height:25px;
+  align-items:center;
+  margin-top:7px!important;
+  padding:4px 8px;
+  border-radius:999px;
+  background:rgba(0,0,0,.10);
+  font-size:.72em!important;
+}
+#modoPersonaggio .check-riga{
+  padding:10px 12px;
+  border:1px solid rgba(0,0,0,.18);
+  border-radius:8px;
+  background:rgba(255,255,255,.12);
+}
+#modoPersonaggio .check-riga label{line-height:1.4}
+#notaConoscenzeAvanzatePG,#notaLivelliStudente{
+  margin:7px 0 12px!important;
+  padding:9px 11px;
+  border-radius:7px;
+  background:rgba(255,255,255,.11);
+  color:var(--ux-ink-muted)!important;
+}
+
+/* Pulsanti: stessa logica visiva ovunque. */
+.bottone-azione,.session-btn,.flow-page-btn,.flow-action-btn,.session-danger-btn,button.copy-btn,.mz-bonus-add,.erb-bonus-add{
+  min-height:40px;
+  border-radius:8px!important;
+  font-weight:700;
+  transition:transform .14s ease,filter .14s ease,background .14s ease,border-color .14s ease;
+}
+.bottone-azione:hover:not(:disabled),.session-btn:hover:not(:disabled),.flow-page-btn:hover:not(:disabled),.flow-action-btn:hover:not(:disabled),.session-danger-btn:hover:not(:disabled),button.copy-btn:hover:not(:disabled){filter:brightness(1.08)}
+.bottone-azione:active:not(:disabled),.session-btn:active:not(:disabled),.flow-page-btn:active:not(:disabled),.flow-action-btn:active:not(:disabled),button.copy-btn:active:not(:disabled){transform:translateY(1px)}
+.session-btn.ghost{background:rgba(255,255,255,.035)!important}
+.session-danger-btn{padding:8px 12px!important}
+button.copy-btn{
+  min-height:40px!important;
+  padding:0 12px!important;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  font-size:11px!important;
+  font-weight:800!important;
+}
+button.copy-btn:before{content:"⧉";font-size:14px;line-height:1}
+
+/* Home delle sessioni. */
+.research-session-home,.research-workspace{max-width:1040px!important}
+.session-card-head{padding:14px 17px!important}
+.session-card-head h2{font-size:1.15em!important}
+.session-card-body{padding:16px 17px!important}
+.session-lead{margin:0 0 10px;font-size:.93em;line-height:1.45;color:var(--ux-text)}
+.session-warning,.readonly-banner{
+  padding:10px 12px!important;
+  border-radius:8px!important;
+  line-height:1.42;
+}
+.session-warning:before{content:"i";display:inline-grid;place-items:center;width:18px;height:18px;margin-right:7px;border:1px solid currentColor;border-radius:50%;font-size:11px;font-weight:800;vertical-align:1px}
+.session-new-row{margin-top:12px}
+.session-item{padding:12px 13px!important;border-radius:9px!important}
+.session-title{font-size:.98em}
+.session-meta{margin-top:4px!important;line-height:1.35}
+.session-owner{margin-top:7px!important}
+.session-toolbar-card{position:relative;overflow:visible!important}
+
+/* Navigazione della Ricerca: stepper numerato. */
+.research-flow-nav{
+  counter-reset:uxStep;
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:7px!important;
+  margin:0 0 18px!important;
+}
+.flow-page-btn{
+  counter-increment:uxStep;
+  position:relative;
+  min-height:54px!important;
+  padding:8px 9px 8px 40px!important;
+  text-align:left;
+  line-height:1.2;
+  font-size:.82em;
+}
+.flow-page-btn:before{
+  content:counter(uxStep);
+  position:absolute;
+  left:9px;
+  top:50%;
+  transform:translateY(-50%);
+  width:23px;
+  height:23px;
+  display:grid;
+  place-items:center;
+  border:1px solid currentColor;
+  border-radius:50%;
+  font-size:10px;
+  font-weight:800;
+  opacity:.78;
+}
+.flow-page-btn.active{box-shadow:0 5px 16px rgba(0,0,0,.18)}
+.flow-page-btn.active:before{background:rgba(255,255,255,.16);opacity:1}
+.flow-page-btn.locked{filter:saturate(.55)}
+
+.flow-actions{
+  margin-top:20px!important;
+  padding-top:14px!important;
+  gap:10px!important;
+}
+.flow-actions>div{display:flex;gap:8px;flex-wrap:wrap}
+
+/* Risultati/dadi più scansionabili. */
+.result-line{gap:9px!important;margin:9px 0!important}
+.result-line>span:first-child{font-weight:700}
+.result-line input[type=number]{width:104px!important;flex:0 0 104px}
+.dice-code{
+  min-height:40px!important;
+  display:flex;
+  align-items:center;
+  padding:8px 10px!important;
+  border-radius:8px!important;
+  line-height:1.35;
+}
+.formula-tag{border-radius:7px!important;line-height:1.4}
+.out-tag{font-weight:800;white-space:nowrap}
+.profilo-riferimento{
+  gap:9px!important;
+  padding:10px 12px!important;
+  border-radius:8px!important;
+  line-height:1.4;
+}
+
+/* Checkbox e radio: l'intera riga sembra un controllo, non testo disperso. */
+.check-riga{gap:9px!important;line-height:1.4}
+.check-riga input[type=checkbox],.check-riga input[type=radio]{width:17px;height:17px;flex:0 0 auto}
+
+/* Details: testata evidente, contenuto leggibile e nessun muro indistinto. */
+details{margin:12px 0;border:1px solid rgba(0,0,0,.20);border-radius:9px;overflow:hidden}
+details>summary{
+  list-style:none;
+  cursor:pointer;
+  position:relative;
+  padding:11px 42px 11px 13px;
+  background:var(--ux-surface-2)!important;
+  color:var(--ux-text)!important;
+  font-weight:800;
+  line-height:1.35;
+}
+details>summary::-webkit-details-marker{display:none}
+details>summary:after{
+  content:"+";
+  position:absolute;
+  right:12px;
+  top:50%;
+  transform:translateY(-50%);
+  width:22px;height:22px;
+  display:grid;place-items:center;
+  border:1px solid rgba(255,255,255,.32);
+  border-radius:50%;
+  font-size:16px;font-weight:400;
+}
+details[open]>summary{background:var(--ux-accent-deep)!important}
+details[open]>summary:after{content:"−"}
+details[open]>.nota-regole{padding:12px 13px!important;margin:0!important;line-height:1.55!important}
+.research-rules .nota-regole{background:var(--ux-surface)!important;color:var(--ux-text)!important}
+.research-rules .nota-regole b{color:#fff!important}
+
+/* Guide: tab più compatti e titoli meno dispersivi. */
+.barra-tab{gap:7px!important;margin-bottom:18px!important}
+.tab-bottone{min-height:40px;border-radius:8px!important;padding:8px 12px!important;font-weight:700}
+.tab-bottone.attivo{box-shadow:0 4px 12px rgba(0,0,0,.16)}
+.guide-firebase-bar{border-radius:999px!important;padding:6px 10px!important;width:max-content;max-width:100%;margin:0 0 12px!important;font-size:.72em!important}
+
+/* Link: mai blu; chiari sui fondi scuri, scuri sulle schede luminose. */
+.contenitore a{color:var(--ux-link);text-decoration-color:rgba(255,255,255,.45);text-underline-offset:2px}
+.scheda a,.blocco-incontro a{color:var(--ux-ink)!important;text-decoration-color:rgba(0,0,0,.35)!important}
+.research-rules a,.session-card a,.session-toolbar-card a{color:var(--ux-link)!important}
+
+/* Tabelle: bordi e testo più netti. */
+table.fasce{border-radius:8px;overflow:hidden}
+table.fasce th,table.fasce td{padding:8px 9px!important;line-height:1.3}
+
+@media(max-width:760px){
+  body{padding:8px}
+  .contenitore{padding:17px 13px 22px;border-radius:12px}
+  h1{font-size:34px!important}
+  .sottotitolo{font-size:.86em;margin-bottom:17px!important}
+  .barra-modo{grid-template-columns:1fr;padding:5px;gap:4px!important}
+  .modo-bottone{min-height:43px;justify-content:flex-start;padding-left:14px!important}
+  .scheda,.blocco-incontro{padding:15px 13px!important}
+  .research-flow-nav{grid-template-columns:1fr 1fr}
+  .research-flow-nav .flow-page-btn:last-child{grid-column:1 / -1}
+  .flow-actions{align-items:stretch!important}
+  .flow-actions>button,.flow-actions>div,.flow-actions>div>button{width:100%}
+  .flow-actions>div{display:grid;grid-template-columns:1fr}
+  .result-line{align-items:stretch!important}
+  .result-line .dice-code{flex:1 1 100%!important}
+  .result-line input[type=number]{width:100%!important;flex:1 1 120px}
+  button.copy-btn{flex:1 1 100px!important}
+  .session-item-buttons{justify-content:stretch!important}
+  .session-item-buttons .session-btn,.session-item-buttons .session-danger-btn{flex:1 1 100%!important}
+}
+
+</style>
 </head>
 <body>
 <div class="contenitore">
 
 <div class="sigillo-erbologia" aria-hidden="true"><i class="fa-brands fa-pagelines"></i></div>
 <h1>• L'Erbologia •</h1>
-<div class="sottotitolo">Strumenti interattivi per il Ritrovamento, Riconoscimento, Interazione, Trattamento e Coltivazione delle Piante Magiche</div>
+<div class="sottotitolo">Profilo PG · Ricerca Piante Magiche · Guida all’Erbologia</div>
 
 <div class="barra-modo">
-  <button class="modo-bottone attivo" id="modoPersonaggioBtn">Il tuo Personaggio</button>
-  <button class="modo-bottone" id="modoRicercaBtn">Ricerca Piante Magiche</button>
-  <button class="modo-bottone" id="modoErbologiaBtn">Guida all'Erbologia</button>
+  <button type="button" class="modo-bottone attivo" id="modoPersonaggioBtn" aria-controls="modoPersonaggio"><i class="fa-solid fa-user" aria-hidden="true"></i><span>Il tuo Personaggio</span></button>
+  <button type="button" class="modo-bottone" id="modoRicercaBtn" aria-controls="modoRicerca"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><span>Ricerca Piante Magiche</span></button>
+  <button type="button" class="modo-bottone" id="modoErbologiaBtn" aria-controls="modoErbologia"><i class="fa-solid fa-book-open" aria-hidden="true"></i><span>Guida all’Erbologia</span></button>
 </div>
 <div id="modoPersonaggio" class="modo-sezione visibile">
 <div class="scheda">
 <h2>Il tuo Personaggio</h2>
-<div class="profilo-condiviso-note">Compila questo profilo una sola volta: ogni funzione usa automaticamente i dati del Personaggio che le servono. <b>Empatia</b> e <b>Sapienza Erbologica</b> vengono condivise anche con la Ricerca Piante Magiche. Per i PG Studenti la Sapienza non viene applicata. I <b>PG Studenti che non seguono Erbologia</b> utilizzano automaticamente i valori del voto <b>Troll</b>.</div>
+<div class="profilo-condiviso-note">Compila il PG una volta: <b>nome, Empatia e Sapienza Erbologica</b> vengono riutilizzati automaticamente. Gli <b>Studenti</b> usano il voto nella singola Pianta; l’eventuale Conoscenza Avanzata di Livello I applica automaticamente il <b>+2</b> previsto.</div>
+<div class="profile-section-label">Dati del Personaggio</div>
 <div class="riga">
   <div class="campo" style="flex:1 1 100%">
     <label>Nome del PG</label>
@@ -1142,7 +1485,7 @@ table.fasce td{
       <option value="adulto">Adulto</option>
     </select>
   </div>
-  <div class="campo" id="campoSegueErbologia">
+  <div class="campo" id="campoSegueErbologia" style="display:none">
     <label>Segue Erbologia?</label>
     <select id="pgSegueErbologia" data-key="pgSegueErbologia">
       <option value="si" selected>Sì</option>
@@ -1151,7 +1494,7 @@ table.fasce td{
     <div class="numeric-note">Se non segue Erbologia, il voto effettivo usato dal tool è sempre T (Troll).</div>
   </div>
   <div class="campo" id="campoVotoStudente">
-    <label>Voto in Erbologia</label>
+    <label>Voto nella Conoscenza della Pianta</label>
     <select id="pgVoto" data-key="pgVoto">
       <option value="T">T (Troll)</option>
       <option value="D">D (Deludente)</option>
@@ -1172,6 +1515,8 @@ table.fasce td{
   </div>
 </div>
 <div id="campiAdultoPG">
+<div class="profile-section-label">Conoscenze Avanzate</div>
+<div class="nota-regole" id="notaConoscenzeAvanzatePG"><b>Conoscenze Avanzate:</b> gli Studenti possono selezionare soltanto Nessuno o Livello I; gli Adulti possono usare i livelli I-V.</div>
 <div class="riga">
   <div class="campo">
     <label>Livello Erborista</label>
@@ -1226,7 +1571,7 @@ table.fasce td{
   <input type="checkbox" id="pgErbologoMestiere" data-key="pgErbologoMestiere">
   <label for="pgErbologoMestiere"><b>Erbologo di mestiere</b> — per i controlli di scoperta durante Collocazione e Coltivazione di Piante illegali nella propria Serra</label>
 </div>
-<div class="nota-regole" id="notaLivelliStudente">Per i PG Studenti i dadi della Guida usano il voto scolastico in Erbologia. I campi e i livelli riservati ai PG Adulti non vengono applicati ai calcoli.</div>
+<div class="nota-regole" id="notaLivelliStudente">Per i PG Studenti i dadi della Guida usano il <b>voto nella singola Pianta</b>. Se possiedono al Livello I la Conoscenza Avanzata della fase, il tool aggiunge automaticamente <b>+2 possibilità</b>, rispettando il tetto previsto per quel Livello I.</div>
 </div>
 </div>
 
@@ -1711,12 +2056,12 @@ table.fasce td{
   <div class="session-card">
     <div class="session-card-head"><h2>Ricerche Piante Magiche in corso</h2></div>
     <div class="session-card-body">
-      <p>La Ricerca usa automaticamente il PG compilato in «Il tuo Personaggio» e viene salvata mentre la compili.</p>
-      <div class="session-warning"><b>Le sessioni in corso sono personali.</b> Tutti gli utenti autenticati possono consultarle, ma soltanto chi ha creato la sessione e il Narratore possono modificarla o eliminarla.</div>
+      <p class="session-lead">Apri o riprendi la Ricerca del PG compilato in «Il tuo Personaggio». Il salvataggio è automatico.</p>
+      <div class="session-warning"><b>Sessioni condivise in sola lettura.</b> Gli altri giocatori possono consultarle; solo il creatore e il Narratore possono modificarle o concluderle.</div>
       <div id="rp-firebase-auth-status" class="session-status">Connessione a Firebase…</div>
       <div class="session-new-row">
-        <button class="session-btn" id="rp-btn-new-session" type="button" data-session-control="1">+ Nuova Ricerca per questo PG</button>
-        <button class="session-btn ghost" id="rp-btn-refresh-sessions" type="button" data-session-control="1">Aggiorna elenco</button>
+        <button class="session-btn" id="rp-btn-new-session" type="button" data-session-control="1">+ Nuova Ricerca</button>
+        <button class="session-btn ghost" id="rp-btn-refresh-sessions" type="button" data-session-control="1">↻ Aggiorna</button>
       </div>
       <div id="rp-session-home-msg" class="session-status"></div>
       <div id="rp-session-list"></div>
@@ -1734,7 +2079,7 @@ table.fasce td{
           <div id="rp-save-status" class="session-status"></div>
         </div>
         <div class="session-actions">
-          <button class="session-btn ghost" id="rp-btn-back-sessions" type="button" data-session-control="1">← Torna alle Ricerche</button>
+          <button class="session-btn ghost" id="rp-btn-back-sessions" type="button" data-session-control="1">← Elenco Ricerche</button>
           <button class="session-danger-btn" id="rp-btn-delete-session" type="button" data-session-control="1">Concludi ed elimina Ricerca</button>
         </div>
       </div>
@@ -1776,7 +2121,7 @@ table.fasce td{
         <div id="ebxNuotoLagoDettagli" style="display:none"><div class="result-line"><div class="dice-code" id="codiceScrofungulus"></div><button type="button" class="copy-btn" id="copiaScrofungulus">Copia</button></div><div class="result-line"><span>Risultato 1d20:</span><input type="number" id="risultatoScrofungulus" data-key="risultatoScrofungulus" min="1" max="20"><span class="out-tag out-neutral" id="tagScrofungulus">in attesa</span></div></div>
       </div>
       <div class="riga">
-        <div class="campo"><label>PG che lancia i dadi</label><input type="text" id="nomePgRicerca" data-key="nomePgRicerca" maxlength="80" readonly aria-readonly="true"><div class="profilo-session-hint">Preso automaticamente da «Il tuo Personaggio».</div></div>
+        <div class="campo"><label>PG lanciatore</label><input type="text" id="nomePgRicerca" data-key="nomePgRicerca" maxlength="80" readonly aria-readonly="true"><div class="profilo-session-hint">Preso automaticamente da «Il tuo Personaggio».</div></div>
       </div>
       <input type="hidden" id="empatiaRicerca" data-key="empatiaRicerca" value="10">
       <input type="hidden" id="sapienza" data-key="sapienza" value="0">
@@ -2217,6 +2562,20 @@ function guardFormula(chiave, firma, idRisultato){
   formulaSignatures[chiave] = f;
 }
 
+function erbConfiguraLivelloConoscenza(id,studente){
+  var sel=document.getElementById(id);if(!sel)return;
+  Array.prototype.forEach.call(sel.options,function(opt){
+    var n=Number(opt.value||0);
+    opt.disabled=!!studente&&n>1;
+    opt.hidden=!!studente&&n>1;
+  });
+  if(studente&&Number(sel.value)>1)sel.value='1';
+}
+function erbLeggiLivelloConoscenza(id,studente){
+  var sel=document.getElementById(id),v=sel?parseInt(sel.value,10):0;
+  if(!Number.isInteger(v)||v<0)v=0;
+  return studente?Math.min(1,v):Math.min(5,v);
+}
 function aggiornaCampiTipoPG(){
   var tipoEl=document.getElementById('pgTipo');if(!tipoEl)return;
   var studente=tipoEl.value==='studente';
@@ -2227,29 +2586,33 @@ function aggiornaCampiTipoPG(){
   var segue=document.getElementById('pgSegueErbologia');
   var voto=document.getElementById('pgVoto');
   var info=document.getElementById('erbVotoEffettivo');
-  if(campoSegue)campoSegue.style.display=studente?'':'none';
+  /* Erbologia è obbligatoria: il vecchio selettore "Segue Erbologia?" resta nascosto solo per compatibilità con i profili già salvati. */
+  if(campoSegue)campoSegue.style.display='none';
+  if(segue)segue.value='si';
   if(campoVoto)campoVoto.style.display=studente?'':'none';
   if(campoSapienza)campoSapienza.style.display=studente?'none':'';
-  if(campiAdulto)campiAdulto.style.display=studente?'none':'';
-  var troll=studente&&segue&&segue.value==='no';
-  if(voto)voto.disabled=!!troll;
-  if(info)info.textContent=troll?'Voto effettivo: T (Troll) — il voto selezionato non entra nei calcoli.':'';
+  /* Le Conoscenze Avanzate ora servono anche agli Studenti: per loro è disponibile solo il Livello I. */
+  if(campiAdulto)campiAdulto.style.display='';
+  ['livErborista','livAmico','livCustode','livColtivatore'].forEach(function(id){erbConfiguraLivelloConoscenza(id,studente);});
+  if(voto)voto.disabled=false;
+  if(info)info.textContent='';
 }
 
 function leggiPG(){
   var pg={};
   pg.tipo=document.getElementById('pgTipo').value;
-  pg.segueErbologia=pg.tipo==='studente'?(document.getElementById('pgSegueErbologia').value!=='no'):null;
-  pg.votoSelezionato=pg.tipo==='studente'?document.getElementById('pgVoto').value:null;
-  pg.voto=pg.tipo==='studente'?(pg.segueErbologia?pg.votoSelezionato:'T'):null;
+  var studente=pg.tipo==='studente';
+  pg.segueErbologia=studente?true:null;
+  pg.votoSelezionato=studente?document.getElementById('pgVoto').value:null;
+  pg.voto=studente?pg.votoSelezionato:null;
   pg.empatiaBase=bonusValore('empatia');
   pg.empatia=pg.empatiaBase;
   pg.sapienzaErbologicaBase=pg.tipo==='adulto'?bonusValore('sapienzaErbologicaGuida'):0;
   pg.sapienzaErbologica=pg.sapienzaErbologicaBase;
-  pg.livErborista=pg.tipo==='adulto'?parseInt(document.getElementById('livErborista').value,10):0;
-  pg.livAmico=pg.tipo==='adulto'?parseInt(document.getElementById('livAmico').value,10):0;
-  pg.livCustode=pg.tipo==='adulto'?parseInt(document.getElementById('livCustode').value,10):0;
-  pg.livColtivatore=pg.tipo==='adulto'?parseInt(document.getElementById('livColtivatore').value,10):0;
+  pg.livErborista=erbLeggiLivelloConoscenza('livErborista',studente);
+  pg.livAmico=erbLeggiLivelloConoscenza('livAmico',studente);
+  pg.livCustode=erbLeggiLivelloConoscenza('livCustode',studente);
+  pg.livColtivatore=erbLeggiLivelloConoscenza('livColtivatore',studente);
   pg.classificazione=document.getElementById('classificazione').value;
   return pg;
 }
@@ -2388,7 +2751,7 @@ function interazioneStato(){
   var orda=document.getElementById('interazioneOrda').checked;
   var possiedeAmico=false, strumenti=false, n=1;
   if(orda){
-    possiedeAmico = pg.tipo==='adulto' ? pg.livAmico>=1 : document.getElementById('ordaAmicoStudente').checked;
+    possiedeAmico = pg.livAmico>=1;
     strumenti=document.getElementById('ordaUsaStrumenti').checked;
     n=Number(document.getElementById('numeroPianteOrda').value||2);
     if(!possiedeAmico && !strumenti) return 'fallita';
@@ -2488,7 +2851,8 @@ var classRiconoscimento = {X:4, XX:3, XXX:2, XXXX:1, XXXXX:0};
 
 function baseRiconoscimento(pg){
   if(pg.tipo === 'studente'){
-    return tabellaVoto[pg.voto];
+    var baseStudente=tabellaVoto[pg.voto];
+    return pg.livErborista>=1?Math.min(12,baseStudente+2):baseStudente;
   }
   if(pg.livErborista >= 5){
     return 999;
@@ -2628,7 +2992,8 @@ var classInterazione = {X:0, XX:2, XXX:0, XXXX:-2, XXXXX:-3};
 
 function baseInterazione(pg){
   if(pg.tipo === 'studente'){
-    return tabellaVoto[pg.voto];
+    var baseStudente=tabellaVoto[pg.voto];
+    return pg.livAmico>=1?Math.min(12,baseStudente+2):baseStudente;
   }
   if(pg.livAmico >= 1){
     return tabAmicoInterazione[pg.livAmico];
@@ -2691,19 +3056,20 @@ function recomputeInterazione(){
   var orda = !!ordaEl.checked;
   if(!orda && ordaEsportazioneRisolta) ordaEsportazioneRisolta.checked=false;
   opzioniOrda.style.display = orda ? 'block' : 'none';
-  rigaAmicoStudente.style.display = (orda && pg.tipo === 'studente') ? 'flex' : 'none';
+  rigaAmicoStudente.style.display = 'none';
+  if(amicoStudenteEl){amicoStudenteEl.checked=(pg.tipo==='studente'&&pg.livAmico>=1);amicoStudenteEl.disabled=true;}
   if(!orda){
     if(risultatoOrda.value !== '') risultatoOrda.value = '';
     esitoOrdaBox.style.display = 'none';
     notaEsportazioneOrda.style.display = 'none';
   }
-  if(pg.tipo !== 'studente' && amicoStudenteEl.checked) amicoStudenteEl.checked = false;
+  if(pg.tipo !== 'studente' && amicoStudenteEl) amicoStudenteEl.checked = false;
   if(orda) normalizzaIntero('numeroPianteOrda',2,10);
   var numeroOrda = orda ? Number(numeroOrdaEl.value || 2) : 1;
   if(!Number.isInteger(numeroOrda) || numeroOrda < 2 || numeroOrda > 10) numeroOrda = 2;
 
-  var possiedeAmicoOrda = pg.tipo === 'adulto' ? pg.livAmico >= 1 : amicoStudenteEl.checked;
-  var livelloAmicoOrda = pg.tipo === 'adulto' ? Math.max(0,pg.livAmico) : (amicoStudenteEl.checked ? 1 : 0);
+  var possiedeAmicoOrda = pg.livAmico >= 1;
+  var livelloAmicoOrda = Math.max(0,pg.livAmico);
   var usaStrumentiOrda = !!usaStrumentiOrdaEl.checked;
 
   var autoconclusivo = (fase === 'seme') || (!sempreOstile && (pg.classificazione === 'X' || maiOstile));
@@ -3080,7 +3446,8 @@ var tabCustodeLiv = {1:7, 2:8, 3:9, 4:10, 5:11};
 
 function baseCustode(pg){
   if(pg.tipo === 'studente'){
-    return tabCustodeVoto[pg.voto];
+    var baseStudente=tabCustodeVoto[pg.voto];
+    return pg.livCustode>=1?Math.min(7,baseStudente+2):baseStudente;
   }
   if(pg.livCustode >= 1){
     return tabCustodeLiv[pg.livCustode];
@@ -3443,7 +3810,7 @@ var fasceColtivazione = [
   {min:31, etichetta:'31+', z:'1', tt:'2', ss:'3-4', cc:'5-6-7-8-9-10'},
   {min:27, etichetta:'27-30', z:'1', tt:'2', ss:'3-4-5', cc:'6-7-8-9-10'},
   {min:21, etichetta:'21-26', z:'1-2', tt:'3-4', ss:'5-6-7', cc:'8-9-10'},
-  {min:14, etichetta:'14-20', z:'1-2-3', tt:'4-5-6', ss:'7', cc:'8-9-10'},
+  {min:14, etichetta:'14-20', z:'1-2-3', tt:'4-5', ss:'6-7', cc:'8-9-10'},
   {min:7, etichetta:'7-13', z:'1-2-3', tt:'4-5-6', ss:'7-8', cc:'9-10'},
   {min:0, etichetta:'0-6', z:'1-2-3-4', tt:'5-6-7', ss:'8-9', cc:'10'}
 ];
@@ -3493,7 +3860,8 @@ function percentualeDaFascia(fascia, valore){
 
 function baseColtivatore(pg){
   if(pg.tipo === 'studente'){
-    return tabColtivatoreVoto[pg.voto];
+    var baseStudente=tabColtivatoreVoto[pg.voto];
+    return pg.livColtivatore>=1?Math.min(7,baseStudente+2):baseStudente;
   }
   if(pg.livColtivatore >= 1){
     return tabColtivatoreLiv[pg.livColtivatore];
