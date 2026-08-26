@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Erbologia - Strumenti Interattivi</title>
-<!-- v70: sincronizzazione completa Ricerca → Guida + controllo specie/classificazione -->
+<!-- v71: selettore/autocompletamento specie + aggiornamento immediato dati deducibili -->
 <!-- v53: apertura Ricerca immediata + aggancio Firebase del PG durante la compilazione -->
 <style>
 /* v38 allineata alla Magizoologia - Quote BBCode esplicativi estesi anche alla Guida all'Erbologia: soglie, esiti semantici e formule senza enumerazioni aritmetiche ridondanti. */
@@ -1805,8 +1805,93 @@ function ebxEl(id){ return document.getElementById(id); }
 <div class="riga">
   <div class="campo" style="flex:2 1 320px">
     <label>Pianta che stai gestendo</label>
-    <input type="text" id="speciePiantaGuida" data-key="speciePiantaGuida" maxlength="120" placeholder="Es. Geranio Zannuto">
-    <div class="numeric-note">Se arrivi dalla Ricerca, viene compilata automaticamente. Se la Pianta era già posseduta o acquistata, inseriscila manualmente.</div>
+    <input type="text" id="speciePiantaGuida" data-key="speciePiantaGuida" maxlength="120" placeholder="Cerca o seleziona una Pianta" list="erbSpeciesCatalog" autocomplete="off">
+    <datalist id="erbSpeciesCatalog">
+      <option value="Aconito"></option>
+      <option value="Agrifoglio"></option>
+      <option value="Albero della Vita"></option>
+      <option value="Albero di Biancaneve"></option>
+      <option value="Albero di Cenere"></option>
+      <option value="Algabranchia"></option>
+      <option value="Alioto"></option>
+      <option value="Alloro"></option>
+      <option value="Aloe"></option>
+      <option value="Amarantacea"></option>
+      <option value="Arbusti Autofertilizzanti"></option>
+      <option value="Artemisia"></option>
+      <option value="Asfodelo"></option>
+      <option value="Assenzio"></option>
+      <option value="Bacche di Balzar"></option>
+      <option value="Belladonna"></option>
+      <option value="Brugmansia"></option>
+      <option value="Bubotubero"></option>
+      <option value="Bucaneve"></option>
+      <option value="Bucaneve (autunno/inverno) - Fico (primavera-autunno)"></option>
+      <option value="Bucaneve (autunno/inverno) - Fico (primavera-estate)"></option>
+      <option value="Bucaneve (autunno/inverno) - Fico (primavera/estate)"></option>
+      <option value="Bucaneve (se autunno/inverno) - Fico (se primavera/estate)"></option>
+      <option value="Bulbo Balzellante"></option>
+      <option value="Canterose"></option>
+      <option value="Cavolo Carnivoro Cinese"></option>
+      <option value="Centinodia"></option>
+      <option value="Cespuglio Farfallino"></option>
+      <option value="Cespuglio Spinoso"></option>
+      <option value="Cicuta"></option>
+      <option value="Coclearia"></option>
+      <option value="Dittamo"></option>
+      <option value="Erba Fondente"></option>
+      <option value="Erba Stregata"></option>
+      <option value="Fagiolo Corridore"></option>
+      <option value="Fagiolo Sopoforoso"></option>
+      <option value="Felci Imitanti"></option>
+      <option value="Fico"></option>
+      <option value="Fiori Fabula"></option>
+      <option value="Fiori Floo"></option>
+      <option value="Frullobulbo"></option>
+      <option value="Fungo Allucinogeno"></option>
+      <option value="Fungo Saltellante"></option>
+      <option value="Fungo Scoppiettante"></option>
+      <option value="Geranio Zannuto"></option>
+      <option value="Giaggiolo Puzzolente"></option>
+      <option value="Giunchiglia strombazzante"></option>
+      <option value="Grinzafico"></option>
+      <option value="Horklump"></option>
+      <option value="Lavanda"></option>
+      <option value="Levistico"></option>
+      <option value="Mandragola"></option>
+      <option value="Menta peperita"></option>
+      <option value="Menta Piperita"></option>
+      <option value="Mimbulus Mimbletonia"></option>
+      <option value="Moly"></option>
+      <option value="Muschio del sud"></option>
+      <option value="Ortica"></option>
+      <option value="Ortiche"></option>
+      <option value="Papaveri"></option>
+      <option value="Pianta di Semi di Fuoco"></option>
+      <option value="Pianta Fumogena"></option>
+      <option value="Pianta Stridula"></option>
+      <option value="Pianta Vampiro"></option>
+      <option value="Platano Picchiatore"></option>
+      <option value="Primula Veris"></option>
+      <option value="Puffagiolo"></option>
+      <option value="Pugnacio"></option>
+      <option value="Radigorda"></option>
+      <option value="Rampicanti Capovolti"></option>
+      <option value="Ricino"></option>
+      <option value="Rosa"></option>
+      <option value="Ruta"></option>
+      <option value="Salvia"></option>
+      <option value="Sanguinaria"></option>
+      <option value="Siepi dell&#x27;Ombra"></option>
+      <option value="Starnutaria"></option>
+      <option value="Tentacula Velenosa"></option>
+      <option value="Tranello del Diavolo"></option>
+      <option value="Valeriana"></option>
+      <option value="Verbena"></option>
+      <option value="Vischio"></option>
+      <option value="Zenzero"></option>
+    </datalist>
+    <div class="numeric-note">Se arrivi dalla Ricerca viene compilata automaticamente. Altrimenti cerca o seleziona una Pianta dall’elenco; puoi comunque digitare manualmente una specie non presente.</div>
   </div>
   <div class="campo" id="campoVotoStudente">
     <label>Voto nella singola Pianta</label>
@@ -6174,6 +6259,70 @@ for(var n=1;n<=3;n++)(function(i){
 })(n);
 window.erbSyncSpeciesClassification=sync;
 setTimeout(sync,0);
+})();
+</script>
+
+
+<script id="erbologia-v71-species-picker">
+(function(){
+'use strict';
+function E(id){return document.getElementById(id);}
+function norm(v){
+  v=String(v||'');
+  try{v=v.normalize('NFD').replace(/[\u0300-\u036f]/g,'');}catch(e){}
+  return v.toLowerCase().replace(/[’‘]/g,"'").replace(/\s+/g,' ').trim();
+}
+var input=E('speciePiantaGuida'),nameField=E('nomePiantaGuida');
+if(!input)return;
+
+var canonical={};
+var list=E('erbSpeciesCatalog');
+if(list){
+  Array.prototype.forEach.call(list.options,function(o){canonical[norm(o.value)]=o.value;});
+}
+var lastCommitted=norm(input.value);
+
+function commitFromCatalog(){
+  var key=norm(input.value),canon=canonical[key];
+  if(!canon || key===lastCommitted)return;
+
+  var old=input.dataset.v71PreviousSpecies || '';
+  input.dataset.v71PreviousSpecies=canon;
+  lastCommitted=key;
+
+  input.dataset.researchEncounter='';
+  input.dataset.researchClass='';
+  input.value=canon;
+
+  if(nameField && (
+    nameField.dataset.autoSpeciesName==='1' ||
+    !nameField.value.trim() ||
+    norm(nameField.value)===norm(old)
+  )){
+    nameField.value=canon;
+    nameField.dataset.autoSpeciesName='1';
+    try{nameField.dispatchEvent(new Event('change',{bubbles:true}));}catch(e){}
+  }
+
+  try{input.dispatchEvent(new Event('change',{bubbles:true}));}catch(e){}
+
+  var status=E('erbSpeciesClassSync');
+  if(status){
+    setTimeout(function(){
+      var extra='<br><span style="font-weight:400">Aggiornati automaticamente i dati deducibili dalla specie; voto ed esiti della Pianta precedente sono stati azzerati.</span>';
+      if(status.innerHTML.indexOf('Aggiornati automaticamente')<0)status.innerHTML+=extra;
+    },0);
+  }
+}
+input.addEventListener('focus',function(){
+  input.dataset.v71PreviousSpecies=input.value.trim();
+});
+input.addEventListener('input',commitFromCatalog);
+input.addEventListener('change',function(){
+  var key=norm(input.value);
+  if(canonical[key])input.value=canonical[key];
+  lastCommitted=norm(input.value);
+});
 })();
 </script>
 
