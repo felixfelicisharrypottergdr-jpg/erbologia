@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Erbologia - Strumenti Interattivi</title>
-<!-- v58: voto della singola Pianta richiesto solo dopo il ritrovamento / nella Guida -->
+<!-- v70: sincronizzazione completa Ricerca → Guida + controllo specie/classificazione -->
 <!-- v53: apertura Ricerca immediata + aggancio Firebase del PG durante la compilazione -->
 <style>
 /* v38 allineata alla Magizoologia - Quote BBCode esplicativi estesi anche alla Guida all'Erbologia: soglie, esiti semantici e formule senza enumerazioni aritmetiche ridondanti. */
@@ -1641,6 +1641,24 @@ function ebxEl(id){ return document.getElementById(id); }
 #modoErbologia .erb-modifiers-details>summary{cursor:pointer;padding:11px 13px;background:#38572c;color:#f4fbeE!important;font-weight:800;}
 #modoErbologia .erb-modifiers-details>.erb-post-modifiers{margin:0!important;border:0!important;border-radius:0!important;}
 </style>
+
+<style id="v70-species-class-sync-style">
+.species-class-sync{
+  margin:10px 0 0;
+  padding:9px 11px;
+  border:1px solid #89a56a;
+  border-left:4px solid #7a975b;
+  border-radius:7px;
+  background:#e8f0d8;
+  color:#203719!important;
+  line-height:1.45;
+}
+.species-class-sync b{color:#203719!important}
+.species-class-sync.ok{background:#e4efd5;border-color:#7fa15e;color:#213b18!important}
+.species-class-sync.warn{background:#f4e8c9;border-color:#b79545;color:#5a4218!important}
+.species-class-sync.bad{background:#f3d5cf;border-color:#bd6656;color:#69261f!important;font-weight:700}
+</style>
+
 </head>
 <body>
 <div class="contenitore">
@@ -1806,6 +1824,7 @@ function ebxEl(id){ return document.getElementById(id); }
   </div>
 </div>
 <div id="erbSpecificVoteHint" class="specific-knowledge-note"></div>
+<div id="erbSpeciesClassSync" class="species-class-sync">Inserisci una Pianta: il tool controllerà automaticamente che specie e Classificazione siano coerenti.</div>
 </div>
 
 <div class="check-riga" style="margin-top:12px">
@@ -5882,9 +5901,13 @@ window.ricalcolaErbologia=function(){
 function transfer(n){
   var sp=species(n),c=cls(n);if(!sp)return false;
   var vote=E('rpVotoRicerca'+n),current=E('speciePiantaGuida');
-  if(current&&current.value.trim()!==sp&&typeof resetGuidaErbologia==='function')resetGuidaErbologia();
+  var previousEncounter=current?(current.dataset.researchEncounter||''):'';
+  if(current&&(current.value.trim()!==sp||previousEncounter!==String(n))&&typeof resetGuidaErbologia==='function')resetGuidaErbologia();
   var spec=E('speciePiantaGuida'),nome=E('nomePiantaGuida'),cl=E('classificazione'),prov=E('provenienzaPianta'),gv=E('pgVoto');
-  if(spec)spec.value=sp;if(nome&&!nome.value)nome.value=sp;if(cl&&/^(X|XX|XXX|XXXX|XXXXX)$/.test(c))cl.value=c;if(prov)prov.value='normale';
+  if(spec){spec.value=sp;spec.dataset.researchEncounter=String(n);spec.dataset.researchClass=c||'';}
+  if(nome&&!nome.value){nome.value=sp;nome.dataset.autoSpeciesName='1';}
+  if(cl&&/^(X|XX|XXX|XXXX|XXXXX)$/.test(c))cl.value=c;
+  if(prov)prov.value='normale';
   var sempreOstile=E('interazioneSempreOstile'),maiOstile=E('interazioneMaiOstile');
   if(sempreOstile&&typeof window.rpIsAlwaysHostileSpecies==='function'){sempreOstile.checked=window.rpIsAlwaysHostileSpecies(sp);if(sempreOstile.checked&&maiOstile)maiOstile.checked=false;}
   if(n===1&&typeof rpNumber==='function'&&typeof rpLookup==='function'&&typeof rpFaseVitaleTab!=='undefined'){
@@ -6079,6 +6102,78 @@ if(oldCalc&&!oldCalc.__v65auto){
  var wrapped=function(){syncAutoTraits();return oldCalc.apply(this,arguments);};wrapped.__v65auto=true;window.ricalcolaErbologia=wrapped;
 }
 syncAutoTraits();
+})();
+</script>
+
+
+<script id="erbologia-v70-species-class-sync">
+(function(){
+'use strict';
+var CLASS_BY_SPECIES={"Alloro":"X","Aloe":"X","Asfodelo":"X","Assenzio":"X","Belladonna":"X","Bucaneve (autunno/inverno) - Fico (primavera-estate)":"X","Centinodia":"X","Coclearia":"X","Erba Fondente":"X","Lavanda":"X","Starnutaria":"X","Valeriana":"X","Vischio":"X","Alioto":"XX","Giaggiolo Puzzolente":"XX","Giunchiglia strombazzante":"XX","Grinzafico":"XX","Radigorda":"XX","Arbusti Autofertilizzanti":"XXX","Cespuglio Farfallino":"XXX","Fagiolo Corridore":"XXX","Fungo Scoppiettante":"XXX","Mimbulus Mimbletonia":"XXX","Muschio del sud":"XXX","Pianta Stridula":"XXX","Bacche di Balzar":"XXXX","Erba Stregata":"XXXX","Felci Imitanti":"XXXX","Fiori Fabula":"XXXX","Fiori Floo":"XXXX","Moly":"XXXX","Primula Veris":"XXXX","Ruta":"XXXX","Agrifoglio":"X","Artemisia":"X","Bucaneve (autunno/inverno) - Fico (primavera-autunno)":"X","Brugmansia":"X","Menta Piperita":"X","Ortiche":"X","Frullobulbo":"XX","Fungo Saltellante":"XX","Horklump":"XX","Bubotubero":"XXX","Bulbo Balzellante":"XXX","Cavolo Carnivoro Cinese":"XXX","Cespuglio Spinoso":"XXX","Geranio Zannuto":"XXX","Puffagiolo":"XXX","Canterose":"XXXX","Mandragola":"XXXX","Pianta Fumogena":"XXXX","Bucaneve (se autunno/inverno) - Fico (se primavera/estate)":"X","Fagiolo Sopoforoso":"X","Levistico":"X","Menta peperita":"X","Ortica":"X","Papaveri":"X","Rosa":"X","Salvia":"X","Sanguinaria":"X","Zenzero":"X","Fungo Allucinogeno":"XXX","Pianta di Semi di Fuoco":"XXXX","Pianta Vampiro":"XXXX","Aconito":"X","Bucaneve (autunno/inverno) - Fico (primavera/estate)":"X","Dittamo":"X","Ricino":"X","Verbena":"X","Albero di Biancaneve":"XXXXX","Albero della Vita":"XXXXX","Amarantacea":"XXXXX","Platano Picchiatore":"XXXXX","Tentacula Velenosa":"XXXXX","Tranello del Diavolo":"XXXXX","Cicuta":"X","Albero di Cenere":"XXXXX","Pugnacio":"XXXXX","Rampicanti Capovolti":"XXXXX","Siepi dell'Ombra":"XXXXX","Algabranchia":"XXXXX","Bucaneve":"X","Fico":"X"};
+function E(id){return document.getElementById(id);}
+function norm(v){
+  v=String(v||'');
+  try{v=v.normalize('NFD').replace(/[\u0300-\u036f]/g,'');}catch(e){}
+  return v.toLowerCase().replace(/[’‘]/g,"'").replace(/\s+/g,' ').trim();
+}
+var NORMALIZED={};
+Object.keys(CLASS_BY_SPECIES).forEach(function(k){NORMALIZED[norm(k)]={name:k,cls:CLASS_BY_SPECIES[k]};});
+function expected(name){return NORMALIZED[norm(name)]||null;}
+function fire(el){if(!el)return;try{el.dispatchEvent(new Event('change',{bubbles:true}));}catch(e){}}
+var syncing=false,lastSpecies=(E('speciePiantaGuida')||{value:''}).value.trim();
+
+function phaseLabel(v){
+  return {germinazione:'Germinazione',vegetazione:'Vegetazione',riproduzione:'Riproduzione',senescenza:'Senescenza',seme:'Seme'}[v]||'';
+}
+function render(message,kind){
+  var h=E('erbSpeciesClassSync');if(!h)return;
+  h.className='species-class-sync'+(kind?' '+kind:'');
+  h.innerHTML=message;
+}
+function sync(source){
+  if(syncing)return;
+  var sp=E('speciePiantaGuida'),cl=E('classificazione');if(!sp||!cl)return;
+  var name=sp.value.trim(),info=expected(name);
+  if(!name){render('Inserisci una Pianta: il tool controllerà automaticamente che specie e Classificazione siano coerenti.','');return;}
+  if(!info){
+    render('<b>'+name.replace(/[<>&]/g,'')+':</b> la specie non è presente negli elenchi incorporati della Ricerca, quindi la Classificazione non viene modificata automaticamente. Verificala nello specchietto della Pianta.','warn');
+    return;
+  }
+  if(cl.value!==info.cls){
+    var old=cl.value;
+    syncing=true;cl.value=info.cls;fire(cl);syncing=false;
+    render('<b>Classificazione corretta automaticamente:</b> '+name.replace(/[<>&]/g,'')+' è <b>'+info.cls+'</b>, non '+(old||'—')+'.','bad');
+  }else{
+    var enc=sp.dataset.researchEncounter||'',extra='';
+    if(enc){
+      var ph=phaseLabel((E('faseInterazione')||{}).value||'');
+      extra=' · importata dalla Ricerca, Incontro '+enc+(enc==='1'&&ph?' · Fase '+ph:'');
+      if(enc!=='1')extra+=' · la Fase Vitale non viene determinata negli Incontri II/III e va controllata nella Guida';
+    }
+    render('<b>Specie/Classificazione coerenti:</b> '+name.replace(/[<>&]/g,'')+' → <b>'+info.cls+'</b>'+extra+'.','ok');
+  }
+}
+var sp=E('speciePiantaGuida'),cl=E('classificazione'),nome=E('nomePiantaGuida');
+if(sp)sp.addEventListener('change',function(e){
+  var now=sp.value.trim(),old=lastSpecies;lastSpecies=now;
+  if(e&&e.isTrusted){
+    sp.dataset.researchEncounter='';sp.dataset.researchClass='';
+    if(nome&&((nome.dataset.autoSpeciesName==='1')||nome.value.trim()===old)){
+      nome.value=now;nome.dataset.autoSpeciesName='1';fire(nome);
+    }
+  }
+  sync('species');
+});
+if(cl)cl.addEventListener('change',function(){sync('class');});
+if(nome)nome.addEventListener('input',function(e){if(e&&e.isTrusted)nome.dataset.autoSpeciesName='';});
+for(var n=1;n<=3;n++)(function(i){
+  ['rpInteragisciSubito'+i,'rpVotoRicerca'+i,'rpOpenGuide'+i].forEach(function(id){
+    var x=E(id);if(x)x.addEventListener('change',function(){setTimeout(sync,0);});
+    if(x&&x.tagName==='BUTTON')x.addEventListener('click',function(){setTimeout(sync,0);});
+  });
+})(n);
+window.erbSyncSpeciesClassification=sync;
+setTimeout(sync,0);
 })();
 </script>
 
