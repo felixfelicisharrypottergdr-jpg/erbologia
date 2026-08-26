@@ -1559,7 +1559,7 @@ function ebxEl(id){ return document.getElementById(id); }
 </style>
 
 <!-- v60: performance input/iframe + azzeramento profilo/guida per cambio PG -->
-<!-- v61 performance: nessun MutationObserver/ResizeObserver permanente -->
+<!-- v63: fix runtime completo + interfaccia stabile -->
 </head>
 <body>
 <div class="contenitore">
@@ -4460,7 +4460,8 @@ function ebxRecomputeLago(){
       inp=ebxEl('risultatoScrofungulus'),
       tag=ebxEl('tagScrofungulus');
   if(!box)return;
-  var lake=ebxZoneNormalized()==='Lago Nero';
+  var _lakeZone=(typeof window.ebxZoneNormalized==='function'?window.ebxZoneNormalized():(typeof rpZona==='function'?rpZona():''));
+  var lake=_lakeZone==='Lago Nero';
   box.style.display=lake?'block':'none';
   if(!lake){
     if(nuoto)nuoto.checked=false;
@@ -4836,7 +4837,7 @@ function rpCreateProfileSessionRecord(name){if(RP_CREATING)return RP_PROFILE_SES
 function rpEnsureProfileSession(createIfMissing){var name=rpProfileName();if(!name){rpProfileStatus('Inserisci il nome del PG per collegare la sessione Firebase.','bad');return Promise.reject(new Error('Nome del PG mancante.'));}if(!RP_FB.user||!RP_FB.db){rpProfileStatus('Collegamento a Firebase in corso…','');return Promise.reject(new Error('Firebase non è ancora pronto.'));}if(RP_CURRENT_ID&&rpSessionCanEdit(RP_CURRENT_DATA)&&rpNormName(rpCurrentName())===rpNormName(name)){rpRememberProfileSession(RP_CURRENT_ID,RP_CURRENT_DATA,name);rpProfileStatus('Sessione Firebase pronta ✓','ok');return Promise.resolve({id:RP_CURRENT_ID,data:RP_CURRENT_DATA});}if(RP_PROFILE_SESSION_ID&&rpNormName(RP_PROFILE_SESSION_NAME)===rpNormName(name)){rpProfileStatus('Sessione Firebase pronta ✓','ok');return Promise.resolve({id:RP_PROFILE_SESSION_ID,data:RP_PROFILE_SESSION_DATA});}if(RP_PROFILE_SESSION_PROMISE)return RP_PROFILE_SESSION_PROMISE;rpProfileStatus('Collegamento del PG a Firebase…','');RP_PROFILE_SESSION_PROMISE=rpFindOwnSessionForProfile(name).then(function(found){if(found){RP_PROFILE_PENDING_CREATE=false;rpRememberProfileSession(found.id,found.data,name);rpProfileStatus('Sessione Firebase pronta ✓','ok');return found;}if(!createIfMissing){rpProfileStatus('PG salvato su Firebase · nessuna Ricerca in corso.','ok');return null;}rpProfileStatus('Creo la sessione Firebase del PG…','');return rpCreateProfileSessionRecord(name).then(function(created){RP_PROFILE_PENDING_CREATE=false;rpProfileStatus('Sessione Firebase creata ✓','ok');return created;});}).catch(function(err){console.error(err);rpProfileStatus('Errore Firebase: '+(err.message||err),'bad');throw err;}).finally(function(){RP_PROFILE_SESSION_PROMISE=null;});return RP_PROFILE_SESSION_PROMISE;}
 function rpReleaseCurrentForProfile(name){if(!RP_CURRENT_ID)return Promise.resolve();if(rpNormName(rpCurrentName())===rpNormName(name))return Promise.resolve();var p=(!RP_READONLY&&rpSessionCanEdit(RP_CURRENT_DATA))?rpSaveNow():Promise.resolve(true);return p.then(function(){RP_CURRENT_ID='';RP_CURRENT_DATA=null;RP_READONLY=false;rpWorkspace().style.display='none';rpEl('piante-session-home').style.display='block';if(/^#session=/.test(String(window.location.hash||''))){try{history.replaceState(null,'',window.location.pathname+window.location.search);}catch(e){}}});}
 function rpProfileNameCommitted(createIfMissing){var name=rpProfileName();RP_PROFILE_SESSION_ID='';RP_PROFILE_SESSION_DATA=null;RP_PROFILE_SESSION_NAME='';RP_PROFILE_PENDING_CREATE=!!(createIfMissing!==false);if(!name){RP_PROFILE_PENDING_CREATE=false;rpProfileStatus('Inserisci il nome del PG.','');return Promise.resolve(null);}return rpReleaseCurrentForProfile(name).then(function(){return rpEnsureProfileSession(createIfMissing!==false);}).then(function(found){RP_PROFILE_PENDING_CREATE=false;return found;});}
-function rpEnterResearchFromProfile(){var name=rpProfileName();if(!name){mostraModo('Personaggio');rpProfileStatus('Inserisci prima il nome del PG.','bad');var f=rpEl('pgNomeSessione');if(f)f.focus();return;}/* La scheda Ricerca deve essere cliccabile subito: Firebase può terminare il collegamento dopo. */mostraModo('Ricerca');rpEl('piante-session-home').style.display='block';rpWorkspace().style.display='none';rpStatus('rp-session-home-msg','Apro la Ricerca di '+name+'…','');ERB_GUIDE_DIRTY_BEFORE_READY=true;if(ERB_GUIDE_READY&&RP_FB.user){ERB_GUIDE_DIRTY_BEFORE_READY=false;erbGuideSaveNow();}if(!RP_FB.user||!RP_FB.db){RP_PROFILE_OPEN_PENDING=true;rpProfileStatus('Collegamento del PG a Firebase in corso…','');rpStatus('rp-session-home-msg','Collegamento a Firebase in corso… la Ricerca si aprirà automaticamente.','');return;}RP_PROFILE_OPEN_PENDING=false;rpProfileStatus('Apro la Ricerca del PG…','');rpReleaseCurrentForProfile(name).then(function(){return rpEnsureProfileSession(true);}).then(function(found){if(!found||!found.id)return;try{history.replaceState(null,'',window.location.pathname+window.location.search+'#session='+encodeURIComponent(found.id));}catch(e){}if(RP_CURRENT_ID===found.id&&RP_CURRENT_DATA){rpEl('piante-session-home').style.display='none';rpWorkspace().style.display='block';rpStatus('rp-session-home-msg','','');rpApplyFlow();rpUpdateToolbar();return;}return rpLoadSession(found.id);}).catch(function(err){rpStatus('rp-session-home-msg','Non riesco ad aprire la Ricerca: '+(err.message||err),'bad');rpProfileStatus('Non riesco ad aprire la Ricerca: '+(err.message||err),'bad');});}
+function rpEnterResearchFromProfile(){var name=rpProfileName();if(!name){mostraModo('Personaggio');rpProfileStatus('Inserisci prima il nome del PG.','bad');var f=rpEl('pgNomeSessione');if(f)f.focus();return;}/* La scheda Ricerca deve essere cliccabile subito: Firebase può terminare il collegamento dopo. */mostraModo('Ricerca');rpEl('piante-session-home').style.display='block';rpWorkspace().style.display='none';rpStatus('rp-session-home-msg','Apro la Ricerca di '+name+'…','');if(typeof window.erbGuideBeforeResearch==='function')window.erbGuideBeforeResearch();if(!RP_FB.user||!RP_FB.db){RP_PROFILE_OPEN_PENDING=true;rpProfileStatus('Collegamento del PG a Firebase in corso…','');rpStatus('rp-session-home-msg','Collegamento a Firebase in corso… la Ricerca si aprirà automaticamente.','');return;}RP_PROFILE_OPEN_PENDING=false;rpProfileStatus('Apro la Ricerca del PG…','');rpReleaseCurrentForProfile(name).then(function(){return rpEnsureProfileSession(true);}).then(function(found){if(!found||!found.id)return;try{history.replaceState(null,'',window.location.pathname+window.location.search+'#session='+encodeURIComponent(found.id));}catch(e){}if(RP_CURRENT_ID===found.id&&RP_CURRENT_DATA){rpEl('piante-session-home').style.display='none';rpWorkspace().style.display='block';rpStatus('rp-session-home-msg','','');rpApplyFlow();rpUpdateToolbar();return;}return rpLoadSession(found.id);}).catch(function(err){rpStatus('rp-session-home-msg','Non riesco ad aprire la Ricerca: '+(err.message||err),'bad');rpProfileStatus('Non riesco ad aprire la Ricerca: '+(err.message||err),'bad');});}
 function rpUpdateToolbar(){if(!RP_CURRENT_DATA)return;var mine=RP_FB.user&&RP_CURRENT_DATA.ownerUid===RP_FB.user.uid,narr=RP_FB.user&&RP_FB.user.uid===RP_NARRATOR_UID,parts=[];rpEl('rp-current-session-title').textContent=rpCurrentName()+' — '+(rpTipo()==='attiva'?'Ricerca Attiva':'Ricerca Passiva');parts.push(mine?'Sessione creata da questo browser':(narr?'Gestione Narratore':'Sessione di un altro giocatore'));var t=rpFormatTs(RP_CURRENT_DATA.updatedAt);if(t)parts.push('ultimo salvataggio '+t);rpEl('rp-current-session-meta').textContent=parts.join(' · ');rpEl('rp-readonly-banner').style.display=RP_READONLY?'block':'none';rpEl('rp-btn-delete-session').style.display=rpSessionCanEdit(RP_CURRENT_DATA)?'inline-block':'none';}
 function rpSetReadonly(ro){RP_READONLY=!!ro;var w=rpWorkspace();if(!w)return;var fields=w.querySelectorAll('input,select,textarea');for(var i=0;i<fields.length;i++)fields[i].disabled=RP_READONLY;var buttons=w.querySelectorAll('button');for(var j=0;j<buttons.length;j++){var b=buttons[j];if(!RP_READONLY)continue;if(b.getAttribute('data-session-control')==='1'||b.classList.contains('copy-btn')||b.classList.contains('flow-page-btn')||b.classList.contains('flow-action-btn'))b.disabled=false;else b.disabled=true;}rpApplyFlow();rpUpdateToolbar();}
 function rpPayload(){var st=rpCollectState();return {ownerUid:RP_CURRENT_DATA.ownerUid,initialPgName:RP_CURRENT_DATA.initialPgName||rpCurrentName(),pgName:rpCurrentName(),tipoRicerca:rpTipo(),createdAt:RP_CURRENT_DATA.createdAt||null,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),toolVersion:'standard-ricerca-v1',state:st};}
@@ -5023,47 +5024,13 @@ function resetGuidaErbologia(){
 rpEl('bottoneReset').addEventListener(evtClick,function(){if(window.confirm('Vuoi davvero azzerare tutti i dati della Guida all’Erbologia? Anche lo stato della Guida salvato su Firebase verrà sostituito dai valori iniziali; le sessioni della Ricerca non verranno toccate.'))resetGuidaErbologia();});
 function erbResetAllForNewPg(){
   var btn=rpEl('erbResetAllBtn');
-  if(!RP_FB||!RP_FB.user||!RP_FB.db){
-    rpStatus('rp-profile-session-status','Attendi il collegamento a Firebase e riprova.','bad');
+  if(typeof window.erbResetPersistentGuideForNewPg!=='function'){
+    rpStatus('rp-profile-session-status','Il modulo di salvataggio non è ancora pronto. Attendi un istante e riprova.','bad');
     return;
   }
-  if(!window.confirm('Vuoi azzerare il profilo e la Guida salvati per questo browser? Le Ricerche già create NON verranno eliminate.'))return;
-  if(btn){btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> Azzeramento…';}
-  if(RP_PROFILE_NAME_TIMER){clearTimeout(RP_PROFILE_NAME_TIMER);RP_PROFILE_NAME_TIMER=null;}
-  if(ERB_GUIDE_SAVE_TIMER){clearTimeout(ERB_GUIDE_SAVE_TIMER);ERB_GUIDE_SAVE_TIMER=null;}
-  if(ERB_GUIDE_NAME_SAVE_TIMER){clearTimeout(ERB_GUIDE_NAME_SAVE_TIMER);ERB_GUIDE_NAME_SAVE_TIMER=null;}
-  RP_PROFILE_OPEN_PENDING=false;
-  ERB_GUIDE_RESTORING=true;
-  try{
-    var setVal=function(id,val){var e=rpEl(id);if(!e)return;if(e.type==='checkbox'||e.type==='radio')e.checked=!!val;else e.value=val;};
-    setVal('pgNomeSessione','');
-    setVal('pgTipo','studente');
-    setVal('pgSegueErbologia','si');
-    setVal('empatia','10');
-    setVal('sapienzaErbologicaGuida','0');
-    setVal('livErborista','0');setVal('livAmico','0');setVal('livCustode','0');setVal('livColtivatore','0');
-    setVal('pgErbologoMestiere',false);
-    resetGuidaErbologia();
-    aggiornaCampiTipoPG();
-    RP_PROFILE_SESSION_ID=null;RP_PROFILE_SESSION_DATA=null;RP_PROFILE_SESSION_NAME='';RP_PROFILE_PENDING_CREATE=false;
-    var ps=rpEl('rp-profile-session-status');if(ps){ps.textContent='Profilo azzerato. Salvataggio dei valori vuoti…';ps.className='session-status';}
-  }finally{ERB_GUIDE_RESTORING=false;}
-  /* Sovrascrive il documento Guida con lo stato vuoto: stessa identità anonima, quindi le vecchie Ricerche restano accessibili. */
-  var ref=erbGuideDoc();
-  var payload={recordType:'guide',ownerUid:RP_FB.user.uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),toolVersion:'erbologia-guide-v60',state:erbGuideCollectState()};
-  ref.set(payload,{merge:true}).then(function(){
-    try{
-      for(var i=localStorage.length-1;i>=0;i--){var k=localStorage.key(i)||'';if(k.indexOf('ffgdr_erb_knowledge_')===0)localStorage.removeItem(k);}
-      localStorage.removeItem('ffgdr_knowledge_return_v1');
-    }catch(e){}
-    try{history.replaceState(null,'',window.location.pathname+window.location.search);}catch(e){window.location.hash='';}
-    window.location.reload();
-  }).catch(function(err){
-    console.error(err);
-    if(btn){btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Azzera tutto / Cambia PG';}
-    rpStatus('rp-profile-session-status','Impossibile azzerare i dati salvati: '+(err.message||err),'bad');
-  });
+  window.erbResetPersistentGuideForNewPg(btn);
 }
+
 var erbResetAllBtn=rpEl('erbResetAllBtn');if(erbResetAllBtn)erbResetAllBtn.addEventListener(evtClick,erbResetAllForNewPg);
 function mostraModo(nome){var nomi=['Personaggio','Erbologia','Ricerca'];for(var i=0;i<nomi.length;i++){var s=rpEl('modo'+nomi[i]),b=rpEl('modo'+nomi[i]+'Btn');if(nomi[i]===nome){s.className='modo-sezione visibile';b.className='modo-bottone attivo';}else{s.className='modo-sezione';b.className='modo-bottone';}}}
 rpEl('modoPersonaggioBtn').addEventListener(evtClick,function(){mostraModo('Personaggio');});
@@ -5079,8 +5046,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <script>
 /* ============================================================
    ERBOLOGIA v6 — estensioni sorgente-verificate
+   v62: questo blocco espone intenzionalmente le API alle estensioni v38+ successive.
    ============================================================ */
-(function(){
 'use strict';
 var EBX_ZONE_PLANTS={"Lago Nero":{"X":["Alloro","Aloe","Asfodelo","Assenzio","Belladonna","Bucaneve (autunno/inverno) - Fico (primavera-estate)","Centinodia","Coclearia","Erba Fondente","Lavanda","Starnutaria","Valeriana","Vischio"],"XX":["Alioto","Giaggiolo Puzzolente","Giunchiglia strombazzante","Grinzafico","Radigorda"],"XXX":["Arbusti Autofertilizzanti","Cespuglio Farfallino","Fagiolo Corridore","Fungo Scoppiettante","Mimbulus Mimbletonia","Muschio del sud","Pianta Stridula"],"XXXX":["Bacche di Balzar","Erba Stregata","Felci Imitanti","Fiori Fabula","Fiori Floo","Moly","Primula Veris","Ruta"],"XXXXX":[]},"Foresta Proibita":{"X":["Agrifoglio","Artemisia","Bucaneve (autunno/inverno) - Fico (primavera-autunno)","Brugmansia","Lavanda","Menta Piperita","Ortiche","Vischio"],"XX":["Frullobulbo","Fungo Saltellante","Giaggiolo Puzzolente","Giunchiglia strombazzante","Grinzafico","Horklump"],"XXX":["Bubotubero","Bulbo Balzellante","Cavolo Carnivoro Cinese","Cespuglio Farfallino","Cespuglio Spinoso","Fungo Scoppiettante","Geranio Zannuto","Puffagiolo"],"XXXX":["Canterose","Felci Imitanti","Fiori Fabula","Fiori Floo","Mandragola","Moly","Pianta Fumogena","Primula Veris"],"XXXXX":[]},"Valli di Hogwarts":{"X":["Agrifoglio","Alloro","Artemisia","Asfodelo","Assenzio","Belladonna","Brugmansia","Bucaneve (se autunno/inverno) - Fico (se primavera/estate)","Centinodia","Coclearia","Erba Fondente","Fagiolo Sopoforoso","Lavanda","Levistico","Menta peperita","Ortica","Papaveri","Rosa","Salvia","Sanguinaria","Starnutaria","Valeriana","Vischio","Zenzero"],"XX":["Alioto","Frullobulbo","Fungo Saltellante","Giaggiolo Puzzolente","Giunchiglia strombazzante","Grinzafico","Horklump","Radigorda"],"XXX":["Arbusti Autofertilizzanti","Bubotubero","Bulbo Balzellante","Cavolo Carnivoro Cinese","Cespuglio Farfallino","Cespuglio Spinoso","Fagiolo Corridore","Fungo Allucinogeno","Fungo Scoppiettante","Geranio Zannuto","Mimbulus Mimbletonia","Muschio del sud","Pianta Stridula","Puffagiolo"],"XXXX":["Bacche di Balzar","Canterose","Erba Stregata","Felci Imitanti","Fiori Fabula","Fiori Floo","Mandragola","Moly","Pianta Fumogena","Pianta di Semi di Fuoco","Pianta Vampiro","Primula Veris","Ruta"],"XXXXX":[]},"Diagon Alley":{"X":["Agrifoglio","Centinodia","Coclearia","Levistico","Papaveri","Rosa","Valeriana","Zenzero"],"XX":["Alioto","Frullobulbo","Grinzafico","Horklump"],"XXX":["Cespuglio Farfallino","Mimbulus Mimbletonia","Puffagiolo"],"XXXX":[],"XXXXX":[]},"Vicoli di Notturn Alley":{"X":["Vischio","Brugmansia","Fagiolo Sopoforoso","Ortica"],"XX":["Giaggiolo Puzzolente","Horklump","Radigorda"],"XXX":["Bubotubero","Cavolo Carnivoro Cinese","Cespuglio Spinoso","Fungo Scoppiettante","Pianta Stridula"],"XXXX":[],"XXXXX":[]},"Valli di Hogsmeade":{"X":["Agrifoglio","Alloro","Artemisia","Asfodelo","Assenzio","Belladonna","Brugmansia","Bucaneve (se autunno/inverno) - Fico (se primavera/estate)","Centinodia","Coclearia","Erba Fondente","Fagiolo Sopoforoso","Lavanda","Levistico","Menta peperita","Ortica","Papaveri","Rosa","Salvia","Sanguinaria","Starnutaria","Valeriana","Vischio","Zenzero"],"XX":["Alioto","Frullobulbo","Fungo Saltellante","Giaggiolo Puzzolente","Giunchiglia strombazzante","Grinzafico","Horklump","Radigorda"],"XXX":["Arbusti Autofertilizzanti","Bubotubero","Bulbo Balzellante","Cavolo Carnivoro Cinese","Cespuglio Farfallino","Cespuglio Spinoso","Fagiolo Corridore","Fungo Allucinogeno","Fungo Scoppiettante","Geranio Zannuto","Mimbulus Mimbletonia","Muschio del sud","Pianta Stridula","Puffagiolo"],"XXXX":["Bacche di Balzar","Canterose","Erba Stregata","Felci Imitanti","Fiori Fabula","Fiori Floo","Mandragola","Moly","Pianta Fumogena","Pianta di Semi di Fuoco","Pianta Vampiro","Primula Veris","Ruta"],"XXXXX":[]},"Vie di Hogsmeade":{"X":["Centinodia","Coclearia","Erba Fondente","Menta peperita","Ortica","Salvia","Valeriana","Zenzero"],"XX":["Horklump","Radigorda"],"XXX":["Geranio Zannuto","Pianta Stridula","Puffagiolo"],"XXXX":[],"XXXXX":[]},"Foreste Magiche Inglesi":{"X":["Aconito","Agrifoglio","Alloro","Aloe","Artemisia","Asfodelo","Assenzio","Bucaneve (autunno/inverno) - Fico (primavera/estate)","Centinodia","Coclearia","Dittamo","Erba Fondente","Fagiolo Sopoforoso","Lavanda","Levistico","Menta peperita","Papaveri","Ricino","Rosa","Salvia","Sanguinaria","Starnutaria","Valeriana","Verbena","Zenzero"],"XX":["Alioto","Frullobulbo","Fungo Saltellante","Giaggiolo Puzzolente","Giunchiglia strombazzante","Grinzafico","Horklump","Radigorda"],"XXX":["Arbusti Autofertilizzanti","Bubotubero","Bulbo Balzellante","Cavolo Carnivoro Cinese","Cespuglio Farfallino","Cespuglio Spinoso","Fagiolo Corridore","Fungo Allucinogeno","Fungo Scoppiettante","Geranio Zannuto","Mimbulus Mimbletonia","Muschio del sud","Pianta Stridula","Puffagiolo"],"XXXX":["Bacche di Balzar","Canterose","Erba Stregata","Felci Imitanti","Fiori Fabula","Fiori Floo","Mandragola","Moly","Pianta Fumogena","Pianta di Semi di Fuoco","Pianta Vampiro","Primula Veris","Ruta"],"XXXXX":["Albero di Biancaneve","Albero della Vita","Amarantacea","Platano Picchiatore","Tentacula Velenosa","Tranello del Diavolo"]},"Foreste Oscure":{"X":["Vischio","Belladonna","Brugmansia","Cicuta","Fagiolo Sopoforoso","Ortica","Ricino"],"XX":["Giaggiolo Puzzolente","Giunchiglia strombazzante","Horklump","Radigorda"],"XXX":["Bubotubero","Cavolo Carnivoro Cinese","Cespuglio Spinoso","Fungo Allucinogeno","Fungo Scoppiettante","Geranio Zannuto","Pianta Stridula"],"XXXX":["Canterose","Fiori Fabula","Fiori Floo","Mandragola","Pianta di Semi di Fuoco","Pianta Vampiro","Primula Veris","Ruta"],"XXXXX":["Albero di Biancaneve","Albero di Cenere","Platano Picchiatore","Pugnacio","Rampicanti Capovolti","Siepi dell'Ombra","Tentacula Velenosa","Tranello del Diavolo"]},"Coste Magiche Inglesi":{"X":["Assenzio","Belladonna","Lavanda","Menta peperita","Sanguinaria","Starnutaria","Valeriana","Aloe"],"XX":["Alioto","Giaggiolo Puzzolente","Giunchiglia strombazzante","Grinzafico"],"XXX":["Arbusti Autofertilizzanti","Cespuglio Farfallino","Cespuglio Spinoso","Fungo Allucinogeno","Geranio Zannuto","Mimbulus Mimbletonia","Pianta Stridula"],"XXXX":["Bacche di Balzar","Moly","Pianta Fumogena","Pianta di Semi di Fuoco","Primula Veris","Ruta"],"XXXXX":["Albero di Biancaneve","Albero della Vita","Amarantacea","Algabranchia"]}};
 var EBX_ZONE_ALIASES={'Valle di Hogwarts':'Valli di Hogwarts','Notturn Alley':'Vicoli di Notturn Alley','Foreste Magiche Oscure':'Foreste Oscure'};
@@ -5230,7 +5197,6 @@ var ebxBaseResetGuida=resetGuidaErbologia;resetGuidaErbologia=function(){ebxBase
 /* ---------- Init + eventi ---------- */
 function ebxInit(){document.querySelectorAll('[data-ebx-preset-phase]').forEach(function(sel){ebxPopulatePhaseSelect(sel,sel.getAttribute('data-ebx-preset-phase'));});document.querySelectorAll('.ebx-add-phase-preset').forEach(function(b){b.addEventListener('click',function(){var sel=ebxEl(b.getAttribute('data-ebx-select')),k=sel?sel.value:'';if(k)ebxAddPhasePreset(b.getAttribute('data-ebx-phase'),k);});});var add=ebxEl('ebxAddResearchBonus'),host=ebxEl('ebxResearchBonusRows');if(add&&host)add.addEventListener('click',function(){host.appendChild(ebxMakeSearchRow({}));ebxSerializeSearch();});if(host){host.addEventListener('click',function(e){if(e.target.classList.contains('ebx-remove')){e.target.closest('.ebx-search-bonus-row').remove();ebxSerializeSearch();ricalcolaRicerca();}});host.addEventListener('change',function(e){var r=e.target.closest('.ebx-search-bonus-row');if(!r)return;ebxUpdateSearchRow(r);ebxSerializeSearch();ricalcolaRicerca();},true);host.addEventListener('input',function(e){if(e.target.matches('input')){ebxSerializeSearch();ricalcolaRicerca();}},true);}attachCopy('copiaPax','codicePax');attachCopy('copiaIllegaleCollocazione','codiceIllegaleCollocazione');attachCopy('copiaIllegaleColtivazione','codiceIllegaleColtivazione');attachCopy('copiaScrofungulus','codiceScrofungulus');if(!ebxEl('bonusRicercaJson').value)ebxEl('bonusRicercaJson').value='[]';ebxLoadSearch();setupNumericInputs();document.addEventListener('change',function(e){if(e.target.id==='ebxPaxPreset'&&ebxEl('risultatoPax'))ebxEl('risultatoPax').value='';if(e.target.id==='piantaIllegaleSerra'||e.target.closest&&e.target.closest('#ebxIllegalGuideBox'))ebxUpdateIllegalUI();if(e.target.id==='ebxNuotoLago')ebxRecomputeLago();if(['ebxToccoVerde','ebxFertilizzantePost','ebxVasoSemi','ebxMooncalfOrda'].indexOf(e.target.id)>=0)ricalcolaErbologia();},true);document.addEventListener('input',function(e){if(/^risultato(Specie|Bolcino|Scrofungulus)/.test(e.target.id))ricalcolaRicerca();if(/^risultato(Illegale|Pax)/.test(e.target.id))ricalcolaErbologia();},true);ricalcolaErbologia();ricalcolaRicerca();}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ebxInit);else ebxInit();
-})();
 
 
 /* ===== ERBOLOGIA v38 — allineamento funzionale alla Magizoologia ===== */
@@ -5507,7 +5473,7 @@ function erbGuideSetFields(fields,restoreProfile){fields=fields||{};document.que
 function erbGuideRebuildSharedAvailable(row){if(!row||row.dataset.sharedAvailable!=='1')return;var wrap=row.querySelector('.erb-apply-wrap');if(!wrap)return;wrap.innerHTML='<input type="checkbox" class="erb-apply" tabindex="-1"><span class="erb-auto-state erb-shared-wait">Disponibile, non ancora usato</span><button type="button" class="erb-use-shared">Usa in questa fase</button>';var use=wrap.querySelector('.erb-use-shared');if(use)use.addEventListener('click',function(){row.dataset.sharedAvailable='';use.remove();if(typeof erbV38AutoApply==='function')erbV38AutoApply(row);if(typeof ricalcolaErbologia==='function')ricalcolaErbologia();});}
 function erbGuideRestoreRows(rows){Object.keys(ERB_PHASE_CONTAINERS||{}).forEach(function(ph){var h=document.getElementById(ERB_PHASE_CONTAINERS[ph]);if(h)h.innerHTML='';});(rows||[]).forEach(function(d){var host=document.getElementById(ERB_PHASE_CONTAINERS[d.phase]||'');if(!host)return;var before=host.children.length,row;if(d.preset&&typeof ebxAddPhasePreset==='function'){ebxAddPhasePreset(d.phase,d.preset);row=host.children[before];}else{row=erbMakeBonusRow(d.phase,false);host.appendChild(row);}if(!row)return;function set(sel,val){var e=row.querySelector(sel);if(e&&val!==undefined)e.value=val;}set('.erb-source',d.source);set('.erb-condition',d.condition);set('.erb-type',d.type);if(typeof erbUpdateTarget==='function')erbUpdateTarget(row);set('.erb-target',d.target);set('.erb-value',d.value);set('.erb-fatigue',d.fatigue);set('.erb-uses-total',d.total);set('.erb-uses-used',d.used);if(d.sharedAvailable){row.dataset.sharedAvailable=d.sharedAvailable;erbGuideRebuildSharedAvailable(row);}var rr=row.querySelector('.erb-knowledge-resolver');if(rr&&d.resolver){var eff=rr.querySelector('[data-erb-resolver-eff]'),bon=rr.querySelector('[data-erb-resolver-bonus]');if(eff)eff.value=d.resolver.eff||'';if(bon)bon.value=d.resolver.bonus||'';if(typeof erbV39RefreshResolver==='function')erbV39RefreshResolver(row);}var ap=row.querySelector('.erb-apply');if(ap&&!d.sharedAvailable){ap.checked=!!d.apply;ap.disabled=false;}row.dataset.autoApplied=d.autoApplied||'';if(typeof erbV39AddShareControl==='function')erbV39AddShareControl(row);});if(typeof setupNumericInputs==='function')setupNumericInputs();if(typeof erbRefreshBonuses==='function')erbRefreshBonuses();if(typeof erbV39RefreshUseLabels==='function')erbV39RefreshUseLabels();}
 function erbGuideApplyState(st){if(!st)return;if(!st.specificVoteV58&&st.fields){st=e44Clone(st);st.fields=st.fields||{};st.fields.pgVoto='';}ERB_GUIDE_RESTORING=true;try{var restoreProfile=true;erbGuideSetFields(st.fields,restoreProfile);if(typeof aggiornaCampiTipoPG==='function')aggiornaCampiTipoPG();erbGuideRestoreRows(st.bonusRows||[]);var g=st.globals||{};ERB_V38_HISTORY=e44Clone(g.history||{riconoscimento:[],interazione:[],esportazione:[],collocazione:[]});EBX_PAX_SUCCESS=!!g.paxSuccess;EBX_PAX_DATA=e44Clone(g.paxData||null);EBX_PAX_AUTOCHECK=!!g.paxAutocheck;EBX_ILLEGAL_SIG=e44Clone(g.illegalSig||{});if(typeof ricalcolaErbologia==='function')ricalcolaErbologia();if(st.activePanel&&document.getElementById('pannello'+st.activePanel))mostraPannello(st.activePanel);}finally{ERB_GUIDE_RESTORING=false;}if(typeof rpEnsureProfileSession==='function'&&RP_FB&&RP_FB.user&&rpProfileName())setTimeout(function(){rpEnsureProfileSession(RP_PROFILE_PENDING_CREATE).catch(function(){});},0);}
-function erbGuideSaveNow(){var ref=erbGuideDoc();if(!ref||ERB_GUIDE_RESTORING)return Promise.resolve();if(ERB_GUIDE_SAVE_TIMER){clearTimeout(ERB_GUIDE_SAVE_TIMER);ERB_GUIDE_SAVE_TIMER=null;}var payload={recordType:'guide',ownerUid:RP_FB.user.uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),toolVersion:'erbologia-guide-v45',state:erbGuideCollectState()};erbGuideStatus('Guida: salvataggio automatico su Firebase…','saving');var task=ERB_GUIDE_SAVE_CHAIN.catch(function(){}).then(function(){return ref.set(payload,{merge:true});}).then(function(){erbGuideStatus('Guida salvata automaticamente su Firebase ✓','ok');}).catch(function(err){console.error(err);erbGuideStatus('Guida: errore di salvataggio Firebase — '+(err.message||err),'bad');});ERB_GUIDE_SAVE_CHAIN=task;return task;}
+function erbGuideSaveNow(){var ref=erbGuideDoc();if(!ref||ERB_GUIDE_RESTORING)return Promise.resolve();if(ERB_GUIDE_SAVE_TIMER){clearTimeout(ERB_GUIDE_SAVE_TIMER);ERB_GUIDE_SAVE_TIMER=null;}var payload={recordType:'guide',ownerUid:RP_FB.user.uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),toolVersion:'erbologia-guide-v63',state:erbGuideCollectState()};erbGuideStatus('Guida: salvataggio automatico su Firebase…','saving');var task=ERB_GUIDE_SAVE_CHAIN.catch(function(){}).then(function(){return ref.set(payload,{merge:true});}).then(function(){erbGuideStatus('Guida salvata automaticamente su Firebase ✓','ok');}).catch(function(err){console.error(err);erbGuideStatus('Guida: errore di salvataggio Firebase — '+(err.message||err),'bad');});ERB_GUIDE_SAVE_CHAIN=task;return task;}
 function erbGuideScheduleSave(){
   if(ERB_GUIDE_RESTORING)return;
   if(!ERB_GUIDE_READY||!RP_FB.user){
@@ -5555,6 +5521,37 @@ function e44InsideGuideOrProfile(t){var g=document.getElementById('modoErbologia
 document.addEventListener('input',function(e){if(!e44InsideGuideOrProfile(e.target))return;if(e.target&&e.target.id==='pgNomeSessione'){if(ERB_GUIDE_NAME_SAVE_TIMER)clearTimeout(ERB_GUIDE_NAME_SAVE_TIMER);ERB_GUIDE_NAME_SAVE_TIMER=setTimeout(function(){ERB_GUIDE_NAME_SAVE_TIMER=null;erbGuideScheduleSave();},1100);return;}erbGuideScheduleSave();},true);document.addEventListener('change',function(e){if(e44InsideGuideOrProfile(e.target)){if(e.target&&e.target.id==='pgNomeSessione'&&ERB_GUIDE_NAME_SAVE_TIMER){clearTimeout(ERB_GUIDE_NAME_SAVE_TIMER);ERB_GUIDE_NAME_SAVE_TIMER=null;}erbGuideScheduleSave();}},true);document.addEventListener('click',function(e){if(e44InsideGuideOrProfile(e.target)&&e.target.closest&&e.target.closest('button')&&e.target.id!=='erbResetAllBtn')setTimeout(erbGuideScheduleSave,80);},true);document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden'&&ERB_GUIDE_READY)erbGuideSaveNow();});window.addEventListener('pagehide',function(){if(ERB_GUIDE_READY)erbGuideSaveNow();});
 
 var e44OldApplyState=window.rpApplyState;window.rpApplyState=function(state){state=state||{};var oldZone=(state.zonaRicerca===undefined||state.zonaRicerca==='storica');if(oldZone){state=Object.assign({},state,{zonaRicerca:'',_legacyZoneNeedsSelection:true,flowPage:state.flowPage==='summary'?'config':state.flowPage});}var r=e44OldApplyState(state);var n=document.getElementById('rpLegacyZoneNotice');if(n)n.classList.toggle('show',!!state._legacyZoneNeedsSelection);return r;};
+
+window.erbGuideBeforeResearch=function(){
+  ERB_GUIDE_DIRTY_BEFORE_READY=true;
+  if(ERB_GUIDE_READY&&RP_FB.user){ERB_GUIDE_DIRTY_BEFORE_READY=false;return erbGuideSaveNow();}
+  return Promise.resolve();
+};
+window.erbResetPersistentGuideForNewPg=function(btn){
+  if(!RP_FB||!RP_FB.user||!RP_FB.db){rpStatus('rp-profile-session-status','Attendi il collegamento a Firebase e riprova.','bad');return;}
+  if(!window.confirm('Vuoi azzerare il profilo e la Guida salvati per questo browser? Le Ricerche già create NON verranno eliminate.'))return;
+  if(btn){btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> Azzeramento…';}
+  if(RP_PROFILE_NAME_TIMER){clearTimeout(RP_PROFILE_NAME_TIMER);RP_PROFILE_NAME_TIMER=null;}
+  if(ERB_GUIDE_SAVE_TIMER){clearTimeout(ERB_GUIDE_SAVE_TIMER);ERB_GUIDE_SAVE_TIMER=null;}
+  if(ERB_GUIDE_NAME_SAVE_TIMER){clearTimeout(ERB_GUIDE_NAME_SAVE_TIMER);ERB_GUIDE_NAME_SAVE_TIMER=null;}
+  RP_PROFILE_OPEN_PENDING=false;ERB_GUIDE_RESTORING=true;
+  try{
+    function setVal(id,val){var e=document.getElementById(id);if(!e)return;if(e.type==='checkbox'||e.type==='radio')e.checked=!!val;else e.value=val;}
+    setVal('pgNomeSessione','');setVal('pgTipo','studente');setVal('pgSegueErbologia','si');setVal('empatia','10');setVal('sapienzaErbologicaGuida','0');
+    setVal('livErborista','0');setVal('livAmico','0');setVal('livCustode','0');setVal('livColtivatore','0');setVal('pgErbologoMestiere',false);
+    if(typeof resetGuidaErbologia==='function')resetGuidaErbologia();
+    if(typeof aggiornaCampiTipoPG==='function')aggiornaCampiTipoPG();
+    RP_PROFILE_SESSION_ID='';RP_PROFILE_SESSION_DATA=null;RP_PROFILE_SESSION_NAME='';RP_PROFILE_PENDING_CREATE=false;
+    var ps=document.getElementById('rp-profile-session-status');if(ps){ps.textContent='Profilo azzerato. Salvataggio dei valori vuoti…';ps.className='session-status';}
+  }finally{ERB_GUIDE_RESTORING=false;}
+  var ref=erbGuideDoc();
+  var payload={recordType:'guide',ownerUid:RP_FB.user.uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),toolVersion:'erbologia-guide-v63',state:erbGuideCollectState()};
+  ref.set(payload,{merge:true}).then(function(){
+    try{for(var i=localStorage.length-1;i>=0;i--){var k=localStorage.key(i)||'';if(k.indexOf('ffgdr_erb_knowledge_')===0)localStorage.removeItem(k);}localStorage.removeItem('ffgdr_knowledge_return_v1');}catch(e){}
+    try{history.replaceState(null,'',window.location.pathname+window.location.search);}catch(e){window.location.hash='';}
+    window.location.reload();
+  }).catch(function(err){console.error(err);if(btn){btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Azzera tutto / Cambia PG';}rpStatus('rp-profile-session-status','Impossibile azzerare i dati salvati: '+(err.message||err),'bad');});
+};
 
 for(var i=1;i<=3;i++)e44UpdateSpecLink(i);
 if(typeof ricalcolaRicerca==='function')ricalcolaRicerca();
@@ -5656,55 +5653,29 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
-<script id="erbologia-v61-height-fix">
+<script id="erbologia-v62-height-fix">
 (function(){
   'use strict';
-  var lastSent=0,raf=0,timer=0;
-  function pageBottom(){
-    var de=document.documentElement,b=document.body,sc=document.scrollingElement||de||b;
-    var vals=[sc?sc.scrollHeight:0,de?de.scrollHeight:0,de?de.offsetHeight:0,b?b.scrollHeight:0,b?b.offsetHeight:0];
-    var c=document.querySelector('.contenitore');
-    if(c&&c.offsetParent!==null){var r=c.getBoundingClientRect();vals.push(Math.ceil(r.bottom+(window.pageYOffset||0)));}
-    return Math.ceil(Math.max.apply(Math,vals)+190);
+  var timer=0,last=0;
+  function measure(){
+    var de=document.documentElement,b=document.body,c=document.querySelector('.contenitore');
+    var h=Math.max(de?de.scrollHeight:0,b?b.scrollHeight:0);
+    if(c){var r=c.getBoundingClientRect();h=Math.max(h,Math.ceil(r.bottom+(window.pageYOffset||0)));}
+    return Math.max(500,Math.ceil(h+80));
   }
   function send(force){
-    var h=pageBottom();
-    if(!isFinite(h)||h<300)return;
-    if(!force&&Math.abs(h-lastSent)<8)return;
-    lastSent=h;
-    var msgs=[
-      {tipo:'altezzaErbologia',altezza:h},
-      {tipo:'altezzaTool',tool:'erbologia',altezza:h},
-      {type:'resize',tool:'erbologia',height:h},
-      {type:'setHeight',tool:'erbologia',height:h}
-    ];
-    for(var i=0;i<msgs.length;i++){try{window.parent.postMessage(msgs[i],'*');}catch(e){}}
+    var h=measure();
+    if(!force&&Math.abs(h-last)<12)return;
+    last=h;
+    try{window.parent.postMessage({tipo:'altezzaErbologia',altezza:h},'*');}catch(e){}
   }
-  function schedule(force,delay){
-    clearTimeout(timer);
-    timer=setTimeout(function(){
-      timer=0;
-      if(raf)cancelAnimationFrame(raf);
-      raf=requestAnimationFrame(function(){raf=0;send(!!force);});
-    },typeof delay==='number'?delay:60);
-  }
-  /* Chiamato esplicitamente dai punti che cambiano davvero il layout. */
-  window.erbNotifyHeight=function(){schedule(false,70);};
-  window.erbForceHeight=function(){schedule(true,40);};
-
-  window.addEventListener('load',function(){send(true);schedule(false,350);schedule(false,1200);});
-  window.addEventListener('hashchange',function(){schedule(false,100);});
-  document.addEventListener('toggle',function(e){if(e.target&&e.target.tagName==='DETAILS')schedule(false,90);},true);
-  document.addEventListener('click',function(e){
-    var t=e.target&&e.target.closest?e.target.closest('button,summary,[data-rp-nav],[data-erb-go],.tab-bottone,.check-riga'):null;
-    if(t)schedule(false,110);
-  },true);
-  document.addEventListener('change',function(e){
-    /* change scatta a modifica conclusa, non a ogni carattere digitato. */
-    if(e.target&&e.target.id!=='pgNomeSessione')schedule(false,110);
-  },true);
-  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){schedule(true,50);});}
-  send(true);
+  function later(force,delay){clearTimeout(timer);timer=setTimeout(function(){timer=0;send(!!force);},typeof delay==='number'?delay:100);}
+  window.erbNotifyHeight=function(){later(false,100);};
+  window.erbForceHeight=function(){later(true,80);};
+  window.addEventListener('load',function(){send(true);later(false,500);});
+  document.addEventListener('toggle',function(e){if(e.target&&e.target.tagName==='DETAILS')later(false,120);},true);
+  document.addEventListener('click',function(e){if(e.target&&e.target.closest&&e.target.closest('button,summary,[data-rp-nav],[data-erb-go],.modo-bottone'))later(false,140);},true);
+  document.addEventListener('change',function(e){if(e.target&&e.target.id!=='pgNomeSessione')later(false,140);},true);
 })();
 </script>
 
