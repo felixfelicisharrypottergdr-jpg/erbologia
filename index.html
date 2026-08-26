@@ -1000,6 +1000,64 @@ table.fasce td{
 <style id="erb-advanced-bridge-v46">
 .erb-bridge-status{margin-top:7px;padding:7px 9px;border-radius:5px;background:rgba(25,55,18,.08);color:#29431f;font-size:.80em;line-height:1.4}.erb-bridge-status.ok{border-left:3px solid #668c48;color:#234218}.erb-bridge-status.warn{border-left:3px solid #b87b35;color:#684019}.erb-knowledge-tool a[data-erb-bridge-open]{display:inline-flex;align-items:center;gap:6px}
 </style>
+
+<style id="erbologia-v49-leggibilita">
+/* Più respiro tra il richiamo a Riuscita e i campi successivi. */
+.erb-knowledge-tool{margin:12px 0 19px!important;}
+.erb-knowledge-tool + .riga,
+.erb-knowledge-tool + .erb-resolver-grid,
+.erb-knowledge-tool + .ebx-search-resolver{margin-top:4px!important;}
+
+/* Link coerenti con la palette: niente blu browser. */
+.contenitore a,
+.contenitore a:visited{color:#fff2dc!important;}
+.contenitore a:hover{color:#ffffff!important;}
+
+/* Note brevi e leggibili, non wall of text. */
+.erb-rule-compact{
+  display:grid;grid-template-columns:minmax(145px,205px) minmax(0,1fr);
+  gap:10px 16px;align-items:start;margin:10px 0;padding:10px 12px;
+  border:1px solid #709b55;border-radius:7px;background:#203a19;color:#f3f8eb;
+  line-height:1.42;
+}
+.erb-rule-compact>b{color:#cdeba9;}
+.erb-rule-compact span{display:block;}
+.erb-short-note{margin:11px 0 17px!important;line-height:1.42!important;}
+@media(max-width:720px){.erb-rule-compact{grid-template-columns:1fr;gap:4px;}}
+
+/* Tabelle: verde chiaro con testo scuro e ben leggibile. */
+.erb-table-block{
+  background:#c9e2a5!important;color:#182610!important;
+  border-color:#6f9853!important;
+}
+.erb-table-intro{color:#213516!important;border-bottom-color:#86aa67!important;}
+#modoErbologia table.fasce th,
+#modoRicerca table.fasce th{
+  background:#a8cb7c!important;color:#17240f!important;border-color:#739653!important;
+}
+#modoErbologia table.fasce td,
+#modoRicerca table.fasce td{
+  background:#dceec3!important;color:#17240f!important;border-color:#89a96e!important;
+}
+.erb-post-matrix{border-color:#6f9356!important;background:#dceec3!important;}
+.erb-post-matrix thead th{background:#9fc575!important;color:#17240f!important;}
+.erb-post-matrix .row33 th,.erb-post-matrix .row33 td,
+.erb-post-matrix .row66 th,.erb-post-matrix .row66 td,
+.erb-post-matrix .row100 th,.erb-post-matrix .row100 td{
+  background:#d7ebbc!important;color:#17240f!important;
+}
+.erb-post-matrix tr:nth-child(even) th,
+.erb-post-matrix tr:nth-child(even) td{background:#c9e2a5!important;}
+.erb-post-matrix .selected{
+  background:#edf7dc!important;color:#11200b!important;
+  outline:3px solid #4f7937!important;outline-offset:-3px!important;
+}
+.erb-post-matrix .failure-row td{background:#d6b2a7!important;color:#421a13!important;}
+
+/* Evita che l'ultima sezione finisca a filo dell'iframe. */
+.contenitore{overflow:visible!important;padding-bottom:70px!important;}
+</style>
+
 </head>
 <body>
 <div class="contenitore">
@@ -1013,9 +1071,6 @@ table.fasce td{
   <button class="modo-bottone" id="modoRicercaBtn">Ricerca Piante Magiche</button>
   <button class="modo-bottone" id="modoErbologiaBtn">Guida all'Erbologia</button>
 </div>
-<div class="nota-regole tool-crosslink"><b>Riuscita delle Conoscenze:</b> per Incantesimi e Tecniche che richiedono un esito, apri il <a href="https://felixfelicisharrypottergdr.forumfree.it/?pag=riuscitaconoscenze" target="_blank" rel="noopener">Generatore di Riuscita delle Conoscenze ↗</a>.</div>
-
-
 <div id="modoPersonaggio" class="modo-sezione visibile">
 <div class="scheda">
 <h2>Il tuo Personaggio</h2>
@@ -1243,8 +1298,8 @@ table.fasce td{
 <h2>Interazione (1d30)</h2>
 <div class="info-bonus" id="faticaInterazione"></div>
 <input type="hidden" id="tentativiInterazioneFallitiPrecedenti" data-key="tentativiInterazioneFallitiPrecedenti" value="0">
-<div class="nota-regole"><b>Fiducia personale:</b> questa procedura va risolta per <b>ogni PG</b> che vuole ottenere personalmente la Fiducia della Pianta e per <b>ogni esemplare</b> con cui vuole interagire, salvo l’apposita procedura delle Orde. Amico delle Piante Magiche può estendere agli altri membri del gruppo soltanto la <b>non ostilità</b> della Pianta: gli altri PG non possono portarla nella propria Serra senza aver eseguito personalmente l’Interazione richiesta. I Semi restano esenti dalla Fase di Interazione.</div>
-<div class="nota-regole">Per una Pianta <b>acquistata o ricevuta in dono</b>, se l’Interazione/Collocazione necessaria al nuovo proprietario viene svolta da un altro PG al posto suo, usa per i tiri i dati del PG che li esegue materialmente. Il regolamento attribuisce in questo caso alla Pianta <b>+10 post permanenti</b> in Coltivazione/Riproduzione.</div>
+<div class="erb-rule-compact"><b>Fiducia personale</b><span>Va ottenuta da ogni PG e per ogni esemplare. Amico delle Piante Magiche può estendere soltanto la non ostilità. <b>I Semi non richiedono Interazione.</b></span></div>
+<div class="erb-rule-compact"><b>Pianta acquistata o ricevuta</b><span>Se Interazione/Collocazione viene svolta da un altro PG, usa i dati di chi esegue i tiri. La Pianta ottiene <b>+10 post permanenti</b> in Coltivazione/Riproduzione.</span></div>
 <div class="riga">
   <div class="campo">
     <label>Fase Vitale della Pianta</label>
@@ -1258,7 +1313,7 @@ table.fasce td{
   </div>
   <input type="hidden" id="extraInterazione" value="0">
 </div>
-<div class="nota-regole">La Fase Vitale è riconosciuta autoconclusivamente da PG Studenti con voto <b>E</b> nella Conoscenza pertinente e da PG Adulti con <b>Sapienza Erbologica 1+</b>; con Sapienza 20-25 il PG comprende anche l’età esatta della Pianta.</div>
+<div class="nota-regole erb-short-note"><b>Fase Vitale automatica:</b> Studente con voto E; Adulto con Sapienza Erbologica 1+. Con Sapienza 20-25 riconosce anche l’età esatta.</div>
 <div class="check-riga">
   <input type="checkbox" id="interazioneMaiOstile" data-key="interazioneMaiOstile">
   <label for="interazioneMaiOstile">Pianta indicata nel regolamento come mai ostile (autoconclusivo)</label>
@@ -3812,6 +3867,22 @@ function rpClearEncounterDownstream(n){
 
 
 function rpRecomputeBolcino(){/* Compatibilità interna: il Bolcino è gestito separatamente nei tre Incontri. */}
+function ebxRecomputeBolcino(n){
+  rpSetCode('codiceBolcino'+n,
+    'Il PG trova un Bolcino d’Oro in questo post?',
+    '1-99. Nessun Bolcino d’Oro\n100. Bolcino d’Oro: +1 Popolarità e 1000 Galeoni',
+    '[dice=1d100]Ricerca del Bolcino d’Oro[/dice]'
+  );
+  var inp=rpEl('risultatoBolcino'+n),v=rpNumber('risultatoBolcino'+n,1,100),tag=rpEl('tagBolcino'+n);
+  if(!tag||!inp)return;
+  if(v===null){
+    tag.textContent=inp.value===''?'in attesa':'Risultato impossibile';
+    tag.className='out-tag '+(inp.value===''?'out-neutral':'out-fail');
+    return;
+  }
+  tag.textContent=v===100?'Bolcino trovato!':'Niente Bolcino';
+  tag.className='out-tag '+(v===100?'out-ok':'out-fail');
+}
 
 function rpRecomputeTrova(n){
   var th=rpTrovaThreshold(n),formula=rpEl('formulaTrova'+n),code=rpEl('codiceTrova'+n),inp=rpEl('risultatoTrova'+n),tag=rpEl('tagTrova'+n);
@@ -4190,7 +4261,14 @@ function rpCreateSession(){
   var state={nomePgRicerca:name,empatiaRicerca:String(ep),sapienza:String(sp),tipoRicerca:'attiva',valigiaMagica:'no',zonaRicerca:'',summaryVisited:false,outcomeVisited:false,flowPage:'config'};
   var data={ownerUid:RP_FB.user.uid,initialPgName:name,pgName:name,tipoRicerca:'attiva',createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp(),toolVersion:'standard-ricerca-v1',state:state};
   rpStatus('rp-session-home-msg','Creazione della Ricerca…','');
-  RP_FB.db.collection(RP_COLLECTION).add(data).then(function(ref){rpNavigateSession(ref.id);}).catch(function(err){console.error(err);RP_CREATING=false;if(btn)btn.disabled=false;rpStatus('rp-session-home-msg','Impossibile creare la Ricerca: '+err.message,'bad');});
+  RP_FB.db.collection(RP_COLLECTION).add(data).then(function(ref){
+    return ref.get().then(function(doc){
+      if(!doc.exists)throw new Error('La nuova Ricerca non è stata riletta correttamente.');
+      RP_CREATING=false;if(btn)btn.disabled=false;
+      try{history.replaceState(null,'',window.location.pathname+window.location.search+'#session='+encodeURIComponent(ref.id));}catch(e){}
+      rpOpenSession(doc.id,doc.data());
+    });
+  }).catch(function(err){console.error(err);RP_CREATING=false;if(btn)btn.disabled=false;rpStatus('rp-session-home-msg','Impossibile creare la Ricerca: '+err.message,'bad');});
 }
 function rpPositionDelete(ev){var modal=rpEl('rp-delete-session-modal'),box=modal?modal.querySelector('.session-modal-box'):null;if(!box)return;var y=ev&&typeof ev.clientY==='number'?ev.clientY:Math.max(120,(window.innerHeight||600)/2);requestAnimationFrame(function(){var h=box.getBoundingClientRect().height||300,vh=window.innerHeight||600,min=Math.min(vh/2,20+h/2),max=Math.max(min,vh-20-h/2);box.style.top=Math.max(min,Math.min(max,y))+'px';});}
 function rpOpenDelete(ev){if(!RP_CURRENT_ID||RP_DELETING||!rpSessionCanEdit(RP_CURRENT_DATA))return;rpEl('rp-delete-session-check').checked=false;rpEl('rp-btn-confirm-delete').disabled=true;rpEl('rp-btn-cancel-delete').disabled=false;rpEl('rp-delete-session-msg').textContent='';var m=rpEl('rp-delete-session-modal');m.classList.add('open');m.setAttribute('aria-hidden','false');rpPositionDelete(ev);}
@@ -4595,9 +4673,9 @@ resetGuidaErbologia=function(){erbV38OldResetGuide();ERB_V38_HISTORY={riconoscim
 
 function erbV38Init(){
   /* Knowledge-success helper, without replacing domain-specific catalogs. */
-  document.querySelectorAll('#modoErbologia .erb-bonus-box').forEach(function(box){if(box.querySelector('.erb-knowledge-tool'))return;var n=document.createElement('div');n.className='erb-knowledge-tool';n.innerHTML='<b>Conoscenze che richiedono una riuscita:</b> determina prima l’esito nel <a href="https://felixfelicisharrypottergdr.forumfree.it/?pag=riuscitaconoscenze" target="_blank" rel="noopener">Generatore di Riuscita delle Conoscenze ↗</a>, poi seleziona nel catalogo il valore effettivamente ottenuto.';var h=box.querySelector('h3');if(h)h.insertAdjacentElement('afterend',n);else box.prepend(n);});
-  var searchBonus=erbV38El('ebxResearchBonusRows');if(searchBonus&&!searchBonus.parentNode.querySelector('.erb-search-knowledge-tool')){var sk=document.createElement('div');sk.className='erb-knowledge-tool erb-search-knowledge-tool';sk.innerHTML='<b>Herbivicus e altre Conoscenze:</b> se devi ancora stabilire la riuscita, usa prima il <a href="https://felixfelicisharrypottergdr.forumfree.it/?pag=riuscitaconoscenze" target="_blank" rel="noopener">Generatore di Riuscita delle Conoscenze ↗</a>, poi scegli l’esito ottenuto nel catalogo.';searchBonus.parentNode.insertBefore(sk,searchBonus);}
-  var paxBox=erbV38El('ebxPaxBox');if(paxBox&&!paxBox.querySelector('.erb-knowledge-tool')){var pk=document.createElement('div');pk.className='erb-knowledge-tool';pk.innerHTML='<b>Prima di usare Pax:</b> se la Conoscenza richiede la determinazione della riuscita, calcolala nel <a href="https://felixfelicisharrypottergdr.forumfree.it/?pag=riuscitaconoscenze" target="_blank" rel="noopener">Generatore di Riuscita delle Conoscenze ↗</a> e seleziona qui il livello ottenuto.';var ph=paxBox.querySelector('h3');if(ph)ph.insertAdjacentElement('afterend',pk);}
+  document.querySelectorAll('#modoErbologia .erb-bonus-box').forEach(function(box){if(box.querySelector('.erb-knowledge-tool'))return;var n=document.createElement('div');n.className='erb-knowledge-tool';n.innerHTML='<b>Riuscita:</b> apri il <a href="https://felixfelicisharrypottergdr.forumfree.it/?pag=riuscitaconoscenze" target="_blank" rel="noopener">Generatore ↗</a>, poi usa qui l’esito ottenuto.';var h=box.querySelector('h3');if(h)h.insertAdjacentElement('afterend',n);else box.prepend(n);});
+  var searchBonus=erbV38El('ebxResearchBonusRows');if(searchBonus&&!searchBonus.parentNode.querySelector('.erb-search-knowledge-tool')){var sk=document.createElement('div');sk.className='erb-knowledge-tool erb-search-knowledge-tool';sk.innerHTML='<b>Riuscita:</b> apri il <a href="https://felixfelicisharrypottergdr.forumfree.it/?pag=riuscitaconoscenze" target="_blank" rel="noopener">Generatore ↗</a>, poi usa qui l’esito ottenuto.';searchBonus.parentNode.insertBefore(sk,searchBonus);}
+  var paxBox=erbV38El('ebxPaxBox');if(paxBox&&!paxBox.querySelector('.erb-knowledge-tool')){var pk=document.createElement('div');pk.className='erb-knowledge-tool';pk.innerHTML='<b>Prima di usare Pax:</b> determina la riuscita nel <a href="https://felixfelicisharrypottergdr.forumfree.it/?pag=riuscitaconoscenze" target="_blank" rel="noopener">Generatore ↗</a>.';var ph=paxBox.querySelector('h3');if(ph)ph.insertAdjacentElement('afterend',pk);}
   /* Existing rows become automatic too. */
   document.querySelectorAll('#modoErbologia .erb-bonus-row').forEach(function(r){var wrap=r.querySelector('.erb-apply-wrap');if(wrap)wrap.innerHTML='<input type="checkbox" class="erb-apply" tabindex="-1"><span class="erb-auto-state pending">Applicazione automatica</span>';erbV38AutoApply(r);});
   document.addEventListener('input',function(e){var row=e.target&&e.target.closest?e.target.closest('#modoErbologia .erb-bonus-row'):null;if(row&&!row.getAttribute('data-ebx-preset'))erbV38AutoApply(row);},true);
@@ -4650,7 +4728,7 @@ var erbV39OldPresetOptions=ebxPresetOptions;
 ebxPresetOptions=function(){var groups={},order=[];Object.keys(EBX_SEARCH_PRESETS).forEach(function(k){var p=EBX_SEARCH_PRESETS[k];if(p.legacy)return;var g=p.g||'Altro';if(!groups[g]){groups[g]=[];order.push(g);}groups[g].push({k:k,p:p});});var h='<option value="">— Scegli effetto —</option>';order.forEach(function(g){h+='<optgroup label="'+ebxEsc(g)+'">';groups[g].forEach(function(x){h+='<option value="'+x.k+'">'+ebxEsc(x.p.label)+'</option>';});h+='</optgroup>';});h+='<option value="manual">Altro bonus manuale</option>';return h;};
 function erbV39LegacyHerbResolver(key){var m={herb_s33:{eff:'33',bonus:''},herb_s66_1:{eff:'66',bonus:'1'},herb_s66_2:{eff:'66',bonus:'2'},herb_s100:{eff:'100',bonus:''},herb_a33_1:{eff:'33',bonus:'1'},herb_a33_2:{eff:'33',bonus:'2'},herb_a66_1:{eff:'66',bonus:'1'},herb_a66_2:{eff:'66',bonus:'2'},herb_a66_3:{eff:'66',bonus:'3'},herb_a100_2:{eff:'100',bonus:'1'},herb_a100_3:{eff:'100',bonus:'2'},herb_sap100:{eff:'100',bonus:''}};return m[key]||null;}
 var erbV39OldMakeSearchRow=ebxMakeSearchRow;
-ebxMakeSearchRow=function(data){data=data||{};var legacy=erbV39LegacyHerbResolver(data.preset||'');if(legacy){data=Object.assign({},data,{preset:'family_herbivicus',resolverEff:legacy.eff,resolverBonus:legacy.bonus});}var row=erbV39OldMakeSearchRow(data);if(!row.querySelector('.ebx-search-resolver')){var r=document.createElement('div');r.className='ebx-search-resolver';r.innerHTML='<div class="erb-knowledge-tool"><b>Riuscita della Conoscenza:</b> usa prima il <a href="https://felixfelicisharrypottergdr.forumfree.it/?pag=riuscitaconoscenze" target="_blank" rel="noopener">Generatore di Riuscita delle Conoscenze ↗</a>.</div><div class="erb-resolver-grid"><div><label>Riuscita ottenuta</label><select data-erb-search-eff><option value="">— Seleziona —</option><option value="0">0% · nessun effetto</option><option value="33">33%</option><option value="66">66%</option><option value="100">100%</option></select></div><div class="erb-secondary-roll" data-erb-search-roll style="display:none"><div class="result-line"><div class="dice-code" data-erb-search-code></div><button type="button" class="copy-btn">Copia</button></div><div class="result-line"><span>Risultato del dado bonus:</span><input type="number" data-erb-search-bonus min="1"></div></div></div><div class="erb-resolver-outcome pending" data-erb-search-outcome>Determina prima la riuscita.</div>';row.appendChild(r);var uid='erbsearch_'+Date.now()+'_'+Math.floor(Math.random()*100000),c=r.querySelector('[data-erb-search-code]'),b=r.querySelector('button.copy-btn');if(c)c.id=uid;if(b)b.setAttribute('data-copy-source',uid);if(data.resolverEff)r.querySelector('[data-erb-search-eff]').value=data.resolverEff;if(data.resolverBonus)r.querySelector('[data-erb-search-bonus]').value=data.resolverBonus;}ebxUpdateSearchRow(row);return row;};
+ebxMakeSearchRow=function(data){data=data||{};var legacy=erbV39LegacyHerbResolver(data.preset||'');if(legacy){data=Object.assign({},data,{preset:'family_herbivicus',resolverEff:legacy.eff,resolverBonus:legacy.bonus});}var row=erbV39OldMakeSearchRow(data);if(!row.querySelector('.ebx-search-resolver')){var r=document.createElement('div');r.className='ebx-search-resolver';r.innerHTML='<div class="erb-knowledge-tool"><b>Riuscita:</b> apri il <a href="https://felixfelicisharrypottergdr.forumfree.it/?pag=riuscitaconoscenze" target="_blank" rel="noopener">Generatore ↗</a>.</div><div class="erb-resolver-grid"><div><label>Riuscita ottenuta</label><select data-erb-search-eff><option value="">— Seleziona —</option><option value="0">0% · nessun effetto</option><option value="33">33%</option><option value="66">66%</option><option value="100">100%</option></select></div><div class="erb-secondary-roll" data-erb-search-roll style="display:none"><div class="result-line"><div class="dice-code" data-erb-search-code></div><button type="button" class="copy-btn">Copia</button></div><div class="result-line"><span>Risultato del dado bonus:</span><input type="number" data-erb-search-bonus min="1"></div></div></div><div class="erb-resolver-outcome pending" data-erb-search-outcome>Determina prima la riuscita.</div>';row.appendChild(r);var uid='erbsearch_'+Date.now()+'_'+Math.floor(Math.random()*100000),c=r.querySelector('[data-erb-search-code]'),b=r.querySelector('button.copy-btn');if(c)c.id=uid;if(b)b.setAttribute('data-copy-source',uid);if(data.resolverEff)r.querySelector('[data-erb-search-eff]').value=data.resolverEff;if(data.resolverBonus)r.querySelector('[data-erb-search-bonus]').value=data.resolverBonus;}ebxUpdateSearchRow(row);return row;};
 function erbV39RefreshSearchResolver(row){var key=row.querySelector('.ebx-search-preset').value,p=EBX_SEARCH_PRESETS[key],r=row.querySelector('.ebx-search-resolver'),scope=row.querySelector('.ebx-search-scope');row.dataset.resolverReady='0';row.dataset.resolvedValue='0';if(!p||!p.resolver){if(r)r.style.display='none';return;}if(r)r.style.display='block';if(p.firstOnly&&scope&&scope.value==='all')scope.value='1';var eff=r.querySelector('[data-erb-search-eff]'),bonus=r.querySelector('[data-erb-search-bonus]'),wrap=r.querySelector('[data-erb-search-roll]'),code=r.querySelector('[data-erb-search-code]'),out=r.querySelector('[data-erb-search-outcome]'),pg=leggiPG();if(wrap)wrap.style.display='none';if(!eff||eff.value===''){if(out){out.className='erb-resolver-outcome pending';out.textContent='Determina prima la riuscita della Conoscenza.';}return;}var spec=erbV39CommonBonusSpec(pg,Number(eff.value));if(spec.unsupported){if(bonus)bonus.value='';if(out){out.className='erb-resolver-outcome bad';out.textContent='Questo esito non è presente nel catalogo originario per il profilo selezionato; il tool non inventa un bonus.';}return;}if(spec.ready){if(bonus)bonus.value='';row.dataset.resolverReady='1';row.dataset.resolvedValue=String(spec.value||0);if(out){out.className='erb-resolver-outcome';out.textContent=Number(eff.value)===0?'0%: nessun bonus prodotto.':'Bonus calcolato: +'+spec.value+' possibilità.';}return;}if(spec.faces){if(wrap)wrap.style.display='block';if(bonus)bonus.max=String(spec.faces);if(code)code.textContent=rpForumDiceBlock('Qual è il bonus di Herbivicus?', 'Il tool somma automaticamente l’eventuale base prevista.', '[dice=1d'+spec.faces+']Herbivicus — valore del bonus[/dice]');var v=bonus&&bonus.value!==''?Number(bonus.value):null;if(v===null){if(out){out.className='erb-resolver-outcome pending';out.textContent='Lancia il 1d'+spec.faces+' e riporta il risultato.';}return;}if(!Number.isInteger(v)||v<1||v>spec.faces){if(out){out.className='erb-resolver-outcome bad';out.textContent='Risultato del dado bonus non valido.';}return;}var value=(spec.base||0)+v;row.dataset.resolverReady='1';row.dataset.resolvedValue=String(value);if(out){out.className='erb-resolver-outcome';out.textContent='Bonus calcolato: +'+value+' possibilità.';}}}
 var erbV39OldUpdateSearchRow=ebxUpdateSearchRow;
 ebxUpdateSearchRow=function(row){erbV39OldUpdateSearchRow(row);var key=row.querySelector('.ebx-search-preset').value,p=EBX_SEARCH_PRESETS[key],r=row.querySelector('.ebx-search-resolver');if(r)r.style.display=(p&&p.resolver)?'block':'none';if(p&&p.resolver){var man=row.querySelector('.ebx-search-manual'),line=row.querySelector('.ebx-effect-line');if(man)man.style.display='none';erbV39RefreshSearchResolver(row);if(line){var val=Number(row.dataset.resolvedValue||0);line.innerHTML=(row.dataset.resolverReady==='1'?('<b>+'+val+' possibilità</b> · '):'')+ebxEsc(p.note||'');}}};
@@ -4674,7 +4752,7 @@ var erbV39BaseAutoApply=erbV38AutoApply;
 erbV38AutoApply=function(row){var p=row&&EBX_PHASE_PRESETS[row.getAttribute('data-ebx-preset')||''];if(p&&p.resolver&&row.dataset.resolverReady!=='1'){erbV38Rollback(row);erbV38AutoState(row,'In attesa del dado','pending');return;}if(row&&row.dataset.sharedAvailable==='1'){erbV38Rollback(row);erbV38AutoState(row,'Disponibile, non ancora usato','pending');return;}return erbV39BaseAutoApply(row);};
 
 var erbV39BaseAddPhasePreset=ebxAddPhasePreset;
-ebxAddPhasePreset=function(phase,key){var p=EBX_PHASE_PRESETS[key];if(!p||!p.resolver)return erbV39BaseAddPhasePreset(phase,key);var host=erbV39El(ERB_PHASE_CONTAINERS[phase]);if(!host)return;var row=erbMakeBonusRow(phase,false);row.setAttribute('data-ebx-preset',key);row.dataset.erbResolver=p.resolver;row.dataset.resolverReady='0';var src=row.querySelector('.erb-source'),cond=row.querySelector('.erb-condition'),type=row.querySelector('.erb-type'),val=row.querySelector('.erb-value'),fat=row.querySelector('.erb-fatigue'),tot=row.querySelector('.erb-uses-total'),wrap=row.querySelector('.erb-apply-wrap');if(src){src.value=p.source;src.readOnly=true;}if(cond){cond.value=p.condition;cond.readOnly=true;}if(type){type.value=p.type;type.disabled=true;}erbUpdateTarget(row);if(val){val.value='0';val.readOnly=true;}if(fat){fat.value=String(p.fatigue||0);fat.readOnly=true;}if(tot){tot.value='';tot.readOnly=true;}if(wrap)wrap.innerHTML='<input type="checkbox" class="erb-apply" tabindex="-1"><span class="erb-auto-state pending">In attesa del dado</span>';var uid='erbresolver_'+Date.now()+'_'+Math.floor(Math.random()*100000);var r=document.createElement('div');r.className='erb-knowledge-resolver';r.innerHTML='<div class="erb-knowledge-tool"><b>Riuscita della Conoscenza:</b> usa prima il <a href="https://felixfelicisharrypottergdr.forumfree.it/?pag=riuscitaconoscenze" target="_blank" rel="noopener">Generatore di Riuscita delle Conoscenze ↗</a>.</div><div class="erb-resolver-grid"><div class="erb-mini"><label>Riuscita ottenuta</label><select data-erb-resolver-eff><option value="">— Seleziona —</option><option value="0">0% · nessun effetto</option><option value="33">33%</option><option value="66">66%</option><option value="100">100%</option></select></div><div class="erb-secondary-roll" data-erb-resolver-roll style="display:none"><div class="result-line"><div class="dice-code" id="'+uid+'" data-erb-resolver-code></div><button type="button" class="copy-btn" data-copy-source="'+uid+'">Copia</button></div><div class="result-line"><span>Risultato del dado bonus:</span><input type="number" data-erb-resolver-bonus min="1"></div></div></div><div class="erb-resolver-outcome pending" data-erb-resolver-outcome>Determina prima la riuscita della Conoscenza.</div>';row.appendChild(r);host.appendChild(row);setupNumericInputs();r.addEventListener('change',function(){erbV39RefreshResolver(row);ricalcolaErbologia();},true);r.addEventListener('input',function(){erbV39RefreshResolver(row);ricalcolaErbologia();},true);erbV39AddShareControl(row);erbV39RefreshResolver(row);ricalcolaErbologia();};
+ebxAddPhasePreset=function(phase,key){var p=EBX_PHASE_PRESETS[key];if(!p||!p.resolver)return erbV39BaseAddPhasePreset(phase,key);var host=erbV39El(ERB_PHASE_CONTAINERS[phase]);if(!host)return;var row=erbMakeBonusRow(phase,false);row.setAttribute('data-ebx-preset',key);row.dataset.erbResolver=p.resolver;row.dataset.resolverReady='0';var src=row.querySelector('.erb-source'),cond=row.querySelector('.erb-condition'),type=row.querySelector('.erb-type'),val=row.querySelector('.erb-value'),fat=row.querySelector('.erb-fatigue'),tot=row.querySelector('.erb-uses-total'),wrap=row.querySelector('.erb-apply-wrap');if(src){src.value=p.source;src.readOnly=true;}if(cond){cond.value=p.condition;cond.readOnly=true;}if(type){type.value=p.type;type.disabled=true;}erbUpdateTarget(row);if(val){val.value='0';val.readOnly=true;}if(fat){fat.value=String(p.fatigue||0);fat.readOnly=true;}if(tot){tot.value='';tot.readOnly=true;}if(wrap)wrap.innerHTML='<input type="checkbox" class="erb-apply" tabindex="-1"><span class="erb-auto-state pending">In attesa del dado</span>';var uid='erbresolver_'+Date.now()+'_'+Math.floor(Math.random()*100000);var r=document.createElement('div');r.className='erb-knowledge-resolver';r.innerHTML='<div class="erb-knowledge-tool"><b>Riuscita:</b> apri il <a href="https://felixfelicisharrypottergdr.forumfree.it/?pag=riuscitaconoscenze" target="_blank" rel="noopener">Generatore ↗</a>.</div><div class="erb-resolver-grid"><div class="erb-mini"><label>Riuscita ottenuta</label><select data-erb-resolver-eff><option value="">— Seleziona —</option><option value="0">0% · nessun effetto</option><option value="33">33%</option><option value="66">66%</option><option value="100">100%</option></select></div><div class="erb-secondary-roll" data-erb-resolver-roll style="display:none"><div class="result-line"><div class="dice-code" id="'+uid+'" data-erb-resolver-code></div><button type="button" class="copy-btn" data-copy-source="'+uid+'">Copia</button></div><div class="result-line"><span>Risultato del dado bonus:</span><input type="number" data-erb-resolver-bonus min="1"></div></div></div><div class="erb-resolver-outcome pending" data-erb-resolver-outcome>Determina prima la riuscita della Conoscenza.</div>';row.appendChild(r);host.appendChild(row);setupNumericInputs();r.addEventListener('change',function(){erbV39RefreshResolver(row);ricalcolaErbologia();},true);r.addEventListener('input',function(){erbV39RefreshResolver(row);ricalcolaErbologia();},true);erbV39AddShareControl(row);erbV39RefreshResolver(row);ricalcolaErbologia();};
 
 /* Share/copy catalog presets to compatible phases without consuming an use immediately. */
 function erbV39PresetGlobalUsed(key){var n=0;document.querySelectorAll('#modoErbologia .erb-bonus-row[data-ebx-preset="'+key+'"] .erb-uses-used').forEach(function(u){n+=Math.max(0,erbInt(u,0));});return n;}
@@ -4760,7 +4838,8 @@ if(typeof ricalcolaRicerca==='function')ricalcolaRicerca();
 })();
 </script>
 
-\n<script id="erb-advanced-bridge-v46-script">
+
+<script id="erb-advanced-bridge-v46-script">
 /* ===== PONTE AVANZATO ERBOLOGIA ↔ RIUSCITA DELLE CONOSCENZE v2 ===== */
 (function(){
 'use strict';
@@ -4805,7 +4884,8 @@ window.addEventListener('focus',check);document.addEventListener('visibilitychan
 function init(){tagAll(document);check();if(window.MutationObserver){new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(function(n){if(n.nodeType===1)tagAll(n);});});}).observe(document.body,{childList:true,subtree:true});}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else setTimeout(init,0);
 })();
-</script>\n
+</script>
+
 <script>
 /* v45 — collegamento contestuale Erbologia ↔ Riuscita delle Conoscenze. */
 (function(){
@@ -4823,6 +4903,82 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
   document.addEventListener('click',function(e){var a=e.target&&e.target.closest?e.target.closest('a[href*="?pag=riuscitaconoscenze"]'):null;if(a){rememberReturn();a.href=a.hasAttribute('data-erb-bridge-open')?(BASE+'&from=erbologia&bridge=erbologia#riuscitaFrame'):targetUrl();}},true);
   if(window.MutationObserver){try{new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(function(n){if(n.nodeType===1)wire(n);});});}).observe(document.documentElement,{subtree:true,childList:true});}catch(e){}}
+})();
+</script>
+
+
+<script>
+/* v48 — quando si torna dal Generatore, apre direttamente la sezione del tool invece dell'inizio pagina. */
+(function(){
+  'use strict';
+  function openToolAnchor(){
+    if(String(window.location.hash||'')!=='#modoErbologia')return;
+    try{ if(typeof mostraModo==='function')mostraModo('Erbologia'); }catch(e){}
+    setTimeout(function(){
+      var el=document.getElementById('modoErbologia');
+      if(el&&el.scrollIntoView)el.scrollIntoView({block:'start'});
+    },80);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',openToolAnchor);else openToolAnchor();
+  window.addEventListener('hashchange',openToolAnchor);
+})();
+</script>
+
+<script id="erbologia-v49-height-fix">
+(function(){
+  'use strict';
+  var last=0,timers=[];
+  function height(){
+    var de=document.documentElement,b=document.body,c=document.querySelector('.contenitore');
+    var vals=[
+      de?de.scrollHeight:0,de?de.offsetHeight:0,de?de.clientHeight:0,
+      b?b.scrollHeight:0,b?b.offsetHeight:0,
+      c?c.scrollHeight:0,c?c.offsetHeight:0
+    ];
+    if(c){
+      var r=c.getBoundingClientRect();
+      vals.push(Math.ceil(r.bottom+(window.pageYOffset||0)+80));
+    }
+    return Math.max.apply(Math,vals)+20;
+  }
+  function send(){
+    var h=height();
+    if(!isFinite(h)||h<300||Math.abs(h-last)<2)return;
+    last=h;
+    try{window.parent.postMessage({tipo:'altezzaErbologia',altezza:h},'*');}catch(e){}
+    try{window.parent.postMessage({tipo:'altezzaTool',tool:'erbologia',altezza:h},'*');}catch(e){}
+  }
+  function schedule(){
+    timers.forEach(clearTimeout);timers=[];
+    send();
+    [40,140,350,800,1500].forEach(function(ms){timers.push(setTimeout(send,ms));});
+  }
+  window.erbNotifyHeight=schedule;
+  window.addEventListener('load',schedule);
+  window.addEventListener('resize',schedule);
+  window.addEventListener('hashchange',schedule);
+  document.addEventListener('click',schedule,true);
+  document.addEventListener('input',schedule,true);
+  document.addEventListener('change',schedule,true);
+  if(window.ResizeObserver){try{new ResizeObserver(schedule).observe(document.documentElement);}catch(e){}}
+  if(window.MutationObserver){try{new MutationObserver(schedule).observe(document.body,{subtree:true,childList:true,attributes:true,characterData:true});}catch(e){}}
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(schedule);}
+  schedule();
+})();
+</script>
+
+
+<script id="erbologia-v49-session-refresh">
+(function(){
+  'use strict';
+  function refreshIfHome(){
+    var h=document.getElementById('piante-session-home');
+    if(h&&h.style.display!=='none'&&typeof rpLoadSessions==='function'&&window.RP_FB&&RP_FB.db&&RP_FB.user){
+      rpLoadSessions();
+    }
+  }
+  window.addEventListener('focus',refreshIfHome);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)refreshIfHome();});
 })();
 </script>
 
