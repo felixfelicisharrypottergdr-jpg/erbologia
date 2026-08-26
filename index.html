@@ -1558,7 +1558,7 @@ function ebxEl(id){ return document.getElementById(id); }
 @media(max-width:640px){.rp-decision-row{align-items:flex-start}.ebx-bolcino-incontro{background:linear-gradient(135deg,#a97912,#efd270,#b78215)!important}}
 </style>
 
-<!-- v60: performance input/iframe + azzeramento profilo/guida per cambio PG -->
+<!-- v64: bridge altezza dinamica ForumFree bidirezionale + performance/reset PG -->
 <!-- v63: fix runtime completo + interfaccia stabile -->
 </head>
 <body>
@@ -5653,29 +5653,81 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
-<script id="erbologia-v62-height-fix">
+<script id="erbologia-v64-height-bridge">
 (function(){
   'use strict';
   var timer=0,last=0;
+
   function measure(){
-    var de=document.documentElement,b=document.body,c=document.querySelector('.contenitore');
-    var h=Math.max(de?de.scrollHeight:0,b?b.scrollHeight:0);
-    if(c){var r=c.getBoundingClientRect();h=Math.max(h,Math.ceil(r.bottom+(window.pageYOffset||0)));}
-    return Math.max(500,Math.ceil(h+80));
+    var de=document.documentElement, b=document.body, c=document.querySelector('.contenitore');
+    var h=0;
+    if(de) h=Math.max(h,de.scrollHeight,de.offsetHeight,de.clientHeight);
+    if(b) h=Math.max(h,b.scrollHeight,b.offsetHeight,b.clientHeight);
+    if(c){
+      var r=c.getBoundingClientRect();
+      h=Math.max(h,Math.ceil(r.bottom+(window.pageYOffset||0)));
+    }
+    return Math.max(600,Math.ceil(h+100));
   }
+
   function send(force){
     var h=measure();
-    if(!force&&Math.abs(h-last)<12)return;
+    if(!force && Math.abs(h-last)<8) return;
     last=h;
-    try{window.parent.postMessage({tipo:'altezzaErbologia',altezza:h},'*');}catch(e){}
+    try{
+      window.parent.postMessage({
+        type:'ffgdr:iframe-height',
+        tipo:'altezzaErbologia',
+        frameId:'erbologiaFrame',
+        height:h,
+        altezza:h
+      },'*');
+    }catch(e){}
   }
-  function later(force,delay){clearTimeout(timer);timer=setTimeout(function(){timer=0;send(!!force);},typeof delay==='number'?delay:100);}
-  window.erbNotifyHeight=function(){later(false,100);};
-  window.erbForceHeight=function(){later(true,80);};
-  window.addEventListener('load',function(){send(true);later(false,500);});
-  document.addEventListener('toggle',function(e){if(e.target&&e.target.tagName==='DETAILS')later(false,120);},true);
-  document.addEventListener('click',function(e){if(e.target&&e.target.closest&&e.target.closest('button,summary,[data-rp-nav],[data-erb-go],.modo-bottone'))later(false,140);},true);
-  document.addEventListener('change',function(e){if(e.target&&e.target.id!=='pgNomeSessione')later(false,140);},true);
+
+  function schedule(force,delay){
+    clearTimeout(timer);
+    timer=setTimeout(function(){timer=0;send(!!force);},typeof delay==='number'?delay:90);
+  }
+
+  /* API usata dal resto del tool quando cambia davvero il layout. */
+  window.erbNotifyHeight=function(){schedule(false,80);};
+  window.erbForceHeight=function(){schedule(true,50);};
+
+  function settle(){
+    send(true);
+    setTimeout(function(){send(false);},120);
+    setTimeout(function(){send(false);},450);
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',settle,{once:true});
+  else settle();
+  window.addEventListener('load',settle,{once:true});
+
+  /* Solo eventi che possono cambiare l'altezza: nessun Mutation/ResizeObserver. */
+  document.addEventListener('toggle',function(e){
+    if(e.target&&e.target.tagName==='DETAILS') schedule(false,70);
+  },true);
+  document.addEventListener('click',function(e){
+    if(e.target&&e.target.closest&&e.target.closest('button,summary,[data-rp-nav],[data-erb-go],.modo-bottone,.tab-bottone')) schedule(false,90);
+  },true);
+  document.addEventListener('change',function(e){
+    if(e.target&&e.target.id!=='pgNomeSessione') schedule(false,90);
+  },true);
+  document.addEventListener('input',function(e){
+    /* Il nome del PG non cambia il layout; i risultati numerici sì. */
+    if(e.target&&e.target.id!=='pgNomeSessione'&&(e.target.type==='number'||e.target.tagName==='SELECT')) schedule(false,110);
+  },true);
+  document.addEventListener('load',function(e){
+    if(e.target&&e.target.tagName==='IMG') schedule(false,70);
+  },true);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){schedule(true,20);}).catch(function(){});}
+
+  /* Il contenitore ForumFree può richiedere l'altezza se il messaggio iniziale è arrivato troppo presto. */
+  window.addEventListener('message',function(e){
+    var d=e.data||{};
+    if(d.type==='ffgdr:request-height'||d.tipo==='richiediAltezzaErbologia') send(true);
+  });
 })();
 </script>
 
