@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Erbologia - Strumenti Interattivi</title>
-<!-- v71: selettore/autocompletamento specie + aggiornamento immediato dati deducibili -->
+<!-- v74: Dati facoltativi Elfo evidenziati in arancio/ambra -->
 <!-- v53: apertura Ricerca immediata + aggancio Firebase del PG durante la compilazione -->
 <style>
 /* v38 allineata alla Magizoologia - Quote BBCode esplicativi estesi anche alla Guida all'Erbologia: soglie, esiti semantici e formule senza enumerazioni aritmetiche ridondanti. */
@@ -1659,6 +1659,45 @@ function ebxEl(id){ return document.getElementById(id); }
 .species-class-sync.bad{background:#f3d5cf;border-color:#bd6656;color:#69261f!important;font-weight:700}
 </style>
 
+
+<style id="v73-elfo-optional-highlight">
+/* Dati facoltativi per Il Mio Elfo Domestico: evidenza distinta dal verde della Guida */
+#modoErbologia .erb-transfer-meta{
+  margin:16px 0 18px!important;
+  border:1px solid #d58a3e!important;
+  border-left:6px solid #ef9b49!important;
+  border-radius:9px!important;
+  background:#5a3118!important;
+  box-shadow:0 4px 12px rgba(0,0,0,.18)!important;
+}
+#modoErbologia .erb-transfer-meta>summary{
+  padding:12px 14px!important;
+  background:#78431f!important;
+  color:#fff2df!important;
+  font-weight:800!important;
+}
+#modoErbologia .erb-transfer-meta>summary::marker{
+  color:#ffd19a!important;
+}
+#modoErbologia .erb-transfer-meta .nota-regole{
+  background:#f4dfc2!important;
+  border-color:#d9a66a!important;
+  color:#4d2b16!important;
+}
+#modoErbologia .erb-transfer-meta .nota-regole b{
+  color:#6a3818!important;
+}
+#modoErbologia .erb-transfer-meta .campo label{
+  color:#ffe1bd!important;
+}
+#modoErbologia .erb-transfer-meta input,
+#modoErbologia .erb-transfer-meta select{
+  background:#fff6eb!important;
+  color:#3d2416!important;
+  border-color:#c9874d!important;
+}
+</style>
+
 </head>
 <body>
 <div class="contenitore">
@@ -1939,7 +1978,7 @@ function ebxEl(id){ return document.getElementById(id); }
 
 
 <details class="erb-transfer-meta">
-  <summary>Dati facoltativi per il Riepilogo / Il Mio Elfo Domestico</summary>
+  <summary>Dati facoltativi per Il Mio Elfo Domestico</summary>
   <div class="nota-regole">Non modificano i dadi: servono soltanto a preparare una scheda ordinata da riportare nella <b>Serra</b>.</div>
   <div class="riga">
     <div class="campo"><label>Nome della Pianta</label><input type="text" id="nomePiantaGuida" data-key="nomePiantaGuida" maxlength="120" placeholder="Es. Mandragola"></div>
@@ -2483,7 +2522,7 @@ function ebxEl(id){ return document.getElementById(id); }
       <option value="S">S (Scarso)</option>
       <option value="A">A (Accettabile)</option>
       <option value="O">O (Oltre le Aspettative)</option>
-      <option value="E">E (Eccezionale)</option></select><div class="numeric-note">Il voto viene riportato automaticamente nella Guida.</div></div></div><div class="research-guide-bridge-status" id="rpGuideBridgeStatus1"></div><button type="button" class="bottone-azione bottone-secondario research-guide-open" id="rpOpenGuide1" style="display:none">Apri questa Pianta nella Guida</button></div></div>
+      <option value="E">E (Eccezionale)</option></select><div class="numeric-note">Il voto viene riportato automaticamente nella Guida.</div></div></div><div class="research-guide-bridge-status" id="rpGuideBridgeStatus1"></div><button type="button" class="bottone-azione bottone-secondario research-guide-open" id="rpOpenGuide1" style="display:none">Importa nella Guida</button></div></div>
         <div class="rp-hostile-alert" id="rpHostileAlert1" style="display:none"></div>
 
         <h3>Fase Vitale (1d9)</h3>
@@ -2534,7 +2573,7 @@ function ebxEl(id){ return document.getElementById(id); }
       <option value="S">S (Scarso)</option>
       <option value="A">A (Accettabile)</option>
       <option value="O">O (Oltre le Aspettative)</option>
-      <option value="E">E (Eccezionale)</option></select><div class="numeric-note">Il voto viene riportato automaticamente nella Guida.</div></div></div><div class="research-guide-bridge-status" id="rpGuideBridgeStatus2"></div><button type="button" class="bottone-azione bottone-secondario research-guide-open" id="rpOpenGuide2" style="display:none">Apri questa Pianta nella Guida</button></div></div>
+      <option value="E">E (Eccezionale)</option></select><div class="numeric-note">Il voto viene riportato automaticamente nella Guida.</div></div></div><div class="research-guide-bridge-status" id="rpGuideBridgeStatus2"></div><button type="button" class="bottone-azione bottone-secondario research-guide-open" id="rpOpenGuide2" style="display:none">Importa nella Guida</button></div></div>
           <h3>Numero di esemplari (1d5)</h3>
           <div class="result-line"><div class="dice-code" id="codiceEsemplari2"></div><button class="copy-btn" type="button" data-copy-source="codiceEsemplari2" data-copy-control="1">Copia</button></div>
           <div class="result-line"><span>Risultato (1-5):</span><input type="number" id="risultatoEsemplari2" data-key="risultatoEsemplari2" min="1" max="5"><span class="out-tag out-neutral" id="tagEsemplari2">in attesa</span></div>
@@ -2581,7 +2620,7 @@ function ebxEl(id){ return document.getElementById(id); }
       <option value="S">S (Scarso)</option>
       <option value="A">A (Accettabile)</option>
       <option value="O">O (Oltre le Aspettative)</option>
-      <option value="E">E (Eccezionale)</option></select><div class="numeric-note">Il voto viene riportato automaticamente nella Guida.</div></div></div><div class="research-guide-bridge-status" id="rpGuideBridgeStatus3"></div><button type="button" class="bottone-azione bottone-secondario research-guide-open" id="rpOpenGuide3" style="display:none">Apri questa Pianta nella Guida</button></div></div>
+      <option value="E">E (Eccezionale)</option></select><div class="numeric-note">Il voto viene riportato automaticamente nella Guida.</div></div></div><div class="research-guide-bridge-status" id="rpGuideBridgeStatus3"></div><button type="button" class="bottone-azione bottone-secondario research-guide-open" id="rpOpenGuide3" style="display:none">Importa nella Guida</button></div></div>
           <h3>Numero di esemplari (1d10)</h3>
           <div class="result-line"><div class="dice-code" id="codiceEsemplari3"></div><button class="copy-btn" type="button" data-copy-source="codiceEsemplari3" data-copy-control="1">Copia</button></div>
           <div class="result-line"><span>Risultato (1-10):</span><input type="number" id="risultatoEsemplari3" data-key="risultatoEsemplari3" min="1" max="10"><span class="out-tag out-neutral" id="tagEsemplari3">in attesa</span></div>
@@ -6001,30 +6040,73 @@ function transfer(n){
   lastSpec=sp;[spec,nome,cl,prov,sempreOstile].forEach(function(x){if(x)fire(x,'change');});
   if(student()&&gv&&vote){gv.value=vote.value;fire(gv,'change');}
   window.ricalcolaErbologia();
-  var syncBox=E('rpGuideBridge'+n);if(syncBox)syncBox.setAttribute('data-v58-synced',sp+'|'+(student()&&vote?vote.value:'adult'));
+  var syncBox=E('rpGuideBridge'+n);if(syncBox)syncBox.setAttribute('data-v58-synced',sp+'|'+(student()&&vote&&vote.value?vote.value:'senza-voto'));
   return true;
 }
 function updateBridge(n){
   var box=E('rpGuideBridge'+n),sp=species(n),choice=E('rpInteragisciSubito'+n),vote=E('rpVotoRicerca'+n),wrap=E('rpResearchVoteWrap'+n),status=E('rpGuideBridgeStatus'+n),open=E('rpOpenGuide'+n),label=E('rpGuideSpeciesLabel'+n),vlabel=E('rpResearchVoteLabel'+n);
   if(!box)return;
-  if(!sp){box.classList.remove('show');return;}
-  box.classList.add('show');if(label)label.textContent=sp;if(vlabel)vlabel.textContent='Voto nella Conoscenza di '+sp;
+  if(!sp){box.classList.remove('show');if(open)open.style.display='none';return;}
+  box.classList.add('show');
+  if(label)label.textContent=sp;
+  if(vlabel)vlabel.textContent='Voto nella Conoscenza di '+sp;
+
   var old=box.getAttribute('data-v58-species')||'';
-  if(old&&old!==sp&&!(typeof RP_RESTORING!=='undefined'&&RP_RESTORING)){if(choice)choice.value='';if(vote)vote.value='';box.removeAttribute('data-v58-synced');}
+  if(old&&old!==sp&&!(typeof RP_RESTORING!=='undefined'&&RP_RESTORING)){
+    if(choice)choice.value='';
+    if(vote)vote.value='';
+    box.removeAttribute('data-v58-synced');
+  }
   box.setAttribute('data-v58-species',sp);
-  if(!choice||choice.value===''){if(wrap)wrap.classList.remove('show');if(open)open.style.display='none';if(status){status.className='research-guide-bridge-status';status.textContent='Scegli se vuoi interagire subito con la Pianta oppure continuare la Ricerca.';}return;}
-  if(choice.value==='no'){if(wrap)wrap.classList.remove('show');if(open)open.style.display='none';if(status){status.className='research-guide-bridge-status';status.textContent='Hai scelto di non interagire ora: puoi continuare la Ricerca. La Pianta potrà essere inserita manualmente nella Guida in seguito.';}return;}
+
+  /* L'importazione resta sempre disponibile: non dipende dalla scelta fatta
+     in precedenza su "interagire subito?". */
+  if(open){
+    open.style.display='inline-flex';
+    open.textContent='Importa nella Guida';
+    open.title='Importa o reimporta questa Pianta nella Guida in qualsiasi momento.';
+  }
+
   if(student()){
-    if(wrap)wrap.classList.add('show');
-    if(!vote||!vote.value){if(open)open.style.display='none';if(status){status.className='research-guide-bridge-status';status.textContent='Indica il voto dello Studente in '+sp+'; verrà riportato automaticamente nella Guida.';}return;}
-  }else if(wrap)wrap.classList.remove('show');
-  var sig=sp+'|'+(student()&&vote?vote.value:'adult'),synced=box.getAttribute('data-v58-synced')===sig;
-  if(open)open.style.display='inline-flex';
-  if(status){status.className='research-guide-bridge-status'+(synced?' ok':'');status.textContent=synced?('Dati trasferiti nella Guida ✓'+(student()?' Voto compreso.':'')):'Dati pronti: verranno trasferiti automaticamente nella Guida.';}
+    if(choice&&choice.value==='si') {
+      if(wrap)wrap.classList.add('show');
+    } else {
+      if(wrap)wrap.classList.remove('show');
+    }
+  } else if(wrap) wrap.classList.remove('show');
+
+  var sig=sp+'|'+(student()&&vote&&vote.value?vote.value:'senza-voto'),
+      synced=box.getAttribute('data-v58-synced')===sig;
+
+  if(status){
+    status.className='research-guide-bridge-status'+(synced?' ok':'');
+    if(synced){
+      status.textContent='Questa Pianta è stata importata nella Guida ✓ Puoi reimportarla in qualsiasi momento.';
+    }else if(choice&&choice.value==='si'&&student()&&(!vote||!vote.value)){
+      status.textContent='Puoi importare subito la Pianta; il voto specifico dello Studente potrà essere indicato direttamente nella Guida.';
+    }else if(choice&&choice.value==='no'){
+      status.textContent='Continua pure la Ricerca. Se cambi idea, “Importa nella Guida” resterà disponibile anche quando riprenderai questa sessione.';
+    }else{
+      status.textContent='Puoi continuare la Ricerca oppure importare questo ritrovamento nella Guida adesso o più tardi.';
+    }
+  }
 }
 var oldResearch=window.ricalcolaRicerca;
 window.ricalcolaRicerca=function(){var r=oldResearch?oldResearch.apply(this,arguments):undefined;for(var n=1;n<=3;n++)updateBridge(n);return r;};
-for(var n=1;n<=3;n++)(function(i){var b=E('rpOpenGuide'+i),choice=E('rpInteragisciSubito'+i),vote=E('rpVotoRicerca'+i);if(choice)choice.addEventListener('change',function(){if(choice.value==='si'&&(!student()||(vote&&vote.value))){transfer(i);}updateBridge(i);});if(vote)vote.addEventListener('change',function(){if(choice&&choice.value==='si'&&vote.value){transfer(i);}updateBridge(i);});if(b)b.addEventListener('click',function(){if(transfer(i)){updateBridge(i);if(typeof mostraModo==='function')mostraModo('Erbologia');if(typeof mostraPannello==='function')mostraPannello('Riconoscimento');var p=E('modoErbologia');if(p&&p.scrollIntoView)p.scrollIntoView({behavior:'smooth',block:'start'});}});})(n);
+for(var n=1;n<=3;n++)(function(i){
+  var b=E('rpOpenGuide'+i),choice=E('rpInteragisciSubito'+i),vote=E('rpVotoRicerca'+i);
+  if(choice)choice.addEventListener('change',function(){updateBridge(i);});
+  if(vote)vote.addEventListener('change',function(){updateBridge(i);});
+  if(b)b.addEventListener('click',function(){
+    if(transfer(i)){
+      updateBridge(i);
+      if(typeof mostraModo==='function')mostraModo('Erbologia');
+      if(typeof mostraPannello==='function')mostraPannello('Riconoscimento');
+      var p=E('modoErbologia');
+      if(p&&p.scrollIntoView)p.scrollIntoView({behavior:'smooth',block:'start'});
+    }
+  });
+})(n);
 var specGuide=E('speciePiantaGuida'),lastSpec=specGuide?specGuide.value:'';
 if(specGuide){specGuide.addEventListener('change',function(){var now=specGuide.value.trim();if(now!==lastSpec){lastSpec=now;var v=E('pgVoto');if(student()&&v)v.value='';clearGuideResults();window.ricalcolaErbologia();}});}
 var pgVote=E('pgVoto');if(pgVote)pgVote.addEventListener('change',function(){window.ricalcolaErbologia();});
@@ -6177,8 +6259,7 @@ for(var n=1;n<=3;n++)(function(i){
  var b=E('rpOpenGuide'+i),choice=E('rpInteragisciSubito'+i),vote=E('rpVotoRicerca'+i);
  function applySoon(){setTimeout(function(){if(typeof window.erbApplyResearchEncounterMeta==='function')window.erbApplyResearchEncounterMeta(i);syncAutoTraits();if(typeof window.ricalcolaErbologia==='function')window.ricalcolaErbologia();},0);}
  if(b)b.addEventListener('click',applySoon);
- if(choice)choice.addEventListener('change',function(){if(choice.value==='si')applySoon();});
- if(vote)vote.addEventListener('change',applySoon);
+ /* I metadati della Ricerca vengono applicati al clic esplicito su Importa. */
 })(n);
 
 /* Mantieni lo stato automatico corretto anche dopo ripristino Firebase/reset. */
