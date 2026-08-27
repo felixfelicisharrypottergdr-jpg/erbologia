@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html lang="it">
+<!-- v85: audit reset — azzeramento esplicito dei campi tecnici hidden/derivati e dello storico tentativi; evita che defaultValue dei campi hidden conservi valori modificati dopo Azzera Guida -->
+<!-- v84: regressione v83 — pulizia esplicita anche delle etichette/UI di Pax, Tocco Verde e controlli illegali quando cambia la Pianta; evita esiti visivi obsoleti quando lo Studente deve ancora reinserire il voto specifico -->
+<!-- v83: secondo audit di robustezza — viewport mobile reale; cambio PG azzera anche il voto specifico; cambio contesto Pianta invalida Pax/Tocco Verde/controlli illegali e forza un ricalcolo pulito -->
 <!-- v82: audit fruibilità completo; preservata classe speciale Riepilogo durante la navigazione; allineamenti v80-v81 mantenuti -->
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Erbologia - Strumenti Interattivi</title>
 <!-- v79: specie in un unico campo scrivibile con tendina catalogo; correzione automatica Classificazione senza falso avviso di errore -->
 <!-- v77: dati Elfo spostati nel Riepilogo finale + post del ciclo; riga verde specie/classificazione rimossa -->
@@ -2952,6 +2956,16 @@ var ultimoContestoInterazione = null;
 var ultimoContestoBaseAdulto = null;
 var ultimoContestoPostColtivazione = null;
 var ultimoContestoPiantaGuida = null;
+function erbResetPerPlantExtensionUi(){
+  var paxBox=document.getElementById('ebxPaxActive');if(paxBox)paxBox.style.display='none';
+  var paxTag=document.getElementById('tagPax');if(paxTag){paxTag.textContent='in attesa';paxTag.className='out-tag out-neutral';}
+  var paxNote=document.getElementById('notePax');if(paxNote)paxNote.textContent='';
+  var toccoRoll=document.getElementById('erbToccoVerdeRoll');if(toccoRoll)toccoRoll.style.display='none';
+  var toccoOut=document.getElementById('erbToccoVerdeOutcome');if(toccoOut){toccoOut.className='erb-resolver-outcome pending';toccoOut.textContent='Non usato.';}
+  ['Collocazione','Coltivazione'].forEach(function(kind){
+    var tag=document.getElementById('tagIllegale'+kind);if(tag){tag.textContent='in attesa';tag.className='out-tag out-neutral';}
+  });
+}
 function resetStoricoSeCambiaPianta(){
   var classe=document.getElementById('classificazione').value;
   var provenienza=getProvenienzaPianta();
@@ -2962,10 +2976,19 @@ function resetStoricoSeCambiaPianta(){
   ultimoContestoPiantaGuida=ctx;
   var zeroIds=['tentativiRiconoscimentoFalliti','tentativiInterazioneFallitiPrecedenti','fallimentiEsportazionePrecedenti','fallimentiCollocazionePrecedenti'];
   for(var i=0;i<zeroIds.length;i++){var z=document.getElementById(zeroIds[i]);if(z)z.value='0';}
-  var clearIds=['risultatoRiconoscimento','risultatoInterazione','risultatoConseguenzaInterazione','risultatoOrdaInterazione','risultatoEsportazione','risultatoCollocazione','risultatoConseguenzaCollocazione','risultatoAltrePianteCollocazione','risultatoColtivazione','baseAdultoRisultato','postBaseColtivazione'];
+  var clearIds=['risultatoRiconoscimento','risultatoInterazione','risultatoConseguenzaInterazione','risultatoOrdaInterazione','risultatoEsportazione','risultatoCollocazione','risultatoConseguenzaCollocazione','risultatoAltrePianteCollocazione','risultatoColtivazione','baseAdultoRisultato','postBaseColtivazione','risultatoPax','risultatoIllegaleCollocazione','risultatoIllegaleColtivazione','risultatoToccoVerdeBonus'];
   for(var j=0;j<clearIds.length;j++){var c=document.getElementById(clearIds[j]);if(c)c.value='';}
+  /* Gli esiti di Pax e Tocco Verde appartengono alla Pianta/azione corrente:
+     non devono sopravvivere a un cambio di specie, classificazione o provenienza. */
+  var paxPreset=document.getElementById('ebxPaxPreset');if(paxPreset)paxPreset.value='';
+  var toccoEff=document.getElementById('ebxToccoVerdeEff');if(toccoEff)toccoEff.value='';
+  var toccoHidden=document.getElementById('ebxToccoVerde');if(toccoHidden)toccoHidden.value='0';
   var secondo=document.getElementById('secondoTentativoInterazione');if(secondo)secondo.checked=false;
   ['riconoscimentoAuto','interazioneRisoltaEsternamente','piantaDaSemeColtivato','trattamentoGiaCompletato','ordaEsportazioneRisolta'].forEach(function(id){var e=document.getElementById(id);if(e)e.checked=false;});
+  erbResetPerPlantExtensionUi();
+  /* Le estensioni calcolano alcuni stati prima del nucleo storico: chiedi al wrapper
+     finale un secondo passaggio, così nessun bonus/esito appena invalidato resta attivo. */
+  window.__ERB_CONTEXT_RESET_PENDING=true;
 }
 function guardFormula(chiave, firma, idRisultato){
   var f = String(firma);
@@ -5303,6 +5326,18 @@ function resetGuidaErbologia(){
     f.disabled=false;
   }
   ['bonusRiconoscimentoRows','bonusInterazioneRows','bonusEsportazioneRows','bonusCollocazioneRows','bonusColtivazioneRows'].forEach(function(id){var h=document.getElementById(id);if(h)h.innerHTML='';});
+  /* Gli input hidden possono aggiornare anche il loro defaultValue quando vengono modificati via JS:
+     per un vero reset non affidarsi al valore di default corrente, ma azzerare esplicitamente lo stato tecnico. */
+  var technicalReset={
+    extraRiconoscimento:'0',tentativiRiconoscimentoFalliti:'0',
+    tentativiInterazioneFallitiPrecedenti:'0',extraInterazione:'0',extraEsportazione:'0',
+    fallimentiEsportazionePrecedenti:'0',extraCollocazione:'0',fallimentiCollocazionePrecedenti:'0',
+    extraColtivazione:'0',ebxToccoVerde:'0',postBaseColtivazione:''
+  };
+  Object.keys(technicalReset).forEach(function(id){var h=document.getElementById(id);if(h)h.value=technicalReset[id];});
+  if(typeof erbResetPerPlantExtensionUi==='function')erbResetPerPlantExtensionUi();
+  if(typeof ERB_V38_HISTORY!=='undefined')ERB_V38_HISTORY={riconoscimento:[],interazione:[],esportazione:[],collocazione:[]};
+  window.__ERB_CONTEXT_RESET_PENDING=false;
   formulaSignatures={};
   ultimoContestoInterazione=null;
   ultimoContestoBaseAdulto=null;
@@ -5835,7 +5870,7 @@ window.erbResetPersistentGuideForNewPg=function(btn){
   RP_PROFILE_OPEN_PENDING=false;ERB_GUIDE_RESTORING=true;
   try{
     function setVal(id,val){var e=document.getElementById(id);if(!e)return;if(e.type==='checkbox'||e.type==='radio')e.checked=!!val;else e.value=val;}
-    setVal('pgNomeSessione','');setVal('pgTipo','studente');setVal('pgSegueErbologia','si');setVal('empatia','10');setVal('sapienzaErbologicaGuida','0');
+    setVal('pgNomeSessione','');setVal('pgTipo','studente');setVal('pgSegueErbologia','si');setVal('pgVoto','');setVal('empatia','10');setVal('sapienzaErbologicaGuida','0');
     setVal('livErborista','0');setVal('livAmico','0');setVal('livCustode','0');setVal('livColtivatore','0');setVal('pgErbologoMestiere',false);
     if(typeof resetGuidaErbologia==='function')resetGuidaErbologia();
     if(typeof aggiornaCampiTipoPG==='function')aggiornaCampiTipoPG();
@@ -6057,6 +6092,11 @@ function fire(el,type){if(!el)return;try{el.dispatchEvent(new Event(type||'chang
 function clearGuideResults(){
   document.querySelectorAll('#modoErbologia input[id^="risultato"],#modoErbologia input[id^="baseAdultoRisultato"],#modoErbologia input[id^="postBaseColtivazione"]').forEach(function(x){if(x.type!=='checkbox'&&x.type!=='radio')x.value='';});
   ['tentativiRiconoscimentoFalliti','tentativiInterazioneFallitiPrecedenti','fallimentiEsportazionePrecedenti','fallimentiCollocazionePrecedenti'].forEach(function(id){var x=E(id);if(x)x.value='0';});
+  var pax=E('ebxPaxPreset');if(pax)pax.value='';
+  var tv=E('ebxToccoVerdeEff');if(tv)tv.value='';
+  var tvh=E('ebxToccoVerde');if(tvh)tvh.value='0';
+  var manualPost=E('malusPostPax');if(manualPost)manualPost.value='0';
+  if(typeof erbResetPerPlantExtensionUi==='function')erbResetPerPlantExtensionUi();
   if(typeof ERB_V38_HISTORY!=='undefined')ERB_V38_HISTORY={riconoscimento:[],interazione:[],esportazione:[],collocazione:[]};
   if(typeof formulaSignatures!=='undefined')formulaSignatures={};
 }
@@ -6833,5 +6873,24 @@ document.addEventListener('change',function(){setTimeout(refresh,0);},true);
 })();
 </script>
 
+
+<script id="erbologia-v83-context-stability">
+(function(){
+'use strict';
+/* Alcune estensioni vengono calcolate prima che il nucleo rilevi un cambio di contesto.
+   Se il nucleo invalida i risultati, ripeti una sola volta l'intera catena sui dati puliti. */
+var previous=window.ricalcolaErbologia;
+if(typeof previous==='function'){
+  window.ricalcolaErbologia=function(){
+    var result=previous.apply(this,arguments);
+    if(window.__ERB_CONTEXT_RESET_PENDING){
+      window.__ERB_CONTEXT_RESET_PENDING=false;
+      result=previous.apply(this,arguments);
+    }
+    return result;
+  };
+}
+})();
+</script>
 </body>
 </html>
