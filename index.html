@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="it">
-<!-- v80: destinazione Elfo allineata (Serra Adulto / Cubicolo Studente); Ciclo fallito esportato esplicitamente -->
+<!-- v82: audit fruibilità completo; preservata classe speciale Riepilogo durante la navigazione; allineamenti v80-v81 mantenuti -->
 <head>
 <meta charset="UTF-8">
 <title>Erbologia - Strumenti Interattivi</title>
@@ -4576,10 +4576,10 @@ function mostraPannello(nome){
     var tab = document.getElementById('tab' + nomi[i]);
     if(nomi[i] === nome){
       pannello.className = 'pannello visibile';
-      tab.className = 'tab-bottone attivo';
+      tab.className = 'tab-bottone' + (nomi[i] === 'Riepilogo' ? ' tab-riepilogo' : '') + ' attivo';
     } else {
       pannello.className = 'pannello';
-      tab.className = 'tab-bottone';
+      tab.className = 'tab-bottone' + (nomi[i] === 'Riepilogo' ? ' tab-riepilogo' : '');
     }
     i = i + 1;
   }
