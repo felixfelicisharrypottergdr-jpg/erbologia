@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="it">
+<!-- v80: destinazione Elfo allineata (Serra Adulto / Cubicolo Studente); Ciclo fallito esportato esplicitamente -->
 <head>
 <meta charset="UTF-8">
 <title>Erbologia - Strumenti Interattivi</title>
@@ -5595,8 +5596,8 @@ function erbRenderGuideSummary(){
   var ec1=erbV38El('erbElfoTipoCiclo'),ec2=erbV38El('erbElfoEsitoCiclo'),ec3=erbV38El('erbElfoPostCiclo');
   if(ec1)ec1.value=cycleTypeLabel;if(ec2)ec2.value=cycleOutcome;if(ec3)ec3.value=cyclePosts;
   var notes=['Interazione: '+(erbV38Text('tagInterazione')||'—'),'Trattamento: Esportazione '+(erbV38Text('tagEsportazione')||'—')+'; Collocazione '+(erbV38Text('tagCollocazione')||'—'),'Coltivazione: '+cycleOutcome,'Ciclo: '+cycleLabel+'; '+post.text];if(mal.length)notes.push('Promemoria: '+mal.join(' | '));
-  var transfer=['DESTINAZIONE: Serra','Nome: '+(name||'— da compilare —'),'Data / riferimento: '+(data||'—'),'Link principale: '+(link||'—'),'Classificazione: '+pg.classificazione,'Link Classificazione: '+(cl||'—'),'Specie: '+(species||'— da compilare —'),'Link Specie: '+(sl||'—'),'Parenti / origine: '+par,'Fase attuale: '+erbV38PhaseLabel(erbV38Val('faseColtivazione')||erbV38Val('faseInterazione')),'Link Fase: '+(fl||'—'),'Tipo ciclo: '+cycleTypeLabel,'Esito Coltivazione: '+cycleOutcome,'Post richiesti ciclo: '+cyclePosts,'Note: '+notes.join(' · ')].join('\n');
-  var th=erbV38El('erbElfoTransferText');if(th)th.textContent=transfer;var ready=erbV38El('erbElfoReadyNote');if(ready){var miss=[];if(!name)miss.push('Nome');if(!species)miss.push('Specie');ready.innerHTML=miss.length?'<b>Dati ancora da completare:</b> '+rpEsc(miss.join(', '))+'.':'<b>Dati principali completi.</b> Controlla gli esiti prima di trasferire la Pianta nella Serra.';}
+  var elfoDest=pg.tipo==='studente'?'Cubicolo':'Serra';var transfer=['DESTINAZIONE: '+elfoDest,'Nome: '+(name||'— da compilare —'),'Data / riferimento: '+(data||'—'),'Link principale: '+(link||'—'),'Classificazione: '+pg.classificazione,'Link Classificazione: '+(cl||'—'),'Specie: '+(species||'— da compilare —'),'Link Specie: '+(sl||'—'),'Parenti / origine: '+par,'Fase attuale: '+erbV38PhaseLabel(erbV38Val('faseColtivazione')||erbV38Val('faseInterazione')),'Link Fase: '+(fl||'—'),'Tipo ciclo: '+cycleTypeLabel,'Esito Coltivazione: '+cycleOutcome,'Post richiesti ciclo: '+cyclePosts,'Note: '+notes.join(' · ')].join('\n');
+  var th=erbV38El('erbElfoTransferText');if(th)th.textContent=transfer;var ready=erbV38El('erbElfoReadyNote');if(ready){var miss=[];if(!name)miss.push('Nome');if(!species)miss.push('Specie');ready.innerHTML=miss.length?'<b>Dati ancora da completare:</b> '+rpEsc(miss.join(', '))+'.':'<b>Dati principali completi.</b> Controlla gli esiti prima di trasferire la Pianta nel '+elfoDest+'.';}
 }
 
 /* More readable illegal-control outputs and Narrator link. */
