@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Erbologia - Strumenti Interattivi</title>
+<!-- v77: dati Elfo spostati nel Riepilogo finale + post del ciclo; riga verde specie/classificazione rimossa -->
 <!-- v76: vera tendina catalogo sempre apribile anche con specie già importata -->
 <!-- v53: apertura Ricerca immediata + aggancio Firebase del PG durante la compilazione -->
 <style>
@@ -1992,7 +1993,7 @@ function ebxEl(id){ return document.getElementById(id); }
   </div>
 </div>
 <div id="erbSpecificVoteHint" class="specific-knowledge-note"></div>
-<div id="erbSpeciesClassSync" class="species-class-sync">Inserisci una Pianta: il tool controllerà automaticamente che specie e Classificazione siano coerenti.</div>
+<div id="erbSpeciesClassSync" class="species-class-sync" style="display:none"></div>
 </div>
 
 <div class="check-riga" style="margin-top:12px">
@@ -2021,23 +2022,6 @@ function ebxEl(id){ return document.getElementById(id); }
 </div>
 
 
-<details class="erb-transfer-meta">
-  <summary>Dati facoltativi per Il Mio Elfo Domestico</summary>
-  <div class="nota-regole">Non modificano i dadi: servono soltanto a preparare una scheda ordinata da riportare nella <b>Serra</b>.</div>
-  <div class="riga">
-    <div class="campo"><label>Nome della Pianta</label><input type="text" id="nomePiantaGuida" data-key="nomePiantaGuida" maxlength="120" placeholder="Es. Mandragola"></div>
-    <div class="campo"><label>Data / riferimento temporale</label><input type="text" id="dataPiantaGuida" data-key="dataPiantaGuida" maxlength="80" placeholder="Es. Agosto 2026"></div>
-  </div>
-  <div class="riga">
-    <div class="campo"><label>Link principale della role</label><input type="text" id="linkPiantaGuida" data-key="linkPiantaGuida" maxlength="500" placeholder="https://..."></div>
-    <div class="campo"><label>Link Classificazione</label><input type="text" id="linkClassificazioneErbGuida" data-key="linkClassificazioneErbGuida" maxlength="500" placeholder="https://..."></div>
-    <div class="campo"><label>Link Specie</label><input type="text" id="linkSpecieErbGuida" data-key="linkSpecieErbGuida" maxlength="500" placeholder="https://..."></div>
-  </div>
-  <div class="riga">
-    <div class="campo"><label>Link Fase Vitale</label><input type="text" id="linkFaseErbGuida" data-key="linkFaseErbGuida" maxlength="500" placeholder="https://..."></div>
-    <div class="campo"><label>Parenti / origine</label><input type="text" id="parentiPiantaGuida" data-key="parentiPiantaGuida" value="//" maxlength="200"></div>
-  </div>
-</details>
 
 <div class="barra-tab">
   <button class="tab-bottone attivo" id="tabRiconoscimento">Riconoscimento</button>
@@ -2431,11 +2415,34 @@ function ebxEl(id){ return document.getElementById(id); }
 
 <div class="pannello" id="pannelloRiepilogo">
   <h2>Riepilogo della Guida</h2>
-  <div class="nota-regole erb-summary-intro">Stato della Pianta, esiti, Fatica, malus ancora attivi, Oggetti/Conoscenze utilizzati e dati da riportare nella Serra.</div>
+  <div class="nota-regole erb-summary-intro">Stato della Pianta, esiti, Fatica, malus ancora attivi e dati da riportare nella Serra. I campi facoltativi per Il Mio Elfo Domestico sono raccolti qui, alla fine della Guida.</div>
   <div class="erb-summary-section"><h3>Pianta</h3><div class="erb-guide-summary-grid" id="erbGuidePlantSummary"></div></div>
   <div class="erb-summary-section"><h3>Esiti delle fasi</h3><div id="erbGuidePhaseSummary"></div></div>
   <div class="erb-summary-section"><h3>Malus, conseguenze e promemoria</h3><div id="erbGuideMalusSummary"></div></div>
   <div class="erb-summary-section" id="riepilogoSessioneErbologia"><h3>Oggetti, Conoscenze, Incantesimi e Fatica</h3><div class="info-bonus" id="riepilogoFaticaErbologia"></div><div id="riepilogoEffettiErbologia"></div><div class="erb-bagaglio-update" id="erbBagaglioUpdateSummary"></div><div id="erbIllegalProtectionSummary"></div></div>
+  <details class="erb-transfer-meta">
+    <summary>Dati facoltativi per Il Mio Elfo Domestico</summary>
+    <div class="nota-regole">Non modificano i dadi: servono soltanto a preparare la scheda da riportare nella <b>Serra</b>. Il tipo di ciclo, l’esito e i post finali vengono letti automaticamente dalla Coltivazione/Riproduzione appena conclusa.</div>
+    <div class="riga">
+      <div class="campo"><label>Nome della Pianta</label><input type="text" id="nomePiantaGuida" data-key="nomePiantaGuida" maxlength="120" placeholder="Es. Mandragola"></div>
+      <div class="campo"><label>Data / riferimento temporale</label><input type="text" id="dataPiantaGuida" data-key="dataPiantaGuida" maxlength="80" placeholder="Es. Agosto 2026"></div>
+    </div>
+    <div class="riga">
+      <div class="campo"><label>Link principale della role</label><input type="text" id="linkPiantaGuida" data-key="linkPiantaGuida" maxlength="500" placeholder="https://..."></div>
+      <div class="campo"><label>Link Classificazione</label><input type="text" id="linkClassificazioneErbGuida" data-key="linkClassificazioneErbGuida" maxlength="500" placeholder="https://..."></div>
+      <div class="campo"><label>Link Specie</label><input type="text" id="linkSpecieErbGuida" data-key="linkSpecieErbGuida" maxlength="500" placeholder="https://..."></div>
+    </div>
+    <div class="riga">
+      <div class="campo"><label>Link Fase Vitale</label><input type="text" id="linkFaseErbGuida" data-key="linkFaseErbGuida" maxlength="500" placeholder="https://..."></div>
+      <div class="campo"><label>Parenti / origine</label><input type="text" id="parentiPiantaGuida" data-key="parentiPiantaGuida" value="//" maxlength="200"></div>
+    </div>
+  
+    <div class="riga">
+      <div class="campo"><label>Tipo di ciclo</label><input type="text" id="erbElfoTipoCiclo" readonly value="—"></div>
+      <div class="campo"><label>Esito Coltivazione</label><input type="text" id="erbElfoEsitoCiclo" readonly value="—"></div>
+      <div class="campo"><label>Post necessari per il ciclo</label><input type="text" id="erbElfoPostCiclo" readonly value="—"></div>
+    </div>
+  </details>
   <div class="erb-summary-section erb-elfo-transfer"><h3>Dati pronti per Il Mio Elfo Domestico</h3><div class="nota-regole" id="erbElfoReadyNote"></div><div class="research-bbcode" id="erbElfoTransferText"></div><div class="erb-transfer-actions"><button type="button" class="copy-btn" data-copy-source="erbElfoTransferText">Copia dati per la Serra</button></div></div>
   <div class="erb-phase-footer-nav erb-summary-footer" data-current-phase="Riepilogo"><button type="button" class="bottone-azione erb-nav-prev" data-erb-go="Coltivazione">← Torna a Coltivazione</button><span></span></div>
   <div class="piede-nota"><button class="bottone-azione bottone-pericolo" id="bottoneReset">Azzera tutti i dati</button></div>
@@ -5579,8 +5586,16 @@ function erbRenderGuideSummary(){
   erbV38Bagaglio();erbV38RenderProtectionSummary();
 
   var name=erbV38Val('nomePiantaGuida'),species=erbV38Val('speciePiantaGuida'),data=erbV38Val('dataPiantaGuida'),link=erbV38Val('linkPiantaGuida'),cl=erbV38Val('linkClassificazioneErbGuida'),sl=erbV38Val('linkSpecieErbGuida'),fl=erbV38Val('linkFaseErbGuida'),par=erbV38Val('parentiPiantaGuida')||'//';
-  var notes=['Interazione: '+(erbV38Text('tagInterazione')||'—'),'Trattamento: Esportazione '+(erbV38Text('tagEsportazione')||'—')+'; Collocazione '+(erbV38Text('tagCollocazione')||'—'),'Coltivazione: '+(erbV38Text('tagColtivazione')||'—'),'Ciclo: '+cycleLabel+'; '+post.text];if(mal.length)notes.push('Promemoria: '+mal.join(' | '));
-  var transfer=['DESTINAZIONE: Serra','Nome: '+(name||'— da compilare —'),'Data / riferimento: '+(data||'—'),'Link principale: '+(link||'—'),'Classificazione: '+pg.classificazione,'Link Classificazione: '+(cl||'—'),'Specie: '+(species||'— da compilare —'),'Link Specie: '+(sl||'—'),'Parenti / origine: '+par,'Fase attuale: '+erbV38PhaseLabel(erbV38Val('faseColtivazione')||erbV38Val('faseInterazione')),'Link Fase: '+(fl||'—'),'Note: '+notes.join(' · ')].join('\n');
+  var cycleTypeValue=(erbV38El('tipoCicloColtivazione')||{}).value||'ingredienti';
+  var cycleTypeLabel=cycleTypeValue==='semi'?'Riproduzione di Semi':'Produzione di Ingredienti';
+  var cycleOutcome=erbV38Text('tagColtivazione')||'—';
+  var cyclePostText=erbV38Text('riepilogoPostColtivazione');
+  var cyclePostMatch=cyclePostText.match(/(\d+)\s+post\s+finali/i);
+  var cyclePosts=cyclePostMatch?cyclePostMatch[1]:(cycleOutcome==='Riuscita 0%'?'Ciclo fallito':'—');
+  var ec1=erbV38El('erbElfoTipoCiclo'),ec2=erbV38El('erbElfoEsitoCiclo'),ec3=erbV38El('erbElfoPostCiclo');
+  if(ec1)ec1.value=cycleTypeLabel;if(ec2)ec2.value=cycleOutcome;if(ec3)ec3.value=cyclePosts;
+  var notes=['Interazione: '+(erbV38Text('tagInterazione')||'—'),'Trattamento: Esportazione '+(erbV38Text('tagEsportazione')||'—')+'; Collocazione '+(erbV38Text('tagCollocazione')||'—'),'Coltivazione: '+cycleOutcome,'Ciclo: '+cycleLabel+'; '+post.text];if(mal.length)notes.push('Promemoria: '+mal.join(' | '));
+  var transfer=['DESTINAZIONE: Serra','Nome: '+(name||'— da compilare —'),'Data / riferimento: '+(data||'—'),'Link principale: '+(link||'—'),'Classificazione: '+pg.classificazione,'Link Classificazione: '+(cl||'—'),'Specie: '+(species||'— da compilare —'),'Link Specie: '+(sl||'—'),'Parenti / origine: '+par,'Fase attuale: '+erbV38PhaseLabel(erbV38Val('faseColtivazione')||erbV38Val('faseInterazione')),'Link Fase: '+(fl||'—'),'Tipo ciclo: '+cycleTypeLabel,'Esito Coltivazione: '+cycleOutcome,'Post richiesti ciclo: '+cyclePosts,'Note: '+notes.join(' · ')].join('\n');
   var th=erbV38El('erbElfoTransferText');if(th)th.textContent=transfer;var ready=erbV38El('erbElfoReadyNote');if(ready){var miss=[];if(!name)miss.push('Nome');if(!species)miss.push('Specie');ready.innerHTML=miss.length?'<b>Dati ancora da completare:</b> '+rpEsc(miss.join(', '))+'.':'<b>Dati principali completi.</b> Controlla gli esiti prima di trasferire la Pianta nella Serra.';}
 }
 
@@ -6337,6 +6352,15 @@ function phaseLabel(v){
 }
 function render(message,kind){
   var h=E('erbSpeciesClassSync');if(!h)return;
+  /* v77: la riga verde "Specie/Classificazione coerenti" è ridondante.
+     Manteniamo visibili soltanto avvisi reali o correzioni automatiche. */
+  if(kind==='ok'||!message){
+    h.style.display='none';
+    h.className='species-class-sync';
+    h.innerHTML='';
+    return;
+  }
+  h.style.display='block';
   h.className='species-class-sync'+(kind?' '+kind:'');
   h.innerHTML=message;
 }
