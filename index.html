@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Erbologia - Strumenti Interattivi</title>
-<!-- v75: Importa nella Guida spostato nella pagina Esito -->
+<!-- v76: vera tendina catalogo sempre apribile anche con specie già importata -->
 <!-- v53: apertura Ricerca immediata + aggancio Firebase del PG durante la compilazione -->
 <style>
 /* v38 allineata alla Magizoologia - Quote BBCode esplicativi estesi anche alla Guida all'Erbologia: soglie, esiti semantici e formule senza enumerazioni aritmetiche ridondanti. */
@@ -1718,6 +1718,27 @@ function ebxEl(id){ return document.getElementById(id); }
 }
 </style>
 
+
+<style id="v76-real-species-select">
+#modoErbologia .species-catalog-select{
+  width:100%!important;
+  min-height:40px!important;
+  margin-top:8px!important;
+  padding:8px 11px!important;
+  border:1px solid #c9853f!important;
+  border-radius:7px!important;
+  background:#fff6eb!important;
+  color:#4b2b18!important;
+  font-weight:800!important;
+  cursor:pointer!important;
+}
+#modoErbologia .species-catalog-select:focus{
+  outline:none!important;
+  border-color:#e49a4e!important;
+  box-shadow:0 0 0 2px rgba(228,154,78,.18)!important;
+}
+</style>
+
 </head>
 <body>
 <div class="contenitore">
@@ -1864,7 +1885,10 @@ function ebxEl(id){ return document.getElementById(id); }
 <div class="riga">
   <div class="campo" style="flex:2 1 320px">
     <label>Pianta che stai gestendo</label>
-    <input type="text" id="speciePiantaGuida" data-key="speciePiantaGuida" maxlength="120" placeholder="Cerca o seleziona una Pianta" list="erbSpeciesCatalog" autocomplete="off">
+    <input type="text" id="speciePiantaGuida" data-key="speciePiantaGuida" maxlength="120" placeholder="Scrivi una Pianta oppure usa la tendina qui sotto" autocomplete="off">
+    <select id="erbSpeciesCatalogSelect" class="species-catalog-select" aria-label="Cambia Pianta dal catalogo">
+      <option value="">▼ Cambia Pianta dal catalogo</option>
+    </select>
     <datalist id="erbSpeciesCatalog">
       <option value="Aconito"></option>
       <option value="Agrifoglio"></option>
@@ -1950,7 +1974,7 @@ function ebxEl(id){ return document.getElementById(id); }
       <option value="Vischio"></option>
       <option value="Zenzero"></option>
     </datalist>
-    <div class="numeric-note">Se arrivi dalla Ricerca viene compilata automaticamente. Altrimenti cerca o seleziona una Pianta dall’elenco; puoi comunque digitare manualmente una specie non presente.</div>
+    <div class="numeric-note">Se arrivi dalla Ricerca viene compilata automaticamente. Per cambiarla usa la tendina qui sopra: mostra sempre tutto il catalogo, senza dover cancellare la Pianta già scritta. Il campo di testo resta disponibile per specie non presenti.</div>
   </div>
   <div class="campo" id="campoVotoStudente">
     <label>Voto nella singola Pianta</label>
@@ -6364,7 +6388,7 @@ setTimeout(sync,0);
 </script>
 
 
-<script id="erbologia-v71-species-picker">
+<script id="erbologia-v76-species-picker">
 (function(){
 'use strict';
 function E(id){return document.getElementById(id);}
@@ -6373,27 +6397,57 @@ function norm(v){
   try{v=v.normalize('NFD').replace(/[\u0300-\u036f]/g,'');}catch(e){}
   return v.toLowerCase().replace(/[’‘]/g,"'").replace(/\s+/g,' ').trim();
 }
-var input=E('speciePiantaGuida'),nameField=E('nomePiantaGuida');
+var input=E('speciePiantaGuida'),
+    nameField=E('nomePiantaGuida'),
+    list=E('erbSpeciesCatalog'),
+    select=E('erbSpeciesCatalogSelect');
 if(!input)return;
 
-var canonical={};
-var list=E('erbSpeciesCatalog');
+var canonical={}, ordered=[];
 if(list){
-  Array.prototype.forEach.call(list.options,function(o){canonical[norm(o.value)]=o.value;});
+  Array.prototype.forEach.call(list.options,function(o){
+    var v=String(o.value||'').trim();
+    if(!v)return;
+    var k=norm(v);
+    if(!canonical[k]){
+      canonical[k]=v;
+      ordered.push(v);
+    }
+  });
 }
+ordered.sort(function(a,b){return a.localeCompare(b,'it',{sensitivity:'base'});});
+
+if(select){
+  ordered.forEach(function(v){
+    var o=document.createElement('option');
+    o.value=v;
+    o.textContent=v;
+    select.appendChild(o);
+  });
+}
+
 var lastCommitted=norm(input.value);
 
-function commitFromCatalog(){
-  var key=norm(input.value),canon=canonical[key];
-  if(!canon || key===lastCommitted)return;
+function syncSelect(){
+  if(!select)return;
+  var key=norm(input.value), canon=canonical[key];
+  select.value=canon||'';
+}
 
-  var old=input.dataset.v71PreviousSpecies || '';
-  input.dataset.v71PreviousSpecies=canon;
-  lastCommitted=key;
+function commitSpecies(canon,oldValue){
+  if(!canon)return;
+  var key=norm(canon);
+  if(key===norm(input.value) && key===lastCommitted){
+    syncSelect();
+    return;
+  }
 
+  var old=String(oldValue!=null?oldValue:input.value).trim();
+  input.dataset.v76PreviousSpecies=old;
   input.dataset.researchEncounter='';
   input.dataset.researchClass='';
   input.value=canon;
+  lastCommitted=key;
 
   if(nameField && (
     nameField.dataset.autoSpeciesName==='1' ||
@@ -6405,25 +6459,49 @@ function commitFromCatalog(){
     try{nameField.dispatchEvent(new Event('change',{bubbles:true}));}catch(e){}
   }
 
+  /* Richiama i gestori preesistenti: voto/esiti, classificazione,
+     ostilità automatica e ricalcolo. */
   try{input.dispatchEvent(new Event('change',{bubbles:true}));}catch(e){}
+  syncSelect();
 
   var status=E('erbSpeciesClassSync');
   if(status){
     setTimeout(function(){
-      var extra='<br><span style="font-weight:400">Aggiornati automaticamente i dati deducibili dalla specie; voto ed esiti della Pianta precedente sono stati azzerati.</span>';
-      if(status.innerHTML.indexOf('Aggiornati automaticamente')<0)status.innerHTML+=extra;
+      var extra='<br><span style="font-weight:400">Pianta cambiata dal catalogo: aggiornati i dati deducibili e azzerati voto/esiti della Pianta precedente.</span>';
+      if(status.innerHTML.indexOf('Pianta cambiata dal catalogo')<0)status.innerHTML+=extra;
     },0);
   }
 }
+
+if(select){
+  select.addEventListener('change',function(){
+    if(!select.value)return;
+    var old=input.value;
+    commitSpecies(select.value,old);
+  });
+}
+
+input.addEventListener('input',function(){
+  var key=norm(input.value),canon=canonical[key];
+  if(canon && key!==lastCommitted){
+    commitSpecies(canon,input.dataset.v76PreviousSpecies||'');
+  }else{
+    syncSelect();
+  }
+});
+
 input.addEventListener('focus',function(){
-  input.dataset.v71PreviousSpecies=input.value.trim();
+  input.dataset.v76PreviousSpecies=input.value.trim();
 });
-input.addEventListener('input',commitFromCatalog);
+
 input.addEventListener('change',function(){
-  var key=norm(input.value);
-  if(canonical[key])input.value=canonical[key];
+  var key=norm(input.value),canon=canonical[key];
+  if(canon)input.value=canon;
   lastCommitted=norm(input.value);
+  syncSelect();
 });
+
+setTimeout(syncSelect,0);
 })();
 </script>
 
