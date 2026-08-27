@@ -6733,5 +6733,104 @@ input.addEventListener('keydown',function(ev){if(ev.key==='ArrowDown'){ev.preven
 document.addEventListener('mousedown',function(ev){if(!wrap.contains(ev.target))close();});
 })();
 </script>
+
+
+<!-- v81: allineamento finale con Magizoologia — esiti verdi/rossi e promemoria ostilità solo per specie Sempre/Mai ostili -->
+<style id="erbologia-v81-alignment-fixes">
+/* Come in Magizoologia: non mostrare un promemoria permanente quando la Pianta segue la procedura normale. */
+#modoErbologia #erbAutoHostility.auto-neutral{display:none!important;}
+
+/* Stato visivo delle fasi e degli Incontri: verde = riuscita/trovata, rosso = fallimento. */
+#modoErbologia .tab-bottone[data-result-state="ok"],
+#modoRicerca .flow-page-btn[data-result-state="ok"]{
+  background:#3f6f36!important;
+  border-color:#79a866!important;
+  color:#f3f9ef!important;
+}
+#modoErbologia .tab-bottone[data-result-state="ok"].attivo,
+#modoRicerca .flow-page-btn[data-result-state="ok"].active{
+  background:#4f8144!important;
+  border-color:#9bc183!important;
+  color:#fff!important;
+}
+#modoErbologia .tab-bottone[data-result-state="fail"],
+#modoRicerca .flow-page-btn[data-result-state="fail"]{
+  background:#7a2d27!important;
+  border-color:#bd675d!important;
+  color:#fff1ed!important;
+}
+#modoErbologia .tab-bottone[data-result-state="fail"].attivo,
+#modoRicerca .flow-page-btn[data-result-state="fail"].active{
+  background:#91362f!important;
+  border-color:#d77b70!important;
+  color:#fff!important;
+}
+</style>
+<script id="erbologia-v81-outcome-buttons">
+(function(){
+'use strict';
+function E(id){return document.getElementById(id);}
+function visible(el){
+  if(!el)return false;
+  if(el.hidden)return false;
+  if(el.style&&el.style.display==='none')return false;
+  try{return window.getComputedStyle(el).display!=='none';}catch(e){return true;}
+}
+function tagState(id){
+  var e=E(id);if(!e||!visible(e))return '';
+  if(e.classList.contains('out-fail'))return 'fail';
+  if(e.classList.contains('out-ok'))return 'ok';
+  return '';
+}
+function setState(el,state){
+  if(!el)return;
+  if(state)el.setAttribute('data-result-state',state);
+  else el.removeAttribute('data-result-state');
+}
+function combine(ids,requireAll){
+  var states=[];
+  (ids||[]).forEach(function(id){var s=tagState(id);if(s)states.push(s);});
+  if(states.indexOf('fail')>=0)return 'fail';
+  if(!states.length)return '';
+  if(requireAll){
+    var expected=0;(ids||[]).forEach(function(id){var e=E(id);if(e&&visible(e))expected++;});
+    return expected>0&&states.length===expected&&states.every(function(s){return s==='ok';})?'ok':'';
+  }
+  return states.indexOf('ok')>=0?'ok':'';
+}
+function interactionState(){
+  var normal=tagState('tagInterazione');
+  var paxBox=E('ebxPaxActive'),pax=visible(paxBox)?tagState('tagPax'):'';
+  if(normal==='fail'||pax==='fail')return 'fail';
+  if(normal==='ok'||pax==='ok')return 'ok';
+  return '';
+}
+window.erbPaintOutcomeButtons=function(){
+  setState(E('tabRiconoscimento'),tagState('tagRiconoscimento'));
+  setState(E('tabInterazione'),interactionState());
+  setState(E('tabTrattamento'),combine(['tagEsportazione','tagCollocazione'],true));
+  setState(E('tabColtivazione'),combine(['tagColtivazione','tagIllegaleColtivazione'],false));
+  [1,2,3].forEach(function(n){
+    var b=document.querySelector('#rp-flow-nav [data-rp-page="enc'+n+'"]');
+    setState(b,tagState('tagTrova'+n));
+  });
+};
+function refresh(){if(window.erbPaintOutcomeButtons)window.erbPaintOutcomeButtons();}
+var oldGuide=window.ricalcolaErbologia;
+if(typeof oldGuide==='function'&&!oldGuide.__v81OutcomePaint){
+  var wrappedGuide=function(){var out=oldGuide.apply(this,arguments);setTimeout(refresh,0);return out;};
+  wrappedGuide.__v81OutcomePaint=true;window.ricalcolaErbologia=wrappedGuide;
+}
+var oldResearch=window.ricalcolaRicerca;
+if(typeof oldResearch==='function'&&!oldResearch.__v81OutcomePaint){
+  var wrappedResearch=function(){var out=oldResearch.apply(this,arguments);setTimeout(refresh,0);return out;};
+  wrappedResearch.__v81OutcomePaint=true;window.ricalcolaRicerca=wrappedResearch;
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(refresh,0);});else setTimeout(refresh,0);
+document.addEventListener('input',function(e){if(e.target&&e.target.matches&&e.target.matches('input[type="number"],input[type="checkbox"],select'))setTimeout(refresh,0);},true);
+document.addEventListener('change',function(){setTimeout(refresh,0);},true);
+})();
+</script>
+
 </body>
 </html>
