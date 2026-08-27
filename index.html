@@ -6529,5 +6529,169 @@ setTimeout(syncSelect,0);
 })();
 </script>
 
+
+
+<!-- v78: bonus compatti ripristinati sul modello precedente — catalogo essenziale, resolver solo quando serve, dado secondario copiabile + risultato -->
+<style id="erbologia-v78-bonus-compatti">
+/* Bonus catalogati: niente più griglia tecnica. I dati restano nel DOM per i calcoli,
+   ma il player vede soltanto nome, effetto/stato e gli eventuali dadi necessari. */
+#modoErbologia .erb-bonus-box > .erb-knowledge-tool{display:none!important;}
+#modoErbologia .erb-knowledge-resolver .erb-knowledge-tool{display:block!important;}
+#modoRicerca .erb-search-knowledge-tool{display:none!important;}
+#modoRicerca .ebx-search-resolver .erb-knowledge-tool{display:block!important;}
+
+#modoErbologia .erb-bonus-box .ebx-picker{
+  display:flex!important;flex-wrap:wrap!important;align-items:center!important;gap:8px!important;margin:10px 0 8px!important;
+}
+#modoErbologia .erb-bonus-box .ebx-picker > *{margin:0!important;}
+#modoErbologia .erb-compact-add{
+  margin:0!important;padding:8px 12px!important;border-radius:6px!important;
+}
+#modoErbologia .erb-bonus-choice-row{
+  flex:1 1 100%;display:grid;grid-template-columns:minmax(0,1fr) 40px;gap:8px;align-items:end;
+  margin:8px 0;padding:9px 10px;border:1px solid #88af63;border-radius:7px;background:#2d4822;
+}
+#modoErbologia .erb-bonus-choice-row label{display:block;margin:0 0 4px;color:#eff7e7;font-size:.74em;}
+#modoErbologia .erb-bonus-choice-row select{width:100%;height:36px;box-sizing:border-box;background:#172811;color:#f7fbf4;border:1px solid #6f9553;border-radius:5px;padding:5px 7px;font-family:inherit;}
+#modoErbologia .erb-bonus-choice-row button{width:40px;height:36px;margin:0;padding:0;border:1px solid #9b7352;border-radius:5px;background:transparent;color:#f0d7b5;font-size:18px;cursor:pointer;}
+
+#modoErbologia .erb-bonus-row[data-ebx-preset]{
+  display:grid!important;grid-template-columns:minmax(0,1fr) 42px!important;gap:8px!important;
+  align-items:start!important;padding:9px 10px!important;margin:7px 0!important;
+}
+#modoErbologia .erb-bonus-row[data-ebx-preset] > .erb-mini{display:none!important;}
+#modoErbologia .erb-bonus-row[data-ebx-preset] > .erb-remove{
+  display:block!important;grid-column:2!important;grid-row:1!important;width:42px!important;height:36px!important;margin:0!important;padding:0!important;
+}
+#modoErbologia .erb-bonus-compact-summary{
+  grid-column:1!important;grid-row:1!important;display:flex;flex-direction:column;gap:3px;
+  min-height:36px;padding:7px 10px;border:1px solid #6f9553;border-radius:6px;background:#203719;color:#f1f8ea;line-height:1.35;font-size:.84em;
+}
+#modoErbologia .erb-bonus-compact-summary b{color:#d7e9bd;font-size:.98em;}
+#modoErbologia .erb-bonus-compact-summary span{color:#eef7e7;}
+#modoErbologia .erb-bonus-compact-summary .erb-compact-state{opacity:.82;font-size:.92em;}
+#modoErbologia .erb-bonus-row[data-ebx-preset] > .erb-knowledge-resolver,
+#modoErbologia .erb-bonus-row[data-ebx-preset] > .erb-bonus-share{grid-column:1 / -1!important;}
+#modoErbologia .erb-bonus-share{padding-top:4px!important;margin-top:0!important;border-top:0!important;}
+#modoErbologia .erb-bonus-share-status{display:none!important;}
+#modoErbologia .erb-bonus-share button{padding:6px 9px!important;font-size:.76em!important;}
+
+/* Resolver: piccolo e visibile solo per Conoscenze/Incantesimi che ne hanno davvero bisogno. */
+#modoErbologia .erb-knowledge-resolver,
+#modoRicerca .ebx-search-resolver{padding:9px 10px!important;margin-top:2px!important;}
+#modoErbologia .erb-knowledge-resolver .erb-knowledge-tool,
+#modoRicerca .ebx-search-resolver .erb-knowledge-tool{margin:0 0 9px!important;padding:8px 10px!important;}
+#modoErbologia .erb-knowledge-resolver .erb-knowledge-tool a,
+#modoRicerca .ebx-search-resolver .erb-knowledge-tool a{margin-top:4px!important;padding:5px 9px!important;text-decoration:none!important;border-radius:5px!important;}
+#modoErbologia .erb-secondary-roll,
+#modoRicerca .erb-secondary-roll{padding:8px 9px!important;}
+#modoErbologia .erb-secondary-roll .result-line,
+#modoRicerca .erb-secondary-roll .result-line{margin:5px 0!important;}
+#modoErbologia .erb-resolver-outcome,
+#modoRicerca .erb-resolver-outcome{margin-top:7px!important;padding:7px 9px!important;}
+
+/* Inserimento manuale: è l'unico caso in cui restano visibili i campi tecnici. */
+#modoErbologia .erb-bonus-row.erb-manual-compact{padding:10px!important;}
+#modoErbologia .erb-bonus-row.erb-manual-compact::before{
+  content:'Inserimento manuale / eccezione';grid-column:1 / -1;color:#d7e4a4;font-weight:700;font-size:.84em;margin-bottom:2px;
+}
+
+@media(max-width:650px){
+  #modoErbologia .erb-bonus-choice-row{grid-template-columns:1fr;}
+  #modoErbologia .erb-bonus-choice-row button{width:100%;}
+  #modoErbologia .erb-bonus-row[data-ebx-preset]{grid-template-columns:1fr 40px!important;}
+}
+</style>
+<script id="erbologia-v78-bonus-compatti-js">
+(function(){
+'use strict';
+function E(id){return document.getElementById(id);}
+function num(el){var n=Number(el&&el.value);return Number.isFinite(n)?n:0;}
+function signed(n){return n>0?'+'+n:String(n);}
+function effectLabel(row,p){
+  if(p&&p.resolver&&row.dataset.resolverReady!=='1')return 'Effetto da determinare con la riuscita';
+  var type=(row.querySelector('.erb-type')||{}).value||(p&&p.type)||'possibilita';
+  var value=num(row.querySelector('.erb-value'));
+  if(type==='parametro')return signed(value)+' Empatia';
+  return signed(value)+' possibilità';
+}
+function ensureSummary(row){
+  if(!row||!row.getAttribute('data-ebx-preset'))return;
+  var key=row.getAttribute('data-ebx-preset')||'',p=window.EBX_PHASE_PRESETS&&EBX_PHASE_PRESETS[key];
+  if(!p)return;
+  var s=row.querySelector('.erb-bonus-compact-summary');
+  if(!s){s=document.createElement('div');s.className='erb-bonus-compact-summary';row.insertBefore(s,row.firstChild);}
+  var bits=[effectLabel(row,p)];
+  var fat=num(row.querySelector('.erb-fatigue'));if(fat>0)bits.push('Fatica -'+String(fat).replace('.',','));
+  if(p.total!=null){
+    var used=0;
+    document.querySelectorAll('#modoErbologia .erb-bonus-row[data-ebx-preset="'+key+'"] .erb-uses-used').forEach(function(u){used+=Math.max(0,Math.floor(num(u)));});
+    used=Math.min(Number(p.total),used);
+    bits.push(used+'/'+p.total+' usi · '+Math.max(0,Number(p.total)-used)+' rimasti');
+  }
+  var state=(row.querySelector('.erb-auto-state')||{}).textContent||'';
+  s.innerHTML='<b>'+String(p.label||p.source||'Bonus').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</b><span>'+bits.join(' · ')+'</span>'+(state?'<span class="erb-compact-state">'+String(state).replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</span>':'');
+}
+function refreshAll(){document.querySelectorAll('#modoErbologia .erb-bonus-row[data-ebx-preset]').forEach(ensureSummary);}
+
+/* Mantiene la logica preesistente; aggiunge soltanto il riepilogo compatto alla riga appena creata. */
+if(typeof window.ebxAddPhasePreset==='function'){
+  var oldAdd=window.ebxAddPhasePreset;
+  window.ebxAddPhasePreset=function(phase,key){
+    var host=E((window.ERB_PHASE_CONTAINERS||{})[phase]||''),before=host?host.children.length:0;
+    var out=oldAdd.apply(this,arguments);
+    if(host){var row=host.children[before];if(row)ensureSummary(row);}
+    refreshAll();return out;
+  };
+}
+if(typeof window.erbAddBonus==='function'){
+  var oldManual=window.erbAddBonus;
+  window.erbAddBonus=function(phase){
+    var host=E(phase==='generale'?'bonusGeneraliRows':((window.ERB_PHASE_CONTAINERS||{})[phase]||'')),before=host?host.children.length:0;
+    var out=oldManual.apply(this,arguments);
+    if(host&&phase!=='generale'){var row=host.children[before];if(row)row.classList.add('erb-manual-compact');}
+    return out;
+  };
+}
+if(typeof window.ricalcolaErbologia==='function'){
+  var oldRecalc=window.ricalcolaErbologia;
+  window.ricalcolaErbologia=function(){var out=oldRecalc.apply(this,arguments);refreshAll();return out;};
+}
+
+function addChoice(picker,phase){
+  if(picker.querySelector('.erb-bonus-choice-row'))return;
+  var row=document.createElement('div');row.className='erb-bonus-choice-row';
+  row.innerHTML='<div><label>Oggetto / Conoscenza / Tecnica / Incantesimo</label><select><option value="">— Seleziona —</option></select></div><button type="button" title="Annulla" aria-label="Annulla">×</button>';
+  var sel=row.querySelector('select');
+  if(typeof window.ebxPopulatePhaseSelect==='function')ebxPopulatePhaseSelect(sel,phase);
+  var manual=document.createElement('option');manual.value='__manual__';manual.textContent='Inserimento manuale / altro bonus';sel.appendChild(manual);
+  picker.appendChild(row);
+  row.querySelector('button').addEventListener('click',function(){row.remove();});
+  sel.addEventListener('change',function(){
+    var key=sel.value;if(!key)return;
+    if(key==='__manual__'){if(typeof window.erbAddBonus==='function')erbAddBonus(phase);}
+    else if(typeof window.ebxAddPhasePreset==='function')ebxAddPhasePreset(phase,key);
+    row.remove();refreshAll();
+  });
+  sel.focus();
+}
+function installAdders(){
+  document.querySelectorAll('#modoErbologia .erb-bonus-box .ebx-picker').forEach(function(picker){
+    if(picker.dataset.compactBonus==='1')return;
+    var oldSel=picker.querySelector('select[data-ebx-preset-phase]');if(!oldSel)return;
+    var phase=oldSel.getAttribute('data-ebx-preset-phase');if(!phase)return;
+    picker.dataset.compactBonus='1';picker.innerHTML='<button type="button" class="bottone-azione bottone-secondario erb-compact-add">+ Aggiungi bonus</button>';
+    picker.querySelector('button').addEventListener('click',function(){addChoice(picker,phase);});
+  });
+}
+function init(){installAdders();refreshAll();
+  document.addEventListener('input',function(e){if(e.target&&e.target.closest&&e.target.closest('#modoErbologia .erb-bonus-row'))setTimeout(refreshAll,0);},true);
+  document.addEventListener('change',function(e){if(e.target&&e.target.closest&&e.target.closest('#modoErbologia .erb-bonus-row'))setTimeout(refreshAll,0);},true);
+  document.addEventListener('click',function(e){if(e.target&&e.target.closest&&e.target.closest('#modoErbologia .erb-bonus-row'))setTimeout(refreshAll,0);},true);
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,0);});else setTimeout(init,0);
+})();
+</script>
+
 </body>
 </html>
