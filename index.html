@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Erbologia - Strumenti Interattivi</title>
+<!-- v79: specie in un unico campo scrivibile con tendina catalogo; correzione automatica Classificazione senza falso avviso di errore -->
 <!-- v77: dati Elfo spostati nel Riepilogo finale + post del ciclo; riga verde specie/classificazione rimossa -->
 <!-- v76: vera tendina catalogo sempre apribile anche con specie già importata -->
 <!-- v53: apertura Ricerca immediata + aggancio Firebase del PG durante la compilazione -->
@@ -1720,23 +1721,25 @@ function ebxEl(id){ return document.getElementById(id); }
 </style>
 
 
-<style id="v76-real-species-select">
-#modoErbologia .species-catalog-select{
+<style id="v79-editable-species-combobox">
+#modoErbologia #speciePiantaGuida[list]{
   width:100%!important;
   min-height:40px!important;
-  margin-top:8px!important;
-  padding:8px 11px!important;
-  border:1px solid #c9853f!important;
+  padding:8px 34px 8px 11px!important;
+  background:#23351d!important;
+  color:#eff6e7!important;
+  border:1px solid #425d37!important;
   border-radius:7px!important;
-  background:#fff6eb!important;
-  color:#4b2b18!important;
-  font-weight:800!important;
-  cursor:pointer!important;
+  font-weight:700!important;
 }
-#modoErbologia .species-catalog-select:focus{
+#modoErbologia #speciePiantaGuida[list]:focus{
   outline:none!important;
-  border-color:#e49a4e!important;
-  box-shadow:0 0 0 2px rgba(228,154,78,.18)!important;
+  border-color:#6e9f45!important;
+  box-shadow:0 0 0 2px rgba(110,159,69,.18)!important;
+}
+#modoErbologia #speciePiantaGuida[list]::-webkit-calendar-picker-indicator{
+  opacity:1!important;
+  cursor:pointer!important;
 }
 </style>
 
@@ -1886,10 +1889,7 @@ function ebxEl(id){ return document.getElementById(id); }
 <div class="riga">
   <div class="campo" style="flex:2 1 320px">
     <label>Pianta che stai gestendo</label>
-    <input type="text" id="speciePiantaGuida" data-key="speciePiantaGuida" maxlength="120" placeholder="Scrivi una Pianta oppure usa la tendina qui sotto" autocomplete="off">
-    <select id="erbSpeciesCatalogSelect" class="species-catalog-select" aria-label="Cambia Pianta dal catalogo">
-      <option value="">▼ Cambia Pianta dal catalogo</option>
-    </select>
+    <input type="text" id="speciePiantaGuida" data-key="speciePiantaGuida" list="erbSpeciesCatalog" maxlength="120" placeholder="Scrivi o scegli una Pianta" autocomplete="off" role="combobox" aria-autocomplete="list" aria-controls="erbSpeciesCatalog">
     <datalist id="erbSpeciesCatalog">
       <option value="Aconito"></option>
       <option value="Agrifoglio"></option>
@@ -1975,7 +1975,7 @@ function ebxEl(id){ return document.getElementById(id); }
       <option value="Vischio"></option>
       <option value="Zenzero"></option>
     </datalist>
-    <div class="numeric-note">Se arrivi dalla Ricerca viene compilata automaticamente. Per cambiarla usa la tendina qui sopra: mostra sempre tutto il catalogo, senza dover cancellare la Pianta già scritta. Il campo di testo resta disponibile per specie non presenti.</div>
+    <div class="numeric-note">Puoi scrivere il nome oppure aprire la tendina dello stesso campo e scegliere dal catalogo. Le Piante non presenti nel catalogo possono essere inserite liberamente.</div>
   </div>
   <div class="campo" id="campoVotoStudente">
     <label>Voto nella singola Pianta</label>
@@ -6376,7 +6376,8 @@ function sync(source){
   if(cl.value!==info.cls){
     var old=cl.value;
     syncing=true;cl.value=info.cls;fire(cl);syncing=false;
-    render('<b>Classificazione corretta automaticamente:</b> '+name.replace(/[<>&]/g,'')+' è <b>'+info.cls+'</b>, non '+(old||'—')+'.','bad');
+    /* La correzione è già stata applicata: non mostrarla come errore. */
+    render('', 'ok');
   }else{
     var enc=sp.dataset.researchEncounter||'',extra='';
     if(enc){
@@ -6424,7 +6425,7 @@ function norm(v){
 var input=E('speciePiantaGuida'),
     nameField=E('nomePiantaGuida'),
     list=E('erbSpeciesCatalog'),
-    select=E('erbSpeciesCatalogSelect');
+    select=null; /* v79: il catalogo è il datalist del campo scrivibile */
 if(!input)return;
 
 var canonical={}, ordered=[];
@@ -6488,13 +6489,7 @@ function commitSpecies(canon,oldValue){
   try{input.dispatchEvent(new Event('change',{bubbles:true}));}catch(e){}
   syncSelect();
 
-  var status=E('erbSpeciesClassSync');
-  if(status){
-    setTimeout(function(){
-      var extra='<br><span style="font-weight:400">Pianta cambiata dal catalogo: aggiornati i dati deducibili e azzerati voto/esiti della Pianta precedente.</span>';
-      if(status.innerHTML.indexOf('Pianta cambiata dal catalogo')<0)status.innerHTML+=extra;
-    },0);
-  }
+  /* Nessun avviso persistente: il cambio catalogo aggiorna già automaticamente i dati dipendenti. */
 }
 
 if(select){
