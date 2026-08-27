@@ -6688,5 +6688,50 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
+
+<!-- v80: combobox specie custom — catalogo sempre apribile anche con valore già presente -->
+<style id="erbologia-v80-species-combobox">
+#modoErbologia .species-combobox-wrap{position:relative;display:flex;width:100%;min-width:0}
+#modoErbologia .species-combobox-wrap>input[type=text]{flex:1 1 auto;width:100%;padding-right:38px!important}
+#modoErbologia .species-combobox-toggle{position:absolute;right:1px;top:1px;bottom:1px;width:34px;border:0!important;border-left:1px solid #425d37!important;border-radius:0 4px 4px 0!important;background:#2d4822!important;color:#eff6e7!important;cursor:pointer;font:inherit;line-height:1;padding:0!important;margin:0!important;z-index:3}
+#modoErbologia .species-combobox-toggle:hover,#modoErbologia .species-combobox-toggle:focus{background:#3e6c2a!important}
+#modoErbologia .species-combobox-menu{display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:10020;max-height:280px;overflow:auto;background:#172811;border:1px solid #56733c;border-radius:6px;box-shadow:0 10px 24px rgba(0,0,0,.34);padding:4px}
+#modoErbologia .species-combobox-menu.open{display:block}
+#modoErbologia .species-combobox-option{display:block;width:100%;border:0;background:transparent;color:#eef7e7;text-align:left;padding:7px 9px;border-radius:4px;cursor:pointer;font:inherit;font-size:.9em}
+#modoErbologia .species-combobox-option:hover,#modoErbologia .species-combobox-option.active{background:#3e6c2a;color:#fff}
+#modoErbologia .species-combobox-empty{padding:8px 9px;color:#b9c99e;font-size:.84em;font-style:italic}
+</style>
+<script id="erbologia-v80-species-combobox-script">
+(function(){
+'use strict';
+var input=document.getElementById('speciePiantaGuida'), data=document.getElementById('erbSpeciesCatalog');
+if(!input||!data||input.dataset.customCombo==='1')return;
+input.dataset.customCombo='1';
+input.removeAttribute('list');
+var values=[];
+Array.prototype.forEach.call(data.options,function(o){var v=String(o.value||'').trim();if(v&&values.indexOf(v)<0)values.push(v);});
+values.sort(function(a,b){return a.localeCompare(b,'it',{sensitivity:'base'});});
+var parent=input.parentNode,wrap=document.createElement('div');wrap.className='species-combobox-wrap';
+parent.insertBefore(wrap,input);wrap.appendChild(input);
+var toggle=document.createElement('button');toggle.type='button';toggle.className='species-combobox-toggle';toggle.setAttribute('aria-label','Apri elenco Piante');toggle.setAttribute('title','Apri elenco Piante');toggle.textContent='▾';wrap.appendChild(toggle);
+var menu=document.createElement('div');menu.className='species-combobox-menu';menu.setAttribute('role','listbox');wrap.appendChild(menu);
+var active=-1, typing=false;
+function norm(s){s=String(s||'');try{s=s.normalize('NFD').replace(/[\u0300-\u036f]/g,'');}catch(e){}return s.toLowerCase().replace(/[’‘]/g,"'").trim();}
+function filtered(all){if(all)return values.slice();var q=norm(input.value);return !q?values.slice():values.filter(function(v){return norm(v).indexOf(q)!==-1;});}
+function render(all){var arr=filtered(!!all);menu.innerHTML='';active=-1;if(!arr.length){var e=document.createElement('div');e.className='species-combobox-empty';e.textContent='Nessuna Pianta trovata';menu.appendChild(e);return;}
+arr.forEach(function(v){var b=document.createElement('button');b.type='button';b.className='species-combobox-option';b.setAttribute('role','option');b.textContent=v;b.addEventListener('mousedown',function(ev){ev.preventDefault();choose(v);});menu.appendChild(b);});}
+function open(all){render(all);menu.classList.add('open');input.setAttribute('aria-expanded','true');}
+function close(){menu.classList.remove('open');input.setAttribute('aria-expanded','false');active=-1;}
+function choose(v){input.value=v;typing=false;try{input.dispatchEvent(new Event('input',{bubbles:true}));input.dispatchEvent(new Event('change',{bubbles:true}));}catch(e){}close();input.focus();}
+function options(){return Array.prototype.slice.call(menu.querySelectorAll('.species-combobox-option'));}
+function setActive(i){var opts=options();if(!opts.length)return;active=(i+opts.length)%opts.length;opts.forEach(function(o,k){o.classList.toggle('active',k===active);});opts[active].scrollIntoView({block:'nearest'});}
+input.addEventListener('focus',function(){typing=false;open(true);});
+input.addEventListener('click',function(){typing=false;open(true);});
+input.addEventListener('input',function(ev){if(!ev.isTrusted)return;typing=true;open(false);});
+toggle.addEventListener('click',function(ev){ev.preventDefault();ev.stopPropagation();if(menu.classList.contains('open'))close();else{typing=false;open(true);input.focus({preventScroll:true});}});
+input.addEventListener('keydown',function(ev){if(ev.key==='ArrowDown'){ev.preventDefault();if(!menu.classList.contains('open'))open(!typing);setActive(active+1);}else if(ev.key==='ArrowUp'){ev.preventDefault();if(!menu.classList.contains('open'))open(!typing);setActive(active-1);}else if(ev.key==='Enter'&&menu.classList.contains('open')){var opts=options();if(active>=0&&opts[active]){ev.preventDefault();choose(opts[active].textContent);}}else if(ev.key==='Escape'){close();}});
+document.addEventListener('mousedown',function(ev){if(!wrap.contains(ev.target))close();});
+})();
+</script>
 </body>
 </html>
