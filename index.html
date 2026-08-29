@@ -1,5 +1,13 @@
 <!DOCTYPE html>
+<!-- Erbologia tool v101 — importazione multi-esemplare: scelta esplicita dell’esemplare II/III Incontro, Fase Vitale e Salute preservate nella Guida -->
+<!-- Erbologia tool v100 — restore a due passaggi: cache tecniche azzerate prima di ricreare righe dinamiche; nessuna invalidazione durante il caricamento -->
+<!-- Erbologia tool v99 — restore Firebase protetto: i listener di cambio specie distinguono ripristino da modifica manuale -->
+<!-- Erbologia tool v98 — ripristino Firebase: reset delle sole cache tecniche prima del ricalcolo -->
+
+<!-- Erbologia tool v97 — input numerici allineati a Magizoologia: valori fuori dado/limite vengono svuotati subito -->
+
 <html lang="it">
+<!-- v96: audit protocollo completo — acquisto/prezzario integrati (Germinazione, prezzi per classe, +50% Esotiche, listino illegale); illegalità di Coltivazione automatica per specie regolamentate; mantiene conflitti Classificazione, reset A→B→A e Repello Babbanum sospeso. -->
 <!-- v85: audit reset — azzeramento esplicito dei campi tecnici hidden/derivati e dello storico tentativi; evita che defaultValue dei campi hidden conservi valori modificati dopo Azzera Guida -->
 <!-- v84: regressione v83 — pulizia esplicita anche delle etichette/UI di Pax, Tocco Verde e controlli illegali quando cambia la Pianta; evita esiti visivi obsoleti quando lo Studente deve ancora reinserire il voto specifico -->
 <!-- v83: secondo audit di robustezza — viewport mobile reale; cambio PG azzera anche il voto specifico; cambio contesto Pianta invalida Pax/Tocco Verde/controlli illegali e forza un ricalcolo pulito -->
@@ -999,6 +1007,25 @@ table.fasce td{
 .rp-legacy-zone-notice{display:none;margin:9px 0;padding:9px 11px;border:1px solid #8cab67;border-left:5px solid #bbd794;border-radius:6px;background:#d0e4ac;color:#18300f}.rp-legacy-zone-notice.show{display:block}
 .spec-sheet-link{margin-top:8px;padding:8px 10px;border:1px solid #739356;border-radius:6px;background:#2d4822;color:#f0f7eb;line-height:1.45}.spec-sheet-link a{color:#d7f0ad!important;font-weight:800;text-decoration:underline}.spec-sheet-link.empty{display:none}
 
+
+/* ===== v87 — DADI SPECIFICI / NARRATORE / ESPOSIZIONI ===== */
+.erb-v87-narrator{margin:9px 0;padding:9px 11px;border:1px solid #8d2f26;border-left:4px solid #b84131;border-radius:6px;background:#2d110d;color:#ffe0d6;line-height:1.42;font-size:.86em;}
+.erb-v87-narrator .erb-narratore-call{display:inline-block;margin-right:7px;padding:2px 7px;border:1px solid #d76e5b;border-radius:11px;color:#ffd8ce;font-size:.68em;font-weight:800;letter-spacing:.06em;vertical-align:1px;}
+.erb-v87-source-conflict{margin:9px 0;padding:9px 11px;border:1px solid #9f6a24;border-left:4px solid #cf8e31;border-radius:6px;background:#2c2110;color:#ffe8bd;line-height:1.42;font-size:.86em;}
+.erb-v87-gate{margin:9px 0;padding:10px 11px;border:1px solid #7a472c;border-radius:7px;background:#21140e;color:#f8e7da;}
+.erb-v87-gate>.check-riga{margin:0 0 7px;}
+.erb-v87-gate>.check-riga label{color:#f5dfcf!important;font-weight:700;}
+.erb-v87-roll{margin-top:8px;padding:9px 10px;border:1px dashed #7f472b;border-radius:6px;background:#160d09;color:#f6e4d7;}
+.erb-v87-roll .nota-regole{color:#d9c0ae!important;}
+.erb-v87-action-title{font-weight:800;color:#ffc58f;margin-bottom:6px;}
+.erb-v87-kind{display:inline-block;margin-left:6px;padding:2px 7px;border-radius:10px;border:1px solid #8a5b3e;color:#e7c5ab;font-size:.66em;letter-spacing:.04em;text-transform:uppercase;}
+.erb-v87-kind.pg{border-color:#728e4b;color:#dff4bf;}.erb-v87-kind.conditional{border-color:#9f7433;color:#ffe2a2;}.erb-v87-kind.narrator{border-color:#b34d3d;color:#ffd0c7;}
+.erb-v87-special-box{margin:12px 0 16px;padding:12px 14px;border:1px solid #87502f;border-radius:8px;background:#24140d;color:#f7e9dd;}
+.erb-v87-special-box>h3{margin:0 0 7px;color:#ffc58f;}
+.erb-v87-special-box .campo label{color:#f0a060!important;}
+.erb-v87-special-box input,.erb-v87-special-box select{background:#3b2015!important;color:#fff0e4!important;border-color:#724027!important;}
+.erb-v87-special-box .dice-code{background:#130b08!important;color:#ffbe79!important;border-color:#8e4c28!important;}
+.erb-v87-empty{font-size:.82em;color:#d4bdad;font-style:italic;}
 </style>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
@@ -1906,6 +1933,7 @@ function ebxEl(id){ return document.getElementById(id); }
       <option value="Alloro"></option>
       <option value="Aloe"></option>
       <option value="Amarantacea"></option>
+      <option value="Annientamento"></option>
       <option value="Arbusti Autofertilizzanti"></option>
       <option value="Artemisia"></option>
       <option value="Asfodelo"></option>
@@ -1934,6 +1962,7 @@ function ebxEl(id){ return document.getElementById(id); }
       <option value="Fagiolo Sopoforoso"></option>
       <option value="Felci Imitanti"></option>
       <option value="Fico"></option>
+      <option value="Fichi"></option>
       <option value="Fiori Fabula"></option>
       <option value="Fiori Floo"></option>
       <option value="Frullobulbo"></option>
@@ -1979,6 +2008,19 @@ function ebxEl(id){ return document.getElementById(id); }
       <option value="Verbena"></option>
       <option value="Vischio"></option>
       <option value="Zenzero"></option>
+      <option value="Albero Carnivoro"></option>
+      <option value="Albero Medusa"></option>
+      <option value="Bebop Caraibica"></option>
+      <option value="Coccolacea"></option>
+      <option value="Erbaschiuma"></option>
+      <option value="Germogli Lamentosi"></option>
+      <option value="Loto di Mahoutokoro"></option>
+      <option value="Menta Tibetana"></option>
+      <option value="Orchidea Fantasma"></option>
+      <option value="Pianta Mangiauomini"></option>
+      <option value="Platano Colombiano"></option>
+      <option value="Prato Messicano"></option>
+      <option value="Stupefiore"></option>
     </datalist>
     <div class="numeric-note">Puoi scrivere il nome oppure aprire la tendina dello stesso campo e scegliere dal catalogo. Le Piante non presenti nel catalogo possono essere inserite liberamente.</div>
   </div>
@@ -1999,6 +2041,9 @@ function ebxEl(id){ return document.getElementById(id); }
 </div>
 <div id="erbSpecificVoteHint" class="specific-knowledge-note"></div>
 <div id="erbSpeciesClassSync" class="species-class-sync" style="display:none"></div>
+<div id="erbPurchaseInfo" class="erb-auto-trait auto-neutral" style="display:none;margin-top:8px"></div>
+<input type="hidden" id="erbSpeciesSpecialJson" data-key="erbSpeciesSpecialJson" value="{}">
+<div id="erbSpeciesSpecialBox" class="erb-v87-special-box" style="display:none"></div>
 </div>
 
 <div class="check-riga" style="margin-top:12px">
@@ -2017,13 +2062,13 @@ function ebxEl(id){ return document.getElementById(id); }
     <label class="check-riga"><input type="checkbox" id="ebxProtFianto" data-key="ebxProtFianto" data-ebx-faces="4" data-ebx-fatigue="1" data-ebx-name="Fianto Duri"> Fianto Duri: +4 facce · Fatica -1</label>
     <label class="check-riga"><input type="checkbox" id="ebxProtIterum" data-key="ebxProtIterum" data-ebx-faces="5" data-ebx-fatigue="1.5" data-ebx-name="Iterum Post Me"> Iterum Post Me: +5 facce · Fatica -1,5</label>
     <label class="check-riga"><input type="checkbox" id="ebxProtMaxima" data-key="ebxProtMaxima" data-ebx-faces="10" data-ebx-fatigue="3" data-ebx-name="Protego Maxima"> Protego Maxima: +10 facce · Fatica -3</label>
-    <label class="check-riga"><input type="checkbox" id="ebxProtBabbanum" data-key="ebxProtBabbanum" data-ebx-faces="1" data-ebx-fatigue="1.5" data-ebx-name="Repello Babbanum"> Repello Babbanum: +1 faccia · Fatica -1,5</label>
+    <label class="check-riga"><input type="checkbox" id="ebxProtBabbanum" data-key="ebxProtBabbanum" data-ebx-faces="0" data-ebx-fatigue="1.5" data-ebx-name="Repello Babbanum" data-ebx-unresolved="1"> Repello Babbanum: bonus facce non risolto (+1 nell’elenco / +2 nell’esempio) · Fatica -1,5</label>
     <label class="check-riga"><input type="checkbox" id="ebxProtInimicum" data-key="ebxProtInimicum" data-ebx-faces="3" data-ebx-fatigue="2" data-ebx-name="Repello Inimicum"> Repello Inimicum: +3 facce · Fatica -2</label>
     <label class="check-riga"><input type="checkbox" id="ebxProtSalvio" data-key="ebxProtSalvio" data-ebx-faces="3" data-ebx-fatigue="2" data-ebx-name="Salvio Hexia"> Salvio Hexia: +3 facce · Fatica -2</label>
   </div>
   <div class="formula-tag" id="formulaProtezioneIllegaleErbologia"></div>
   <div class="nota-regole erb-illegal-fatigue-note"><b>Fatica degli Incantesimi:</b> è stata sostenuta quando la protezione è stata evocata nei post precedenti. Il Riepilogo la mostra separatamente come <b>Fatica già spesa per predisporre la Serra</b> e non la scala una seconda volta dalla sessione corrente.</div>
-  <div class="nota-regole"><b>Nota:</b> questo è il controllo specifico per la Produzione illegale e non si aggiunge anche il normale 1d100 delle Azioni Illegali Generiche. Il tool segue per Repello Babbanum il valore esplicito dell'elenco: <b>+1 faccia</b>.</div>
+  <div class="nota-regole"><b>Nota:</b> questo è il controllo specifico per la Produzione illegale e non si aggiunge anche il normale 1d100 delle Azioni Illegali Generiche. <b>Repello Babbanum non aggiunge facce automaticamente:</b> la fonte è incoerente (+1 nell’elenco, +2 nell’esempio). La protezione può essere registrata e la Fatica resta conteggiata, ma il bonus al dado rimane sospeso finché il regolamento non viene uniformato.</div>
 </div>
 
 
@@ -2097,6 +2142,10 @@ function ebxEl(id){ return document.getElementById(id); }
   </div>
   <input type="hidden" id="extraInterazione" value="0">
 </div>
+<input type="hidden" id="statoSaluteImportato" data-key="statoSaluteImportato" value="">
+<input type="hidden" id="incontroImportato" data-key="incontroImportato" value="">
+<input type="hidden" id="esemplareImportato" data-key="esemplareImportato" value="">
+<div class="erb-rule-compact" id="erbImportedResearchMeta" style="display:none"><b>Dati importati dalla Ricerca</b><span id="erbImportedResearchMetaText"></span></div>
 <div class="nota-regole erb-short-note"><b>Fase Vitale automatica:</b> Studente con voto E; Adulto con Sapienza Erbologica 1+. Con Sapienza 20-25 riconosce anche l’età esatta.</div>
 <input type="checkbox" id="interazioneMaiOstile" data-key="interazioneMaiOstile" hidden>
 <input type="checkbox" id="interazioneSempreOstile" data-key="interazioneSempreOstile" hidden>
@@ -2344,6 +2393,10 @@ function ebxEl(id){ return document.getElementById(id); }
   <span class="out-tag out-neutral" id="tagColtivazione">in attesa</span>
 </div>
 <div class="nota-regole" id="noteColtivazione"></div>
+<input type="hidden" id="erbSpeciesRiskJson" data-key="erbSpeciesRiskJson" value="{}">
+<input type="hidden" id="erbObjectRiskJson" data-key="erbObjectRiskJson" value="{}">
+<input type="hidden" id="erbDirectItemUsageJson" data-key="erbDirectItemUsageJson" value="{}">
+<div class="ebx-special" id="erbV86CultivationRiskBox" style="display:none"></div>
 
 <details class="erb-modifiers-details">
   <summary>Modificatori dei post / della produzione</summary>
@@ -2356,10 +2409,11 @@ function ebxEl(id){ return document.getElementById(id); }
       <div class="erb-secondary-roll" id="erbToccoVerdeRoll" style="display:none"><div class="result-line"><div class="dice-code" id="codiceToccoVerdeBonus"></div><button type="button" class="copy-btn" data-copy-source="codiceToccoVerdeBonus">Copia</button></div><div class="result-line"><span>Risultato del dado bonus:</span><input type="number" id="risultatoToccoVerdeBonus" data-key="risultatoToccoVerdeBonus" min="1" max="2"></div></div>
       <div class="erb-resolver-outcome" id="erbToccoVerdeOutcome">Non usato.</div>
       <div class="nota-regole">Riduce i post della sola <b>Produzione di Ingredienti</b>. Costo: -2 Fatica quando effettivamente usato.</div></div>
-    <div class="ebx-mini-card"><h4>Fertilizzante</h4><select id="ebxFertilizzantePost" data-key="ebxFertilizzantePost"><option value="0">Nessuno</option><option value="5">Bava di Gnomo — Mercato degli Elfi (-5%)</option><option value="10">Bava di Gnomo — standard (-10%)</option><option value="20b">Bava di Gnomo — Il Terrifico (-20%)</option><option value="20d">Sterco di Drago — Mercato degli Elfi (-20%)</option><option value="40">Sterco di Drago — standard (-40%)</option><option value="80">Sterco di Drago — Il Terrifico (-80%)</option></select><div class="nota-regole">3 usi. Le varianti de Il Terrifico prevedono anche 1d10: 1-3 la Pianta si ammala, 4-5 muore.</div></div>
-    <div class="ebx-mini-card"><h4>Vaso in Vetro Temperato</h4><select id="ebxVasoSemi" data-key="ebxVasoSemi"><option value="0">Non usato</option><option value="15">Mercato degli Elfi → +15% Semi (2 usi)</option><option value="30">Standard → +30% Semi (5 usi)</option><option value="60">Il Terrifico → +60% Semi (10 usi)</option></select><div class="nota-regole">Il bonus Semi si arrotonda <b>per difetto</b>. Con la versione de Il Terrifico, i Semi extra muoiono con 1 su 1d3.</div></div>
-    <div class="ebx-mini-card"><h4>Fertilizzante allo sterco di Mooncalf</h4><select id="ebxMooncalfOrda" data-key="ebxMooncalfOrda"><option value="0">Non usato</option><option value="elfi">Mercato degli Elfi</option><option value="standard">Standard</option><option value="terrifico">Il Terrifico</option></select><div class="nota-regole" id="ebxMooncalfNote">Effetto sulle Orde: estende la Fiducia ottenuta dopo un'Interazione positiva; non modifica il normale dado di Coltivazione.</div></div>
+    <div class="ebx-mini-card erb-direct-item-card" id="erbDirectFertilizerCard"><h4>Fertilizzante</h4><select id="ebxFertilizzantePost" data-key="ebxFertilizzantePost"><option value="0">Nessuno</option><option value="5">Bava di Gnomo — Mercato degli Elfi (-5%)</option><option value="10">Bava di Gnomo — standard (-10%)</option><option value="20b">Bava di Gnomo — Il Terrifico (-20%)</option><option value="20d">Sterco di Drago — Mercato degli Elfi (-20%)</option><option value="40">Sterco di Drago — standard (-40%)</option><option value="80">Sterco di Drago — Il Terrifico (-80%)</option></select><div class="erb-direct-counter" id="erbFertilizzanteCounter" style="display:none"><label>Usi consumati</label><input type="number" id="erbFertilizzanteUsed" min="0" step="1"><span class="erb-direct-use-status" id="erbFertilizzanteUseStatus"></span></div><div class="nota-regole">Ogni variante ha <b>3 usi</b>. Il contatore aumenta soltanto quando il ciclo di Coltivazione viene realmente risolto. Le varianti de Il Terrifico prevedono anche 1d10: 1-3 la Pianta si ammala, 4-5 muore.</div></div>
+    <div class="ebx-mini-card erb-direct-item-card" id="erbDirectVasoCard"><h4>Vaso in Vetro Temperato</h4><select id="ebxVasoSemi" data-key="ebxVasoSemi"><option value="0">Non usato</option><option value="15">Mercato degli Elfi → +15% Semi (2 usi)</option><option value="30">Standard → +30% Semi (5 usi)</option><option value="60">Il Terrifico → +60% Semi (10 usi)</option></select><div class="erb-direct-counter" id="erbVasoCounter" style="display:none"><label>Usi consumati</label><input type="number" id="erbVasoUsed" min="0" step="1"><span class="erb-direct-use-status" id="erbVasoUseStatus"></span></div><div class="nota-regole">Si consuma soltanto durante una vera <b>Riproduzione di Semi</b>. Il bonus si arrotonda per difetto. Con la versione de Il Terrifico, dopo una Riproduzione riuscita i Semi extra muoiono con 1 su 1d3.</div></div>
+    <div class="ebx-mini-card erb-direct-item-card erb-direct-moon-card" id="erbDirectMoonCard"><h4>Fertilizzante allo sterco di Mooncalf</h4><select id="ebxMooncalfOrda" data-key="ebxMooncalfOrda"><option value="0">Non usato</option><option value="elfi">Mercato degli Elfi</option><option value="standard">Standard</option><option value="terrifico">Il Terrifico</option></select><div class="erb-direct-counter" id="erbMooncalfCounter" style="display:none"><label>Usi consumati</label><input type="number" id="erbMooncalfUsed" min="0" step="1"><span class="erb-direct-use-status" id="erbMooncalfUseStatus"></span></div><div id="erbMooncalfRecipients" style="display:none"><div class="riga" style="margin-top:8px"><div class="campo"><label>Piante extra cui estendere la Fiducia</label><input type="number" id="erbMooncalfExtraPlants" data-key="erbMooncalfExtraPlants" min="0" max="4" value="0"></div><div class="campo"><label>Altri PG cui estendere la non-ostilità/Fiducia prevista</label><input type="number" id="erbMooncalfExtraPg" data-key="erbMooncalfExtraPg" min="0" max="2" value="0"></div></div></div><div class="nota-regole" id="ebxMooncalfNote">Effetto sulle Orde: estende la Fiducia ottenuta dopo un'Interazione positiva; non modifica il normale dado di Coltivazione.</div><div class="ebx-special" id="erbMooncalfRiskBox" style="display:none"></div></div>
   </div>
+  <div class="ebx-special" id="erbV86ObjectRiskBox" style="display:none"></div>
   <div class="nota-regole"><b>Oxygeni:</b> non altera i dadi erbologici; ogni dose di Ossigeno di Pianta Magica ottenuta con l'incantesimo permette invece +20% Fatica e +20% Salute a chi la consuma. <b>Fischietto Magico Richiama-Piante:</b> riduce i tempi di richiamo da Serra/Valigia, non aumenta le probabilità della Ricerca Casuale. <b>Evocatio:</b> se evochi un oggetto standard del Prezzario, applica qui l'effetto di quell'oggetto; Evocatio non aggiunge un secondo bonus.</div>
 </div>
 </details>
@@ -2516,14 +2570,28 @@ function ebxEl(id){ return document.getElementById(id); }
           <option value="Foreste Magiche Inglesi">Foreste Magiche Inglesi</option>
           <option value="Foreste Oscure">Foreste Oscure</option>
           <option value="Coste Magiche Inglesi">Coste Magiche Inglesi</option>
-          <option value="Fuori dal Regno Unito — Coste/Foreste del Mondo Magico">Fuori dal Regno Unito — Coste/Foreste del Mondo Magico</option>
+          <optgroup label="Coste del Mondo Magico — estero">
+            <option value="Coste del Mondo Magico — Europa">Europa</option>
+            <option value="Coste del Mondo Magico — America del Nord, Centrale e Caraibi">America del Nord, Centrale e Caraibi</option>
+            <option value="Coste del Mondo Magico — America del Sud">America del Sud</option>
+            <option value="Coste del Mondo Magico — Africa">Africa</option>
+            <option value="Coste del Mondo Magico — Medioriente">Medioriente</option>
+            <option value="Coste del Mondo Magico — Asia">Asia</option>
+            <option value="Coste del Mondo Magico — Australia e Oceania">Australia e Oceania</option>
+          </optgroup>
         </select></div>
       </div>
-      <div class="nota-regole"><b>Prima scegli dove si svolge la role.</b> Per tutte le Zone con un elenco disponibile nel tool, dopo l’estrazione della Classificazione il tool costruisce automaticamente il dado corretto e ricava la Pianta specifica dal risultato. L’inserimento manuale resta soltanto per <b>Fuori dal Regno Unito — Coste/Foreste del Mondo Magico</b>, dove la Zona scelta non identifica un elenco unico.</div><div id="rpLegacyZoneNotice" class="rp-legacy-zone-notice"><b>Ricerca creata con una versione precedente del tool:</b> in questa sessione la Zona non veniva ancora salvata. Seleziona ora la Zona corretta per continuare; tutti gli altri dati e risultati già presenti restano invariati.</div>
+      <div class="nota-regole"><b>Prima scegli dove si svolge la role.</b> Le Zone britanniche e le sette macroaree estere hanno ora la propria lista incorporata: dopo la Classificazione il tool costruisce automaticamente il dado corretto, comprese le ripetizioni che aumentano la probabilità delle Piante Esotiche. Per l’estero scegli la macroarea effettiva della role.</div><div id="rpLegacyZoneNotice" class="rp-legacy-zone-notice"><b>Ricerca creata con una versione precedente del tool:</b> in questa sessione la Zona non veniva ancora salvata. Seleziona ora la Zona corretta per continuare; tutti gli altri dati e risultati già presenti restano invariati.</div>
       <div class="ebx-special" id="ebxLagoNeroBox" style="display:none">
         <h3>Lago Nero — controllo Scrofungulus</h3>
         <label class="check-riga"><input type="checkbox" id="ebxNuotoLago" data-key="ebxNuotoLago"> Il PG sta nuotando nel Lago Nero</label>
         <div id="ebxNuotoLagoDettagli" style="display:none"><div class="result-line"><div class="dice-code" id="codiceScrofungulus"></div><button type="button" class="copy-btn" id="copiaScrofungulus">Copia</button></div><div class="result-line"><span>Risultato 1d20:</span><input type="number" id="risultatoScrofungulus" data-key="risultatoScrofungulus" min="1" max="20"><span class="out-tag out-neutral" id="tagScrofungulus">in attesa</span></div></div>
+      </div>
+      <div class="ebx-special" id="erbV86MalariaBox" style="display:none">
+        <h3>Viaggio estero — controllo Febbre Malarica</h3>
+        <div class="nota-regole">Sud America, Africa, Australia/Oceania: al primo post in loco, se il PG è arrivato tramite un Trasporto Magico, effettua il controllo previsto. La malattia si manifesta soltanto al rientro nel Regno Unito.</div>
+        <div class="result-line"><div class="dice-code" id="codiceMalariaViaggio"></div><button type="button" class="copy-btn" data-copy-source="codiceMalariaViaggio">Copia</button></div>
+        <div class="result-line"><span>Risultato 1d15:</span><input type="number" id="risultatoMalariaViaggio" data-key="risultatoMalariaViaggio" min="1" max="15"><span class="out-tag out-neutral" id="tagMalariaViaggio">in attesa</span></div>
       </div>
       <div class="riga">
         <div class="campo"><label>PG lanciatore</label><input type="text" id="nomePgRicerca" data-key="nomePgRicerca" maxlength="80" readonly aria-readonly="true"><div class="profilo-session-hint">Preso automaticamente da «Il tuo Personaggio».</div></div>
@@ -2536,12 +2604,15 @@ function ebxEl(id){ return document.getElementById(id); }
         <div class="campo"><label>Possiedo la Valigia Magica</label><select id="valigiaMagica" data-key="valigiaMagica"><option value="no">No</option><option value="si">Sì</option></select></div>
       </div>
 
-      <details class="research-rules"><summary>Regole della Ricerca</summary><div class="nota-regole"><b>Ricerca in compagnia:</b> se partecipano due o più PG, <b>tutti i lanci della Ricerca devono essere effettuati solo e soltanto da UNO dei PG partecipanti</b>, indicato qui sopra come PG lanciatore. Non è possibile alternare i lanci fra i partecipanti o usare di volta in volta i Parametri di PG diversi. Ciò che il PG lanciatore trova è disponibile a tutti i PG presenti nella role, ma il ritrovamento condiviso <b>non condivide automaticamente la Fiducia</b>: chi vuole ottenere personalmente una Pianta deve poi seguire la propria Interazione prevista dalla Guida (salvo il Seme). Nella stessa role di gruppo non è inoltre possibile dividere la ricerca fra obiettivi diversi (per esempio un PG cerca Piante e un altro Creature). Per questo, PG con bassa Empatia o senza Sapienza Erbologica possono scegliere di cercare insieme a un PG Animus/Erbologo e affidare a lui tutti i lanci della Ricerca.<br><br><b>Zona:</b> la role di Ricerca deve svolgersi in una Zona di Ricerca prevista dal regolamento. Le <b>Piante Esotiche</b> non possono essere incontrate nel Regno Unito: per trovarle bisogna ruolare fuori dal Regno Unito, nelle Coste/Foreste del Mondo Magico. La specie esatta viene determinata automaticamente dal tool usando la lista della Zona scelta; resta manuale soltanto per le Zone prive di una lista incorporata.<br><br><b>Interazione dopo il ritrovamento:</b> se scegli di interagire, applica la Guida all’Erbologia e i relativi costi in Fatica. Se la specie esatta è sempre ostile, oppure diventa ostile, è richiesto l’intervento del Narratore.<br><br>Nella Ricerca Passiva non si applica il bonus di Ricerca Attiva e non si può proseguire oltre il Primo Incontro. Nella Ricerca Attiva il bonus di +2 possibilità vale solo per il Primo Incontro. Se catturi una Pianta e non possiedi la Valigia Magica, non puoi proseguire all’Incontro successivo.</div></details>
+      <details class="research-rules"><summary>Regole della Ricerca</summary><div class="nota-regole"><b>Ricerca in compagnia:</b> se partecipano due o più PG, <b>tutti i lanci della Ricerca devono essere effettuati solo e soltanto da UNO dei PG partecipanti</b>, indicato qui sopra come PG lanciatore. Non è possibile alternare i lanci fra i partecipanti o usare di volta in volta i Parametri di PG diversi. Ciò che il PG lanciatore trova è disponibile a tutti i PG presenti nella role, ma il ritrovamento condiviso <b>non condivide automaticamente la Fiducia</b>: chi vuole ottenere personalmente una Pianta deve poi seguire la propria Interazione prevista dalla Guida (salvo il Seme). Nella stessa role di gruppo non è inoltre possibile dividere la ricerca fra obiettivi diversi (per esempio un PG cerca Piante e un altro Creature). Per questo, PG con bassa Empatia o senza Sapienza Erbologica possono scegliere di cercare insieme a un PG Animus/Erbologo e affidare a lui tutti i lanci della Ricerca.<br><br><b>Zona:</b> la role di Ricerca deve svolgersi in una Zona di Ricerca prevista dal regolamento. Le <b>Piante Esotiche</b> richiedono normalmente una role fuori dal Regno Unito nella macroarea prevista dalla relativa lista. La specie esatta viene determinata automaticamente dal tool usando la lista della Zona scelta e rispettando le eventuali ripetizioni di esito previste dalla tabella.<br><br><b>Interazione dopo il ritrovamento:</b> se scegli di interagire, applica la Guida all’Erbologia e i relativi costi in Fatica. Se la specie esatta è sempre ostile, oppure diventa ostile, è richiesto l’intervento del Narratore.<br><br>Nella Ricerca Passiva non si applica il bonus di Ricerca Attiva e non si può proseguire oltre il Primo Incontro. Nella Ricerca Attiva il bonus di +2 possibilità vale solo per il Primo Incontro. Se catturi una Pianta e non possiedi la Valigia Magica, non puoi proseguire all’Incontro successivo.</div></details>
 
 <div class="ebx-special" id="ebxResearchBonusBox">
   <h3>Oggetti / Tecniche / Conoscenze — Bonus alla Ricerca</h3>
-  <div class="nota-regole">Seleziona direttamente gli effetti regolamentati dal catalogo: il tool conosce già se modificano <b>Empatia</b> o le <b>possibilità</b>. Herbivicus vale soltanto per il primo step «Trovo qualcosa?» e per il primo tentativo dell'Incontro in cui lo usi. Il <b>Fischietto Richiama-Piante</b> non compare perché serve al richiamo da Serra/Valigia, non alla Ricerca Casuale.</div>
+  <div class="nota-regole">Seleziona direttamente gli effetti regolamentati dal catalogo: il tool conosce già se modificano <b>Empatia</b> o le <b>possibilità</b>. Herbivicus vale soltanto per il primo step «Trovo qualcosa?» e per il primo tentativo complessivo della Ricerca (Primo Incontro). Il <b>Fischietto Richiama-Piante</b> non compare perché serve al richiamo da Serra/Valigia, non alla Ricerca Casuale.</div>
   <input type="hidden" id="bonusRicercaJson" data-key="bonusRicercaJson" value="[]">
+  <input type="hidden" id="ricercaUsiJson" data-key="ricercaUsiJson" value="{}">
+  <input type="hidden" id="ricercaApplicazioniJson" data-key="ricercaApplicazioniJson" value="{}">
+  <input type="hidden" id="rpSpeciesRiskJson" data-key="rpSpeciesRiskJson" value="{}">
   <div id="ebxResearchBonusRows"></div>
   <button type="button" class="bottone-azione bottone-secondario" id="ebxAddResearchBonus">+ Scegli bonus dal catalogo</button>
   <div class="ebx-effect-line" id="ebxResearchBonusSummary"></div>
@@ -2566,7 +2637,9 @@ function ebxEl(id){ return document.getElementById(id); }
       <div class="result-line"><div class="dice-code" id="codiceTrova1"></div><button class="copy-btn" type="button" data-copy-source="codiceTrova1" data-copy-control="1">Copia</button></div>
       <div class="formula-tag" id="formulaTrova1"></div>
       <div class="result-line"><span>Risultato ottenuto sul forum (1-30):</span><input type="number" id="risultatoTrova1" data-key="risultatoTrova1" min="1" max="30"><span class="out-tag out-neutral" id="tagTrova1">in attesa</span></div>
-      <div class="nota-regole">Se non trovi nulla puoi ritentare in un post successivo senza limiti, sostituendo qui il risultato precedente.</div>
+      <div class="nota-regole">Se non trovi nulla puoi ritentare in un post successivo senza limiti. Usa il pulsante qui sotto: così il tool distingue i tentativi e contabilizza correttamente gli eventuali usi di Oggetti/Conoscenze.</div>
+        <input type="hidden" id="rpTrovaAttempt1" data-key="rpTrovaAttempt1" value="1">
+        <div class="rp-v86-attempt"><span id="rpTrovaAttemptLabel1">Tentativo 1</span><button type="button" class="bottone-azione bottone-secondario" id="rpRetryTrova1" style="display:none">Nuovo tentativo nel post successivo</button></div>
 
       <div id="cascata1" style="display:none">
         <h3>Classificazione della Pianta (1d15)</h3>
@@ -2580,6 +2653,7 @@ function ebxEl(id){ return document.getElementById(id); }
       <option value="O">O (Oltre le Aspettative)</option>
       <option value="E">E (Eccezionale)</option></select><div class="numeric-note">Il voto viene riportato automaticamente nella Guida.</div></div></div><div class="research-guide-bridge-status" id="rpGuideBridgeStatus1"></div></div></div>
         <div class="rp-hostile-alert" id="rpHostileAlert1" style="display:none"></div>
+        <div class="ebx-special erb-v86-species-secondary" id="rpSpeciesSecondary1" style="display:none"></div>
 
         <h3>Fase Vitale (1d9)</h3>
         <div class="result-line"><div class="dice-code" id="codiceFase1"></div><button class="copy-btn" type="button" data-copy-source="codiceFase1" data-copy-control="1">Copia</button></div>
@@ -2596,7 +2670,7 @@ function ebxEl(id){ return document.getElementById(id); }
         <div class="rp-decision-help"><b>Scegli una sola delle due opzioni.</b> Servono a dire al tool come si è chiuso l’Incontro: «catturata» attiva anche il controllo della Valigia; «non catturata» chiude l’Incontro senza quel requisito. Questo riepilogo è solo operativo e non va copiato nel post.</div>
       </div>
     
-<div class="ebx-special ebx-bolcino-incontro">
+<div class="ebx-special ebx-bolcino-incontro" id="erbV86BolcinoBox1">
         <h3 style="margin-top:0">Bolcino d'Oro <span class="out-tag out-neutral">facoltativo · solo in Europa · un tiro per ogni post</span></h3>
         <div class="nota-regole">Se stai facendo il tiro del Bolcino nello stesso post dell’Incontro, puoi copiare sia questo dado sia quello della Ricerca direttamente da questa pagina.</div>
         <div class="result-line"><div class="dice-code" id="codiceBolcino1"></div><button class="copy-btn" type="button" data-copy-source="codiceBolcino1" data-copy-control="1">Copia</button></div>
@@ -2616,7 +2690,9 @@ function ebxEl(id){ return document.getElementById(id); }
         <div class="result-line"><div class="dice-code" id="codiceTrova2"></div><button class="copy-btn" type="button" data-copy-source="codiceTrova2" data-copy-control="1">Copia</button></div>
         <div class="formula-tag" id="formulaTrova2"></div>
         <div class="result-line"><span>Risultato ottenuto sul forum (1-30):</span><input type="number" id="risultatoTrova2" data-key="risultatoTrova2" min="1" max="30"><span class="out-tag out-neutral" id="tagTrova2">in attesa</span></div>
-        <div class="nota-regole">Se non trovi nulla puoi ritentare in un post successivo senza limiti, sostituendo qui il risultato precedente.</div>
+        <div class="nota-regole">Se non trovi nulla puoi ritentare in un post successivo senza limiti. Usa il pulsante qui sotto: così il tool distingue i tentativi e contabilizza correttamente gli eventuali usi di Oggetti/Conoscenze.</div>
+        <input type="hidden" id="rpTrovaAttempt2" data-key="rpTrovaAttempt2" value="1">
+        <div class="rp-v86-attempt"><span id="rpTrovaAttemptLabel2">Tentativo 1</span><button type="button" class="bottone-azione bottone-secondario" id="rpRetryTrova2" style="display:none">Nuovo tentativo nel post successivo</button></div>
 
         <div id="cascata2" style="display:none">
           <h3>Classificazione della Pianta (1d15)</h3>
@@ -2634,6 +2710,7 @@ function ebxEl(id){ return document.getElementById(id); }
           <div class="result-line"><div class="dice-code" id="codiceEsemplari2"></div><button class="copy-btn" type="button" data-copy-source="codiceEsemplari2" data-copy-control="1">Copia</button></div>
           <div class="result-line"><span>Risultato (1-5):</span><input type="number" id="risultatoEsemplari2" data-key="risultatoEsemplari2" min="1" max="5"><span class="out-tag out-neutral" id="tagEsemplari2">in attesa</span></div>
           <div class="nota-regole">Da <b>2 esemplari in poi</b> stai gestendo un’Orda: per l’Interazione usa le regole specifiche delle Orde nella Guida all’Erbologia.</div><div class="rp-hostile-alert" id="rpHostileAlert2" style="display:none"></div>
+        <div class="ebx-special erb-v86-species-secondary" id="rpSpeciesSecondary2" style="display:none"></div>
           <div id="esemplariLista2"></div>
           <div class="blocco-avviso" id="avvisoMorente2" style="display:none"></div>
           <div class="check-riga erb-narratore-confirm" id="rigaMorenteGestito2" style="display:none"><input type="checkbox" id="morenteGestito2" data-key="morenteGestito2"><label for="morenteGestito2">La situazione delle Piante morenti è stata gestita con il Narratore</label><a class="erb-narratore-link" href="https://felixfelicisharrypottergdr.forumfree.it/?f=65091943" target="_blank" rel="noopener">Contatta il Narratore ↗</a></div>
@@ -2643,7 +2720,7 @@ function ebxEl(id){ return document.getElementById(id); }
         </div>
       </div>
     
-<div class="ebx-special ebx-bolcino-incontro">
+<div class="ebx-special ebx-bolcino-incontro" id="erbV86BolcinoBox2">
           <h3 style="margin-top:0">Bolcino d'Oro <span class="out-tag out-neutral">facoltativo · solo in Europa · un tiro per ogni post</span></h3>
           <div class="nota-regole">Se stai facendo il tiro del Bolcino nello stesso post dell’Incontro, puoi copiare sia questo dado sia quello della Ricerca direttamente da questa pagina.</div>
           <div class="result-line"><div class="dice-code" id="codiceBolcino2"></div><button class="copy-btn" type="button" data-copy-source="codiceBolcino2" data-copy-control="1">Copia</button></div>
@@ -2663,7 +2740,9 @@ function ebxEl(id){ return document.getElementById(id); }
         <div class="result-line"><div class="dice-code" id="codiceTrova3"></div><button class="copy-btn" type="button" data-copy-source="codiceTrova3" data-copy-control="1">Copia</button></div>
         <div class="formula-tag" id="formulaTrova3"></div>
         <div class="result-line"><span>Risultato ottenuto sul forum (1-30):</span><input type="number" id="risultatoTrova3" data-key="risultatoTrova3" min="1" max="30"><span class="out-tag out-neutral" id="tagTrova3">in attesa</span></div>
-        <div class="nota-regole">Se non trovi nulla puoi ritentare in un post successivo senza limiti, sostituendo qui il risultato precedente.</div>
+        <div class="nota-regole">Se non trovi nulla puoi ritentare in un post successivo senza limiti. Usa il pulsante qui sotto: così il tool distingue i tentativi e contabilizza correttamente gli eventuali usi di Oggetti/Conoscenze.</div>
+        <input type="hidden" id="rpTrovaAttempt3" data-key="rpTrovaAttempt3" value="1">
+        <div class="rp-v86-attempt"><span id="rpTrovaAttemptLabel3">Tentativo 1</span><button type="button" class="bottone-azione bottone-secondario" id="rpRetryTrova3" style="display:none">Nuovo tentativo nel post successivo</button></div>
 
         <div id="cascata3" style="display:none">
           <h3>Classificazione della Pianta (1d15)</h3>
@@ -2681,6 +2760,7 @@ function ebxEl(id){ return document.getElementById(id); }
           <div class="result-line"><div class="dice-code" id="codiceEsemplari3"></div><button class="copy-btn" type="button" data-copy-source="codiceEsemplari3" data-copy-control="1">Copia</button></div>
           <div class="result-line"><span>Risultato (1-10):</span><input type="number" id="risultatoEsemplari3" data-key="risultatoEsemplari3" min="1" max="10"><span class="out-tag out-neutral" id="tagEsemplari3">in attesa</span></div>
           <div class="nota-regole">Da <b>2 esemplari in poi</b> stai gestendo un’Orda: per l’Interazione usa le regole specifiche delle Orde nella Guida all’Erbologia.</div><div class="rp-hostile-alert" id="rpHostileAlert3" style="display:none"></div>
+        <div class="ebx-special erb-v86-species-secondary" id="rpSpeciesSecondary3" style="display:none"></div>
           <div id="esemplariLista3"></div>
           <div class="blocco-avviso" id="avvisoMorente3" style="display:none"></div>
           <div class="check-riga erb-narratore-confirm" id="rigaMorenteGestito3" style="display:none"><input type="checkbox" id="morenteGestito3" data-key="morenteGestito3"><label for="morenteGestito3">La situazione delle Piante morenti è stata gestita con il Narratore</label><a class="erb-narratore-link" href="https://felixfelicisharrypottergdr.forumfree.it/?f=65091943" target="_blank" rel="noopener">Contatta il Narratore ↗</a></div>
@@ -2689,7 +2769,7 @@ function ebxEl(id){ return document.getElementById(id); }
         </div>
       </div>
     
-<div class="ebx-special ebx-bolcino-incontro">
+<div class="ebx-special ebx-bolcino-incontro" id="erbV86BolcinoBox3">
           <h3 style="margin-top:0">Bolcino d'Oro <span class="out-tag out-neutral">facoltativo · solo in Europa · un tiro per ogni post</span></h3>
           <div class="nota-regole">Se stai facendo il tiro del Bolcino nello stesso post dell’Incontro, puoi copiare sia questo dado sia quello della Ricerca direttamente da questa pagina.</div>
           <div class="result-line"><div class="dice-code" id="codiceBolcino3"></div><button class="copy-btn" type="button" data-copy-source="codiceBolcino3" data-copy-control="1">Copia</button></div>
@@ -2971,12 +3051,23 @@ function resetStoricoSeCambiaPianta(){
   var provenienza=getProvenienzaPianta();
   var specieCtx=(document.getElementById('speciePiantaGuida')||{}).value||'';
   var ctx=classe+'|'+provenienza+'|'+specieCtx;
+  /* v100: durante un restore Firebase questo è solo il contesto appena ricostruito.
+     Non deve invalidare risultati/sottotiri già presenti nel salvataggio. */
+  if(window.__ERB_GUIDE_RESTORING===true){ultimoContestoPiantaGuida=ctx;return;}
   if(ultimoContestoPiantaGuida===null){ ultimoContestoPiantaGuida=ctx; return; }
   if(ultimoContestoPiantaGuida===ctx) return;
+  var vecchiPezzi=String(ultimoContestoPiantaGuida).split('|');
+  var vecchiaSpecie=vecchiPezzi.slice(2).join('|');
+  var normSpec=function(v){v=String(v||'');try{v=v.normalize('NFD').replace(/[\u0300-\u036f]/g,'');}catch(e){}return v.toLowerCase().replace(/[’‘]/g,"'").replace(/\s+/g,' ').trim();};
+  if(normSpec(vecchiaSpecie)!==normSpec(specieCtx)){
+    /* I dadi e le condizioni dello specchietto appartengono all'elemento corrente.
+       Cambiando specie, lo stato specifico precedente non deve poter riapparire tornando indietro. */
+    var specialState=document.getElementById('erbSpeciesSpecialJson');if(specialState)specialState.value='{}';
+  }
   ultimoContestoPiantaGuida=ctx;
   var zeroIds=['tentativiRiconoscimentoFalliti','tentativiInterazioneFallitiPrecedenti','fallimentiEsportazionePrecedenti','fallimentiCollocazionePrecedenti'];
   for(var i=0;i<zeroIds.length;i++){var z=document.getElementById(zeroIds[i]);if(z)z.value='0';}
-  var clearIds=['risultatoRiconoscimento','risultatoInterazione','risultatoConseguenzaInterazione','risultatoOrdaInterazione','risultatoEsportazione','risultatoCollocazione','risultatoConseguenzaCollocazione','risultatoAltrePianteCollocazione','risultatoColtivazione','baseAdultoRisultato','postBaseColtivazione','risultatoPax','risultatoIllegaleCollocazione','risultatoIllegaleColtivazione','risultatoToccoVerdeBonus'];
+  var clearIds=['risultatoRiconoscimento','risultatoInterazione','risultatoConseguenzaInterazione','risultatoOrdaInterazione','risultatoEsportazione','risultatoCollocazione','risultatoConseguenzaCollocazione','risultatoAltrePianteCollocazione','risultatoColtivazione','baseAdultoRisultato','postBaseColtivazione','risultatoPax','risultatoIllegaleCollocazione','risultatoIllegaleColtivazione','risultatoToccoVerdeBonus','statoSaluteImportato','incontroImportato','esemplareImportato'];
   for(var j=0;j<clearIds.length;j++){var c=document.getElementById(clearIds[j]);if(c)c.value='';}
   /* Gli esiti di Pax e Tocco Verde appartengono alla Pianta/azione corrente:
      non devono sopravvivere a un cambio di specie, classificazione o provenienza. */
@@ -4715,7 +4806,7 @@ function rpCaricaDatiSessioneNelProfilo(){
 function rpBonusSapienza(){return rpLookup(rpSapienzaTiers,rpSapienza());}
 function rpTipo(){return rpEl('tipoRicerca')?rpEl('tipoRicerca').value:'attiva';}
 function rpValigia(){return rpEl('valigiaMagica')?rpEl('valigiaMagica').value:'no';}
-function rpTrovaThreshold(n){return rpEmpatia()+rpBonusSapienza()+((n===1&&rpTipo()==='attiva')?2:0);}
+function rpTrovaThreshold(n){var b=(typeof ebxSearchTotals==='function'?ebxSearchTotals(n):{empatia:0,possibilita:0});return Math.max(0,rpEmpatia()+Number(b.empatia||0)+rpBonusSapienza()+((n===1&&rpTipo()==='attiva')?2:0)+Number(b.possibilita||0));}
 function rpTrovaEsito(n){var th=rpTrovaThreshold(n);if(th>=30)return true;var v=rpNumber('risultatoTrova'+n,1,30);if(v===null)return null;return v<=th;}
 
 function rpClearEncounterCore(n,includeTrova){
@@ -4796,7 +4887,7 @@ function ebxRecomputeLago(){
 
 function rpRecomputeTrova(n){
   var th=rpTrovaThreshold(n),formula=rpEl('formulaTrova'+n),code=rpEl('codiceTrova'+n),inp=rpEl('risultatoTrova'+n),tag=rpEl('tagTrova'+n);
-  var formulaCtx=n+'|'+rpTipo()+'|'+rpEmpatia()+'|'+rpSapienza()+'|'+rpBonusSapienza();
+  var _sb=(typeof ebxSearchTotals==='function'?ebxSearchTotals(n):{empatia:0,possibilita:0}),_attempt=(typeof window.erbV86Attempt==='function'?window.erbV86Attempt(n):1),_searchSig=(typeof window.erbV86SearchSignature==='function'?window.erbV86SearchSignature(n):'');var formulaCtx=n+'|'+rpTipo()+'|'+rpEmpatia()+'|'+rpSapienza()+'|'+rpBonusSapienza()+'|'+_sb.empatia+'|'+_sb.possibilita+'|'+_attempt+'|'+_searchSig;
   if(!RP_RESTORING && RP_TROVA_FORMULA[n]!==undefined && RP_TROVA_FORMULA[n]!==formulaCtx){
     if(inp)inp.value='';
     rpClearEncounterDownstream(n);
@@ -4807,13 +4898,13 @@ function rpRecomputeTrova(n){
     rpClearEncounterDownstream(n);
   }
   RP_TROVA_RESULT[n]=resultCtx;
-  var parts='Empatia '+rpEmpatia()+' + Sapienza Erbologica '+rpBonusSapienza();if(n===1&&rpTipo()==='attiva')parts+=' + Ricerca Attiva 2';parts+=' = '+th+' su 30';if(formula)formula.textContent=parts;
+  var parts='Empatia '+rpEmpatia();if(_sb.empatia)parts+=(_sb.empatia>0?' + ':' - ')+Math.abs(_sb.empatia)+' modificatori Empatia';parts+=' + Sapienza Erbologica '+rpBonusSapienza();if(n===1&&rpTipo()==='attiva')parts+=' + Ricerca Attiva 2';if(_sb.possibilita)parts+=' + '+_sb.possibilita+' bonus possibilità';parts+=' = '+th+' su 30 · tentativo '+_attempt;if(formula)formula.textContent=parts;
   var nomi=['','Primo','Secondo','Terzo'],q='Il PG trova una Pianta Magica durante il '+nomi[n]+' Incontro?';
   if(th>=30){if(inp&&inp.value!=='')inp.value='';RP_TROVA_RESULT[n]='';if(code)code.textContent='Autoconclusivo: '+th+' possibilità su 30, la Pianta viene trovata senza tiro.';if(inp){inp.disabled=true;}if(tag){tag.textContent='Trovata automaticamente';tag.className='out-tag out-ok';}return true;}
   if(inp)inp.disabled=false;
   rpSetCode('codiceTrova'+n,q,rpThresholdAnswers(th,30,'Pianta trovata','Nessuna Pianta trovata'),'[dice=1d30]Ricerca Piante Magiche — '+nomi[n]+' Incontro[/dice]');
   var v=rpNumber('risultatoTrova'+n,1,30);if(v===null){if(tag){tag.textContent=inp&&inp.value!==''?'Risultato impossibile':'in attesa';tag.className='out-tag '+(inp&&inp.value!==''?'out-fail':'out-neutral');}return null;}
-  var ok=v<=th;if(tag){tag.textContent=ok?'Pianta trovata':'Niente in questo post';tag.className='out-tag '+(ok?'out-ok':'out-neutral');}return ok;
+  var ok=v<=th;if(typeof window.erbV86CommitSearchUse==='function')window.erbV86CommitSearchUse(n);if(tag){tag.textContent=ok?'Pianta trovata':'Niente in questo post';tag.className='out-tag '+(ok?'out-ok':'out-neutral');}return ok;
 }
 
 function rpSetStaticSemanticCodes(){
@@ -4986,7 +5077,7 @@ function rpRenderOutcome(){
   var maxIncontri=rpTipo()==='passiva'?1:3;
   for(var n=1;n<=maxIncontri;n++){
     var s=rpEncounterSummary(n);
-    if(s)items.push('<li><b>Incontro '+(['','I','II','III'][n])+':</b> '+s.html+'<div class="outcome-import-row"><button type="button" class="bottone-azione bottone-secondario outcome-import-btn" data-rp-import-guide="'+n+'">Importa nella Guida</button></div></li>');
+    if(s){var chooser='';if(n>1){var mx=n===2?5:10,cnt=rpNumber('risultatoEsemplari'+n,1,mx);if(cnt&&cnt>1){var opts=[];for(var ei=1;ei<=cnt;ei++){var ep=rpLookup(rpFaseVitaleTab,rpNumber('risultatoFase'+n+'_'+ei,1,9)),eh=rpLookup(rpStatoSaluteTab,rpNumber('risultatoSalute'+n+'_'+ei,1,15));opts.push('<option value="'+ei+'">Esemplare '+ei+' — '+rpEsc(ep)+' · '+rpEsc(eh)+'</option>');}chooser='<label class="outcome-import-choice">Quale esemplare vuoi importare? <select data-rp-import-exemplar="'+n+'">'+opts.join('')+'</select></label>';}}items.push('<li><b>Incontro '+(['','I','II','III'][n])+':</b> '+s.html+'<div class="outcome-import-row">'+chooser+'<button type="button" class="bottone-azione bottone-secondario outcome-import-btn" data-rp-import-guide="'+n+'">Importa nella Guida</button></div></li>');}
   }
   if(!items.length){
     host.innerHTML='<div class="nota-regole">Completa almeno il Primo Incontro per ottenere il riepilogo finale.</div>';
@@ -5303,6 +5394,10 @@ function setupNumericInputs(){
          con step 0,5 un valore come 0,3 non deve entrare nei calcoli. */
       el.setCustomValidity('');
       if(el.validity && (el.validity.rangeUnderflow||el.validity.rangeOverflow||el.validity.stepMismatch)){
+        /* Allineamento Magizoologia: un risultato fuori dal dado/limite non deve
+           restare nel campo né nello stato del tool. Svuotarlo impedisce che un
+           listener successivo possa interpretarlo come un valore ancora valido. */
+        el.value='';
         el.setCustomValidity('Inserire un valore compreso nei limiti previsti e rispettare gli incrementi consentiti.');
       }
     });
@@ -5336,6 +5431,7 @@ function resetGuidaErbologia(){
   };
   Object.keys(technicalReset).forEach(function(id){var h=document.getElementById(id);if(h)h.value=technicalReset[id];});
   if(typeof erbResetPerPlantExtensionUi==='function')erbResetPerPlantExtensionUi();
+  var v87s=document.getElementById('erbSpeciesSpecialJson');if(v87s)v87s.value='{}';
   if(typeof ERB_V38_HISTORY!=='undefined')ERB_V38_HISTORY={riconoscimento:[],interazione:[],esportazione:[],collocazione:[]};
   window.__ERB_CONTEXT_RESET_PENDING=false;
   formulaSignatures={};
@@ -5361,7 +5457,7 @@ function mostraModo(nome){var nomi=['Personaggio','Erbologia','Ricerca'];for(var
 rpEl('modoPersonaggioBtn').addEventListener(evtClick,function(){mostraModo('Personaggio');});
 rpEl('modoErbologiaBtn').addEventListener(evtClick,function(){mostraModo('Erbologia');});
 rpEl('modoRicercaBtn').addEventListener(evtClick,rpEnterResearchFromProfile);
-document.addEventListener('input',function(e){var p=rpEl('modoPersonaggio'),g=rpEl('modoErbologia'),isName=!!(e.target&&e.target.id==='pgNomeSessione');/* Il nome non influisce su alcuna formula: non ricalcolare l'intera Guida a ogni carattere. */if(!isName&&((p&&p.contains(e.target))||(g&&g.contains(e.target))))ricalcolaErbologia();if(isName){if(RP_PROFILE_NAME_TIMER)clearTimeout(RP_PROFILE_NAME_TIMER);var typed=rpProfileName();RP_PROFILE_NAME_TIMER=setTimeout(function(){RP_PROFILE_NAME_TIMER=null;if(typed&&rpNormName(typed)===rpNormName(rpProfileName()))rpProfileNameCommitted(true).catch(function(){});},900);}if(e.target&&(e.target.id==='empatia'||e.target.id==='sapienzaErbologicaGuida'))rpSincronizzaProfiloRicerca();},true);
+document.addEventListener('input',function(e){var p=rpEl('modoPersonaggio'),g=rpEl('modoErbologia'),isName=!!(e.target&&e.target.id==='pgNomeSessione'),isDirectUseCounter=!!(e.target&&/^(?:erbFertilizzanteUsed|erbVasoUsed|erbMooncalfUsed)$/.test(e.target.id));/* Il nome e i contatori diretti non influenzano la formula mentre vengono digitati: il loro gestore aggiorna lo stato prima del ricalcolo successivo. */if(!isName&&!isDirectUseCounter&&((p&&p.contains(e.target))||(g&&g.contains(e.target))))ricalcolaErbologia();if(isName){if(RP_PROFILE_NAME_TIMER)clearTimeout(RP_PROFILE_NAME_TIMER);var typed=rpProfileName();RP_PROFILE_NAME_TIMER=setTimeout(function(){RP_PROFILE_NAME_TIMER=null;if(typed&&rpNormName(typed)===rpNormName(rpProfileName()))rpProfileNameCommitted(true).catch(function(){});},900);}if(e.target&&(e.target.id==='empatia'||e.target.id==='sapienzaErbologicaGuida'))rpSincronizzaProfiloRicerca();},true);
 document.addEventListener('change',function(e){var p=rpEl('modoPersonaggio'),g=rpEl('modoErbologia'),isName=!!(e.target&&e.target.id==='pgNomeSessione');if(!isName&&((p&&p.contains(e.target))||(g&&g.contains(e.target))))ricalcolaErbologia();if(isName){if(RP_PROFILE_NAME_TIMER){clearTimeout(RP_PROFILE_NAME_TIMER);RP_PROFILE_NAME_TIMER=null;}rpProfileNameCommitted(true).catch(function(){});}if(e.target&&(e.target.id==='pgTipo'||e.target.id==='empatia'||e.target.id==='sapienzaErbologicaGuida')){aggiornaCampiTipoPG();rpSincronizzaProfiloRicerca();}},true);
 erbInitBonusUI();ripristinaStatoErbologia();aggiornaCampiTipoPG();rpSincronizzaProfiloRicerca();ricalcolaRicerca();
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',rpSetupFirebase);else rpSetupFirebase();
@@ -5584,9 +5680,9 @@ erbAddBonus=function(phase){var host=document.getElementById(phase==='generale'?
 
 function erbV38Bagaglio(){var host=erbV38El('erbBagaglioUpdateSummary');if(!host)return;var groups={};document.querySelectorAll('#modoErbologia .erb-bonus-row[data-ebx-preset]').forEach(function(r){var pkey=r.getAttribute('data-ebx-preset')||'',p=window.EBX_PHASE_PRESETS&&EBX_PHASE_PRESETS[pkey];if(!p||p.total==null)return;var used=erbInt(r.querySelector('.erb-uses-used'),0);if(used<=0)return;if(!groups[pkey])groups[pkey]={name:p.source||p.label,used:0,total:Number(p.total)};groups[pkey].used+=used;});var rows=Object.keys(groups).map(function(k){return groups[k];});if(!rows.length){host.classList.remove('show');host.innerHTML='';return;}host.classList.add('show');host.innerHTML='<b>Bagaglio da aggiornare</b><br>'+rows.map(function(x){var shown=Math.min(x.total,x.used);return x.used>=x.total?'<span class="remove">'+x.name+': '+shown+'/'+x.total+' usi — UTILIZZI TERMINATI, rimuovi l’Oggetto dal Bagaglio.</span>':'<span class="update">'+x.name+': '+shown+'/'+x.total+' usi — '+(x.total-shown)+' rimasti; aggiorna il contatore nel Bagaglio.</span>';}).join('<br>');}
 
-function erbV38Protections(){var a=[];document.querySelectorAll('#ebxIllegalGuideBox [data-ebx-faces]').forEach(function(x){if(x.checked)a.push({name:x.getAttribute('data-ebx-name')||'Protezione',faces:Number(x.getAttribute('data-ebx-faces')||0),fat:Number(x.getAttribute('data-ebx-fatigue')||0)});});return a;}
+function erbV38Protections(){var a=[];document.querySelectorAll('#ebxIllegalGuideBox [data-ebx-faces]').forEach(function(x){if(x.checked)a.push({name:x.getAttribute('data-ebx-name')||'Protezione',faces:Number(x.getAttribute('data-ebx-faces')||0),fat:Number(x.getAttribute('data-ebx-fatigue')||0),unresolved:x.getAttribute('data-ebx-unresolved')==='1'});});return a;}
 function erbV38ProtectionFatigue(){return erbV38Protections().reduce(function(s,x){return s+x.fat;},0);}
-function erbV38RenderProtectionSummary(){var host=erbV38El('erbIllegalProtectionSummary');if(!host)return;var a=erbV38Protections();if(!a.length){host.innerHTML='';return;}host.innerHTML='<div class="erb-illegal-protection-summary"><b>Protezioni attive della Serra</b><br>'+a.map(function(x){return x.name+' (+'+x.faces+' facce · Fatica -'+String(x.fat).replace('.',',')+')';}).join('<br>')+'<br><br><b>Fatica già spesa per predisporre le protezioni:</b> -'+String(erbV38ProtectionFatigue()).replace('.',',')+'<br><small>Non viene sottratta una seconda volta dalla sessione corrente.</small></div>';}
+function erbV38RenderProtectionSummary(){var host=erbV38El('erbIllegalProtectionSummary');if(!host)return;var a=erbV38Protections();if(!a.length){host.innerHTML='';return;}host.innerHTML='<div class="erb-illegal-protection-summary"><b>Protezioni attive della Serra</b><br>'+a.map(function(x){return x.name+' ('+(x.unresolved?'bonus facce sospeso':'+'+x.faces+' facce')+' · Fatica -'+String(x.fat).replace('.',',')+')';}).join('<br>')+'<br><br><b>Fatica già spesa per predisporre le protezioni:</b> -'+String(erbV38ProtectionFatigue()).replace('.',',')+'<br><small>Non viene sottratta una seconda volta dalla sessione corrente.</small></div>';}
 
 /* Adds Fatigue from standalone special techniques that are not normal phase rows. */
 var erbV38OldPhaseFatigue=erbPhaseEffectFatigue;
@@ -5710,7 +5806,7 @@ ebxPresetOptions=function(){var groups={},order=[];Object.keys(EBX_SEARCH_PRESET
 function erbV39LegacyHerbResolver(key){var m={herb_s33:{eff:'33',bonus:''},herb_s66_1:{eff:'66',bonus:'1'},herb_s66_2:{eff:'66',bonus:'2'},herb_s100:{eff:'100',bonus:''},herb_a33_1:{eff:'33',bonus:'1'},herb_a33_2:{eff:'33',bonus:'2'},herb_a66_1:{eff:'66',bonus:'1'},herb_a66_2:{eff:'66',bonus:'2'},herb_a66_3:{eff:'66',bonus:'3'},herb_a100_2:{eff:'100',bonus:'1'},herb_a100_3:{eff:'100',bonus:'2'},herb_sap100:{eff:'100',bonus:''}};return m[key]||null;}
 var erbV39OldMakeSearchRow=ebxMakeSearchRow;
 ebxMakeSearchRow=function(data){data=data||{};var legacy=erbV39LegacyHerbResolver(data.preset||'');if(legacy){data=Object.assign({},data,{preset:'family_herbivicus',resolverEff:legacy.eff,resolverBonus:legacy.bonus});}var row=erbV39OldMakeSearchRow(data);if(!row.querySelector('.ebx-search-resolver')){var r=document.createElement('div');r.className='ebx-search-resolver';r.innerHTML='<div class="erb-knowledge-tool"><b>Riuscita:</b> apri il <a href="https://felixfelicisharrypottergdr.forumfree.it/?pag=riuscitaconoscenze" target="_blank" rel="noopener">Generatore ↗</a>.</div><div class="erb-resolver-grid"><div><label>Riuscita ottenuta</label><select data-erb-search-eff><option value="">— Seleziona —</option><option value="0">0% · nessun effetto</option><option value="33">33%</option><option value="66">66%</option><option value="100">100%</option></select></div><div class="erb-secondary-roll" data-erb-search-roll style="display:none"><div class="result-line"><div class="dice-code" data-erb-search-code></div><button type="button" class="copy-btn">Copia</button></div><div class="result-line"><span>Risultato del dado bonus:</span><input type="number" data-erb-search-bonus min="1"></div></div></div><div class="erb-resolver-outcome pending" data-erb-search-outcome>Determina prima la riuscita.</div>';row.appendChild(r);var uid='erbsearch_'+Date.now()+'_'+Math.floor(Math.random()*100000),c=r.querySelector('[data-erb-search-code]'),b=r.querySelector('button.copy-btn');if(c)c.id=uid;if(b)b.setAttribute('data-copy-source',uid);if(data.resolverEff)r.querySelector('[data-erb-search-eff]').value=data.resolverEff;if(data.resolverBonus)r.querySelector('[data-erb-search-bonus]').value=data.resolverBonus;}ebxUpdateSearchRow(row);return row;};
-function erbV39RefreshSearchResolver(row){var key=row.querySelector('.ebx-search-preset').value,p=EBX_SEARCH_PRESETS[key],r=row.querySelector('.ebx-search-resolver'),scope=row.querySelector('.ebx-search-scope');row.dataset.resolverReady='0';row.dataset.resolvedValue='0';if(!p||!p.resolver){if(r)r.style.display='none';return;}if(r)r.style.display='block';if(p.firstOnly&&scope&&scope.value==='all')scope.value='1';var eff=r.querySelector('[data-erb-search-eff]'),bonus=r.querySelector('[data-erb-search-bonus]'),wrap=r.querySelector('[data-erb-search-roll]'),code=r.querySelector('[data-erb-search-code]'),out=r.querySelector('[data-erb-search-outcome]'),pg=leggiPG();if(wrap)wrap.style.display='none';if(!eff||eff.value===''){if(out){out.className='erb-resolver-outcome pending';out.textContent='Determina prima la riuscita della Conoscenza.';}return;}var spec=erbV39CommonBonusSpec(pg,Number(eff.value));if(spec.unsupported){if(bonus)bonus.value='';if(out){out.className='erb-resolver-outcome bad';out.textContent='Questo esito non è presente nel catalogo originario per il profilo selezionato; il tool non inventa un bonus.';}return;}if(spec.ready){if(bonus)bonus.value='';row.dataset.resolverReady='1';row.dataset.resolvedValue=String(spec.value||0);if(out){out.className='erb-resolver-outcome';out.textContent=Number(eff.value)===0?'0%: nessun bonus prodotto.':'Bonus calcolato: +'+spec.value+' possibilità.';}return;}if(spec.faces){if(wrap)wrap.style.display='block';if(bonus)bonus.max=String(spec.faces);if(code)code.textContent=rpForumDiceBlock('Qual è il bonus di Herbivicus?', 'Il tool somma automaticamente l’eventuale base prevista.', '[dice=1d'+spec.faces+']Herbivicus — valore del bonus[/dice]');var v=bonus&&bonus.value!==''?Number(bonus.value):null;if(v===null){if(out){out.className='erb-resolver-outcome pending';out.textContent='Lancia il 1d'+spec.faces+' e riporta il risultato.';}return;}if(!Number.isInteger(v)||v<1||v>spec.faces){if(out){out.className='erb-resolver-outcome bad';out.textContent='Risultato del dado bonus non valido.';}return;}var value=(spec.base||0)+v;row.dataset.resolverReady='1';row.dataset.resolvedValue=String(value);if(out){out.className='erb-resolver-outcome';out.textContent='Bonus calcolato: +'+value+' possibilità.';}}}
+function erbV39RefreshSearchResolver(row){var key=row.querySelector('.ebx-search-preset').value,p=EBX_SEARCH_PRESETS[key],r=row.querySelector('.ebx-search-resolver'),scope=row.querySelector('.ebx-search-scope');row.dataset.resolverReady='0';row.dataset.resolvedValue='0';if(!p||!p.resolver){if(r)r.style.display='none';return;}if(!r)return;if(r)r.style.display='block';if(p.firstOnly&&scope&&scope.value==='all')scope.value='1';var eff=r.querySelector('[data-erb-search-eff]'),bonus=r.querySelector('[data-erb-search-bonus]'),wrap=r.querySelector('[data-erb-search-roll]'),code=r.querySelector('[data-erb-search-code]'),out=r.querySelector('[data-erb-search-outcome]'),pg=leggiPG();if(wrap)wrap.style.display='none';if(!eff||eff.value===''){if(out){out.className='erb-resolver-outcome pending';out.textContent='Determina prima la riuscita della Conoscenza.';}return;}var spec=erbV39CommonBonusSpec(pg,Number(eff.value));if(spec.unsupported){if(bonus)bonus.value='';if(out){out.className='erb-resolver-outcome bad';out.textContent='Questo esito non è presente nel catalogo originario per il profilo selezionato; il tool non inventa un bonus.';}return;}if(spec.ready){if(bonus)bonus.value='';row.dataset.resolverReady='1';row.dataset.resolvedValue=String(spec.value||0);if(out){out.className='erb-resolver-outcome';out.textContent=Number(eff.value)===0?'0%: nessun bonus prodotto.':'Bonus calcolato: +'+spec.value+' possibilità.';}return;}if(spec.faces){if(wrap)wrap.style.display='block';if(bonus)bonus.max=String(spec.faces);if(code)code.textContent=rpForumDiceBlock('Qual è il bonus di Herbivicus?', 'Il tool somma automaticamente l’eventuale base prevista.', '[dice=1d'+spec.faces+']Herbivicus — valore del bonus[/dice]');var v=bonus&&bonus.value!==''?Number(bonus.value):null;if(v===null){if(out){out.className='erb-resolver-outcome pending';out.textContent='Lancia il 1d'+spec.faces+' e riporta il risultato.';}return;}if(!Number.isInteger(v)||v<1||v>spec.faces){if(out){out.className='erb-resolver-outcome bad';out.textContent='Risultato del dado bonus non valido.';}return;}var value=(spec.base||0)+v;row.dataset.resolverReady='1';row.dataset.resolvedValue=String(value);if(out){out.className='erb-resolver-outcome';out.textContent='Bonus calcolato: +'+value+' possibilità.';}}}
 var erbV39OldUpdateSearchRow=ebxUpdateSearchRow;
 ebxUpdateSearchRow=function(row){erbV39OldUpdateSearchRow(row);var key=row.querySelector('.ebx-search-preset').value,p=EBX_SEARCH_PRESETS[key],r=row.querySelector('.ebx-search-resolver');if(r)r.style.display=(p&&p.resolver)?'block':'none';if(p&&p.resolver){var man=row.querySelector('.ebx-search-manual'),line=row.querySelector('.ebx-effect-line');if(man)man.style.display='none';erbV39RefreshSearchResolver(row);if(line){var val=Number(row.dataset.resolvedValue||0);line.innerHTML=(row.dataset.resolverReady==='1'?('<b>+'+val+' possibilità</b> · '):'')+ebxEsc(p.note||'');}}};
 var erbV39OldSerializeSearch=ebxSerializeSearch;
@@ -5782,7 +5878,7 @@ document.addEventListener('input',function(e){
 /* ===== ERBOLOGIA v45 — persistenza Guida + link Erbario + flusso Ricerca ===== */
 (function(){
 'use strict';
-var RP_SPEC_LINKS={"Aconito":"aconito","Agrifoglio":"agrifoglio","Albero della Vita":"alberovita","Albero di Biancaneve":"alberobiancaneve","Albero di Cenere":"alberocenere","Algabranchia":"algabranchia","Alioto":"alioto","Alloro":"alloro","Aloe":"aloe","Amarantacea":"amarantacea","Arbusti Autofertilizzanti":"autofert","Artemisia":"artemisia","Asfodelo":"asfodelo","Assenzio":"assenzio","Bacche di Balzar":"balzar","Belladonna":"belladonna","Brugmansia":"brugmansia","Bubotubero":"bubotubero","Bucaneve (autunno/inverno) - Fico (primavera-autunno)":[{"label":"Bucaneve","anchor":"bucaneve"},{"label":"Fico","anchor":"fico"}],"Bucaneve (autunno/inverno) - Fico (primavera-estate)":[{"label":"Bucaneve","anchor":"bucaneve"},{"label":"Fico","anchor":"fico"}],"Bucaneve (autunno/inverno) - Fico (primavera/estate)":[{"label":"Bucaneve","anchor":"bucaneve"},{"label":"Fico","anchor":"fico"}],"Bucaneve (se autunno/inverno) - Fico (se primavera/estate)":[{"label":"Bucaneve","anchor":"bucaneve"},{"label":"Fico","anchor":"fico"}],"Bulbo Balzellante":"bulbo","Canterose":"canterose","Cavolo Carnivoro Cinese":"cavolo","Centinodia":"centinodia","Cespuglio Farfallino":"cespugliofarf","Cespuglio Spinoso":"cespugliospi","Cicuta":"cicuta","Coclearia":"coclearia","Dittamo":"dittamo","Erba Fondente":"fondente","Erba Stregata":"erbastre","Fagiolo Corridore":"fagiolocorri","Fagiolo Sopoforoso":"sopoforosi","Felci Imitanti":"felci","Fiori Fabula":"fiorifab","Fiori Floo":"fiorifloo","Frullobulbo":"frullobulbo","Fungo Allucinogeno":"fungoalluc","Fungo Saltellante":"fungosalt","Fungo Scoppiettante":"fungoscop","Geranio Zannuto":"geranio","Giaggiolo Puzzolente":"giaggiolo","Giunchiglia strombazzante":"giunchiglia","Grinzafico":"grinzafico","Horklump":"horklump","Lavanda":"lavanda","Levistico":"levistico","Mandragola":"mandragola","Menta Piperita":"piperita","Menta peperita":"piperita","Mimbulus Mimbletonia":"mimbulus","Moly":"moly","Muschio del sud":"muschio","Ortica":"ortica","Ortiche":"ortica","Papaveri":"papaveri","Pianta Fumogena":"Piantafumo","Pianta Stridula":"stridula","Pianta Vampiro":"vampiro","Pianta di Semi di Fuoco":"semifuoco","Platano Picchiatore":"picchiatore","Primula Veris":"primula","Puffagiolo":"puffagiolo","Pugnacio":"pugnacio","Radigorda":"radigorda","Rampicanti Capovolti":"capovolti","Ricino":"ricino","Rosa":"rose","Ruta":"ruta","Salvia":"salvia","Sanguinaria":"sanguinaria","Siepi dell'Ombra":"siepi","Starnutaria":"starnutaria","Tentacula Velenosa":"tentacula","Tranello del Diavolo":"tranello","Valeriana":"valeriana","Verbena":"verbena","Vischio":"vischio","Zenzero":"zenzero"};
+var RP_SPEC_LINKS={"Aconito":"aconito","Agrifoglio":"agrifoglio","Albero della Vita":"alberovita","Albero di Biancaneve":"alberobiancaneve","Albero di Cenere":"alberocenere","Algabranchia":"algabranchia","Alioto":"alioto","Annientamento":"annientamento","Alloro":"alloro","Aloe":"aloe","Amarantacea":"amarantacea","Arbusti Autofertilizzanti":"autofert","Artemisia":"artemisia","Asfodelo":"asfodelo","Assenzio":"assenzio","Bacche di Balzar":"balzar","Belladonna":"belladonna","Brugmansia":"brugmansia","Bubotubero":"bubotubero","Bucaneve (autunno/inverno) - Fico (primavera-autunno)":[{"label":"Bucaneve","anchor":"bucaneve"},{"label":"Fico","anchor":"fico"}],"Bucaneve (autunno/inverno) - Fico (primavera-estate)":[{"label":"Bucaneve","anchor":"bucaneve"},{"label":"Fico","anchor":"fico"}],"Bucaneve (autunno/inverno) - Fico (primavera/estate)":[{"label":"Bucaneve","anchor":"bucaneve"},{"label":"Fico","anchor":"fico"}],"Bucaneve (se autunno/inverno) - Fico (se primavera/estate)":[{"label":"Bucaneve","anchor":"bucaneve"},{"label":"Fico","anchor":"fico"}],"Bulbo Balzellante":"bulbo","Canterose":"canterose","Cavolo Carnivoro Cinese":"cavolo","Centinodia":"centinodia","Cespuglio Farfallino":"cespugliofarf","Cespuglio Spinoso":"cespugliospi","Cicuta":"cicuta","Coclearia":"coclearia","Dittamo":"dittamo","Erba Fondente":"fondente","Erba Stregata":"erbastre","Fagiolo Corridore":"fagiolocorri","Fagiolo Sopoforoso":"sopoforosi","Felci Imitanti":"felci","Fichi":"fico","Fiori Fabula":"fiorifab","Fiori Floo":"fiorifloo","Frullobulbo":"frullobulbo","Fungo Allucinogeno":"fungoalluc","Fungo Saltellante":"fungosalt","Fungo Scoppiettante":"fungoscop","Geranio Zannuto":"geranio","Giaggiolo Puzzolente":"giaggiolo","Giunchiglia strombazzante":"giunchiglia","Grinzafico":"grinzafico","Horklump":"horklump","Lavanda":"lavanda","Levistico":"levistico","Mandragola":"mandragola","Menta Piperita":"piperita","Menta peperita":"piperita","Mimbulus Mimbletonia":"mimbulus","Moly":"moly","Muschio del sud":"muschio","Ortica":"ortica","Ortiche":"ortica","Papaveri":"papaveri","Pianta Fumogena":"Piantafumo","Pianta Stridula":"stridula","Pianta Vampiro":"vampiro","Pianta di Semi di Fuoco":"semifuoco","Platano Picchiatore":"picchiatore","Primula Veris":"primula","Puffagiolo":"puffagiolo","Pugnacio":"pugnacio","Radigorda":"radigorda","Rampicanti Capovolti":"capovolti","Ricino":"ricino","Rosa":"rose","Ruta":"ruta","Salvia":"salvia","Sanguinaria":"sanguinaria","Siepi dell'Ombra":"siepi","Starnutaria":"starnutaria","Tentacula Velenosa":"tentacula","Tranello del Diavolo":"tranello","Valeriana":"valeriana","Verbena":"verbena","Vischio":"vischio","Zenzero":"zenzero"};
 var RP_SPEC_BASE='https://felixfelicisharrypottergdr.forumfree.it/?t=80407809#';
 function e44Esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function e44LinksForName(name){var v=RP_SPEC_LINKS[String(name||'').trim()];if(!v)return [];if(Array.isArray(v))return v.map(function(x){return {label:x.label,anchor:x.anchor};});return [{label:String(name||'').trim(),anchor:v}];}
@@ -5805,8 +5901,8 @@ function erbGuideCollectState(){return {specificVoteV58:1,fields:erbGuideFields(
 function erbGuideSetFields(fields,restoreProfile){fields=fields||{};document.querySelectorAll((restoreProfile?'#modoPersonaggio [data-key],':'')+'#modoErbologia [data-key]').forEach(function(f){var k=f.getAttribute('data-key');if(fields[k]===undefined)return;if(f.type==='checkbox'||f.type==='radio')f.checked=!!fields[k];else f.value=fields[k];});}
 function erbGuideRebuildSharedAvailable(row){if(!row||row.dataset.sharedAvailable!=='1')return;var wrap=row.querySelector('.erb-apply-wrap');if(!wrap)return;wrap.innerHTML='<input type="checkbox" class="erb-apply" tabindex="-1"><span class="erb-auto-state erb-shared-wait">Disponibile, non ancora usato</span><button type="button" class="erb-use-shared">Usa in questa fase</button>';var use=wrap.querySelector('.erb-use-shared');if(use)use.addEventListener('click',function(){row.dataset.sharedAvailable='';use.remove();if(typeof erbV38AutoApply==='function')erbV38AutoApply(row);if(typeof ricalcolaErbologia==='function')ricalcolaErbologia();});}
 function erbGuideRestoreRows(rows){Object.keys(ERB_PHASE_CONTAINERS||{}).forEach(function(ph){var h=document.getElementById(ERB_PHASE_CONTAINERS[ph]);if(h)h.innerHTML='';});(rows||[]).forEach(function(d){var host=document.getElementById(ERB_PHASE_CONTAINERS[d.phase]||'');if(!host)return;/* v67: i vecchi bonus manuali non vengono più ripristinati. */if(!d.preset||!EBX_PHASE_PRESETS[d.preset]||typeof ebxAddPhasePreset!=='function')return;var before=host.children.length,row;ebxAddPhasePreset(d.phase,d.preset);row=host.children[before];if(!row)return;function set(sel,val){var e=row.querySelector(sel);if(e&&val!==undefined)e.value=val;}set('.erb-source',d.source);set('.erb-condition',d.condition);set('.erb-type',d.type);if(typeof erbUpdateTarget==='function')erbUpdateTarget(row);set('.erb-target',d.target);set('.erb-value',d.value);set('.erb-fatigue',d.fatigue);set('.erb-uses-total',d.total);set('.erb-uses-used',d.used);if(d.sharedAvailable){row.dataset.sharedAvailable=d.sharedAvailable;erbGuideRebuildSharedAvailable(row);}var rr=row.querySelector('.erb-knowledge-resolver');if(rr&&d.resolver){var eff=rr.querySelector('[data-erb-resolver-eff]'),bon=rr.querySelector('[data-erb-resolver-bonus]');if(eff)eff.value=d.resolver.eff||'';if(bon)bon.value=d.resolver.bonus||'';if(typeof erbV39RefreshResolver==='function')erbV39RefreshResolver(row);}var ap=row.querySelector('.erb-apply');if(ap&&!d.sharedAvailable){ap.checked=!!d.apply;ap.disabled=false;}row.dataset.autoApplied=d.autoApplied||'';if(typeof erbV39AddShareControl==='function')erbV39AddShareControl(row);});if(typeof setupNumericInputs==='function')setupNumericInputs();if(typeof erbRefreshBonuses==='function')erbRefreshBonuses();if(typeof erbV39RefreshUseLabels==='function')erbV39RefreshUseLabels();}
-function erbGuideApplyState(st){if(!st)return;if(!st.specificVoteV58&&st.fields){st=e44Clone(st);st.fields=st.fields||{};st.fields.pgVoto='';}ERB_GUIDE_RESTORING=true;try{var restoreProfile=true;erbGuideSetFields(st.fields,restoreProfile);if(typeof aggiornaCampiTipoPG==='function')aggiornaCampiTipoPG();erbGuideRestoreRows(st.bonusRows||[]);var g=st.globals||{};ERB_V38_HISTORY=e44Clone(g.history||{riconoscimento:[],interazione:[],esportazione:[],collocazione:[]});EBX_PAX_SUCCESS=!!g.paxSuccess;EBX_PAX_DATA=e44Clone(g.paxData||null);EBX_PAX_AUTOCHECK=!!g.paxAutocheck;EBX_ILLEGAL_SIG=e44Clone(g.illegalSig||{});if(typeof ricalcolaErbologia==='function')ricalcolaErbologia();if(st.activePanel&&document.getElementById('pannello'+st.activePanel))mostraPannello(st.activePanel);}finally{ERB_GUIDE_RESTORING=false;}if(typeof rpEnsureProfileSession==='function'&&RP_FB&&RP_FB.user&&rpProfileName())setTimeout(function(){rpEnsureProfileSession(RP_PROFILE_PENDING_CREATE).catch(function(){});},0);}
-function erbGuideSaveNow(){var ref=erbGuideDoc();if(!ref||ERB_GUIDE_RESTORING)return Promise.resolve();if(ERB_GUIDE_SAVE_TIMER){clearTimeout(ERB_GUIDE_SAVE_TIMER);ERB_GUIDE_SAVE_TIMER=null;}var payload={recordType:'guide',ownerUid:RP_FB.user.uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),toolVersion:'erbologia-guide-v65',state:erbGuideCollectState()};erbGuideStatus('Guida: salvataggio automatico su Firebase…','saving');var task=ERB_GUIDE_SAVE_CHAIN.catch(function(){}).then(function(){return ref.set(payload,{merge:true});}).then(function(){erbGuideStatus('Guida salvata automaticamente su Firebase ✓','ok');}).catch(function(err){console.error(err);erbGuideStatus('Guida: errore di salvataggio Firebase — '+(err.message||err),'bad');});ERB_GUIDE_SAVE_CHAIN=task;return task;}
+function erbGuideApplyState(st){if(!st)return;if(!st.specificVoteV58&&st.fields){st=e44Clone(st);st.fields=st.fields||{};st.fields.pgVoto='';}ERB_GUIDE_RESTORING=true;window.__ERB_GUIDE_RESTORING=true;try{var restoreProfile=true;erbGuideSetFields(st.fields,restoreProfile);if(typeof aggiornaCampiTipoPG==='function')aggiornaCampiTipoPG();/* v100: reset tecnico PRIMA della ricostruzione delle righe dinamiche. ebxAddPhasePreset può ricalcolare immediatamente: con cache vecchie cancellerebbe risultati validi prima del secondo passaggio. */formulaSignatures={};ultimoContestoInterazione=null;ultimoContestoBaseAdulto=null;ultimoContestoPostColtivazione=null;ultimoContestoPiantaGuida=null;erbGuideRestoreRows(st.bonusRows||[]);var g=st.globals||{};ERB_V38_HISTORY=e44Clone(g.history||{riconoscimento:[],interazione:[],esportazione:[],collocazione:[]});EBX_PAX_SUCCESS=!!g.paxSuccess;EBX_PAX_DATA=e44Clone(g.paxData||null);EBX_PAX_AUTOCHECK=!!g.paxAutocheck;EBX_ILLEGAL_SIG=e44Clone(g.illegalSig||{});/* Secondo passaggio: la struttura dinamica esiste, quindi tutti i valori salvati possono essere interpretati senza invalidazioni retroattive. */if(typeof ricalcolaErbologia==='function')ricalcolaErbologia();if(st.activePanel&&document.getElementById('pannello'+st.activePanel))mostraPannello(st.activePanel);}finally{ERB_GUIDE_RESTORING=false;window.__ERB_GUIDE_RESTORING=false;}if(typeof rpEnsureProfileSession==='function'&&RP_FB&&RP_FB.user&&rpProfileName())setTimeout(function(){rpEnsureProfileSession(RP_PROFILE_PENDING_CREATE).catch(function(){});},0);}
+function erbGuideSaveNow(){var ref=erbGuideDoc();if(!ref||ERB_GUIDE_RESTORING)return Promise.resolve();if(ERB_GUIDE_SAVE_TIMER){clearTimeout(ERB_GUIDE_SAVE_TIMER);ERB_GUIDE_SAVE_TIMER=null;}var payload={recordType:'guide',ownerUid:RP_FB.user.uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),toolVersion:'erbologia-guide-v101',state:erbGuideCollectState()};erbGuideStatus('Guida: salvataggio automatico su Firebase…','saving');var task=ERB_GUIDE_SAVE_CHAIN.catch(function(){}).then(function(){return ref.set(payload,{merge:true});}).then(function(){erbGuideStatus('Guida salvata automaticamente su Firebase ✓','ok');}).catch(function(err){console.error(err);erbGuideStatus('Guida: errore di salvataggio Firebase — '+(err.message||err),'bad');});ERB_GUIDE_SAVE_CHAIN=task;return task;}
 function erbGuideScheduleSave(){
   if(ERB_GUIDE_RESTORING)return;
   if(!ERB_GUIDE_READY||!RP_FB.user){
@@ -5867,7 +5963,7 @@ window.erbResetPersistentGuideForNewPg=function(btn){
   if(RP_PROFILE_NAME_TIMER){clearTimeout(RP_PROFILE_NAME_TIMER);RP_PROFILE_NAME_TIMER=null;}
   if(ERB_GUIDE_SAVE_TIMER){clearTimeout(ERB_GUIDE_SAVE_TIMER);ERB_GUIDE_SAVE_TIMER=null;}
   if(ERB_GUIDE_NAME_SAVE_TIMER){clearTimeout(ERB_GUIDE_NAME_SAVE_TIMER);ERB_GUIDE_NAME_SAVE_TIMER=null;}
-  RP_PROFILE_OPEN_PENDING=false;ERB_GUIDE_RESTORING=true;
+  RP_PROFILE_OPEN_PENDING=false;ERB_GUIDE_RESTORING=true;window.__ERB_GUIDE_RESTORING=true;
   try{
     function setVal(id,val){var e=document.getElementById(id);if(!e)return;if(e.type==='checkbox'||e.type==='radio')e.checked=!!val;else e.value=val;}
     setVal('pgNomeSessione','');setVal('pgTipo','studente');setVal('pgSegueErbologia','si');setVal('pgVoto','');setVal('empatia','10');setVal('sapienzaErbologicaGuida','0');
@@ -5876,9 +5972,9 @@ window.erbResetPersistentGuideForNewPg=function(btn){
     if(typeof aggiornaCampiTipoPG==='function')aggiornaCampiTipoPG();
     RP_PROFILE_SESSION_ID='';RP_PROFILE_SESSION_DATA=null;RP_PROFILE_SESSION_NAME='';RP_PROFILE_PENDING_CREATE=false;
     var ps=document.getElementById('rp-profile-session-status');if(ps){ps.textContent='Profilo azzerato. Salvataggio dei valori vuoti…';ps.className='session-status';}
-  }finally{ERB_GUIDE_RESTORING=false;}
+  }finally{ERB_GUIDE_RESTORING=false;window.__ERB_GUIDE_RESTORING=false;}
   var ref=erbGuideDoc();
-  var payload={recordType:'guide',ownerUid:RP_FB.user.uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),toolVersion:'erbologia-guide-v63',state:erbGuideCollectState()};
+  var payload={recordType:'guide',ownerUid:RP_FB.user.uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),toolVersion:'erbologia-guide-v101',state:erbGuideCollectState()};
   ref.set(payload,{merge:true}).then(function(){
     try{for(var i=localStorage.length-1;i>=0;i--){var k=localStorage.key(i)||'';if(k.indexOf('ffgdr_erb_knowledge_')===0)localStorage.removeItem(k);}localStorage.removeItem('ffgdr_knowledge_return_v1');}catch(e){}
     try{history.replaceState(null,'',window.location.pathname+window.location.search);}catch(e){window.location.hash='';}
@@ -6099,7 +6195,14 @@ function clearGuideResults(){
   if(typeof erbResetPerPlantExtensionUi==='function')erbResetPerPlantExtensionUi();
   if(typeof ERB_V38_HISTORY!=='undefined')ERB_V38_HISTORY={riconoscimento:[],interazione:[],esportazione:[],collocazione:[]};
   if(typeof formulaSignatures!=='undefined')formulaSignatures={};
+  clearImportedResearchMeta();
 }
+function renderImportedResearchMeta(){
+  var box=E('erbImportedResearchMeta'),txt=E('erbImportedResearchMetaText'),health=E('statoSaluteImportato'),enc=E('incontroImportato'),ex=E('esemplareImportato');if(!box||!txt)return;
+  var h=health?health.value:'',n=enc?enc.value:'',i=ex?ex.value:'';if(!h||!n){box.style.display='none';txt.textContent='';return;}
+  box.style.display='flex';txt.textContent='Incontro '+n+(i?' · Esemplare '+i:'')+' · '+h+'. La Fase Vitale selezionata sopra è quella dello stesso esemplare.';
+}
+function clearImportedResearchMeta(){['statoSaluteImportato','incontroImportato','esemplareImportato'].forEach(function(id){var x=E(id);if(x)x.value='';});renderImportedResearchMeta();}
 function renderVoteGate(){
   var hint=E('erbSpecificVoteHint'),vote=E('pgVoto'),sp=E('speciePiantaGuida');
   if(!hint)return;
@@ -6117,13 +6220,14 @@ window.ricalcolaErbologia=function(){
   if(student() && E('pgVoto') && !E('pgVoto').value){
     if(typeof aggiornaCampiTipoPG==='function')aggiornaCampiTipoPG();
     if(typeof erbRefreshBonuses==='function')erbRefreshBonuses();
-    renderVoteGate();
+    renderVoteGate();renderImportedResearchMeta();
     return;
   }
-  var r=oldCalc?oldCalc.apply(this,arguments):undefined;renderVoteGate();return r;
+  var r=oldCalc?oldCalc.apply(this,arguments):undefined;renderVoteGate();renderImportedResearchMeta();return r;
 };
-function transfer(n){
+function transfer(n,exemplar){
   var sp=species(n),c=cls(n);if(!sp)return false;
+  var chosen=1,maxCount=n===2?5:10;if(n>1){var count=typeof rpNumber==='function'?rpNumber('risultatoEsemplari'+n,1,maxCount):null;chosen=parseInt(exemplar,10);if(count===null||!Number.isInteger(chosen)||chosen<1||chosen>count)return false;}
   var vote=E('rpVotoRicerca'+n),current=E('speciePiantaGuida');
   var previousEncounter=current?(current.dataset.researchEncounter||''):'';
   if(current&&(current.value.trim()!==sp||previousEncounter!==String(n))&&typeof resetGuidaErbologia==='function')resetGuidaErbologia();
@@ -6134,8 +6238,11 @@ function transfer(n){
   if(prov)prov.value='normale';
   var sempreOstile=E('interazioneSempreOstile'),maiOstile=E('interazioneMaiOstile');
   if(sempreOstile&&typeof window.rpIsAlwaysHostileSpecies==='function'){sempreOstile.checked=window.rpIsAlwaysHostileSpecies(sp);if(sempreOstile.checked&&maiOstile)maiOstile.checked=false;}
-  if(n===1&&typeof rpNumber==='function'&&typeof rpLookup==='function'&&typeof rpFaseVitaleTab!=='undefined'){
-    var fv=rpNumber('risultatoFase1',1,9),phase=fv===null?'':rpLookup(rpFaseVitaleTab,fv),map={'Germinazione':'germinazione','Vegetazione':'vegetazione','Riproduzione':'riproduzione','Senescenza':'senescenza','Seme':'seme'},fe=E('faseInterazione');if(fe&&map[phase])fe.value=map[phase];
+  if(typeof rpNumber==='function'&&typeof rpLookup==='function'&&typeof rpFaseVitaleTab!=='undefined'){
+    var phaseId=n===1?'risultatoFase1':'risultatoFase'+n+'_'+chosen,healthId=n===1?'risultatoSalute1':'risultatoSalute'+n+'_'+chosen;
+    var fv=rpNumber(phaseId,1,9),sv=rpNumber(healthId,1,15),phase=fv===null?'':rpLookup(rpFaseVitaleTab,fv),health=(sv===null||typeof rpStatoSaluteTab==='undefined')?'':rpLookup(rpStatoSaluteTab,sv),map={'Germinazione':'germinazione','Vegetazione':'vegetazione','Riproduzione':'riproduzione','Senescenza':'senescenza','Seme':'seme'},fe=E('faseInterazione');if(fe&&map[phase])fe.value=map[phase];
+    var hi=E('statoSaluteImportato'),ei=E('incontroImportato'),xi=E('esemplareImportato');if(hi)hi.value=health;if(ei)ei.value=String(n);if(xi)xi.value=String(chosen);
+    if(spec){spec.dataset.researchExemplar=String(chosen);}
   }
   lastSpec=sp;[spec,nome,cl,prov,sempreOstile].forEach(function(x){if(x)fire(x,'change');});
   if(student()&&gv&&vote){gv.value=vote.value;fire(gv,'change');}
@@ -6199,7 +6306,8 @@ if(outcomeHost)outcomeHost.addEventListener('click',function(ev){
   if(!btn)return;
   var i=parseInt(btn.getAttribute('data-rp-import-guide'),10);
   if(!(i>=1&&i<=3))return;
-  if(transfer(i)){
+  var pick=outcomeHost.querySelector('[data-rp-import-exemplar="'+i+'"]'),chosen=pick?parseInt(pick.value,10):1;
+  if(transfer(i,chosen)){
     updateBridge(i);
     if(typeof mostraModo==='function')mostraModo('Erbologia');
     if(typeof mostraPannello==='function')mostraPannello('Riconoscimento');
@@ -6208,7 +6316,7 @@ if(outcomeHost)outcomeHost.addEventListener('click',function(ev){
   }
 });
 var specGuide=E('speciePiantaGuida'),lastSpec=specGuide?specGuide.value:'';
-if(specGuide){specGuide.addEventListener('change',function(){var now=specGuide.value.trim();if(now!==lastSpec){lastSpec=now;var v=E('pgVoto');if(student()&&v)v.value='';clearGuideResults();window.ricalcolaErbologia();}});}
+if(specGuide){specGuide.addEventListener('change',function(){var now=specGuide.value.trim();/* v99: durante il restore Firebase il cambio specie è ricostruzione dello stato, non una modifica del player. Aggiorna solo il riferimento storico senza cancellare voto/esiti/sottotiri appena caricati. */if(window.__ERB_GUIDE_RESTORING===true){lastSpec=now;return;}if(now!==lastSpec){lastSpec=now;var v=E('pgVoto');if(student()&&v)v.value='';clearGuideResults();window.ricalcolaErbologia();}});}
 var pgVote=E('pgVoto');if(pgVote)pgVote.addEventListener('change',function(){window.ricalcolaErbologia();});
 if(student()&&pgVote&&!E('speciePiantaGuida').value)pgVote.value='';
 window.ricalcolaErbologia();window.ricalcolaRicerca();
@@ -6316,11 +6424,39 @@ var NEVER=[
 var NEVER_MAP={};NEVER.forEach(function(n){NEVER_MAP[norm(n)]=true;});
 window.rpIsNeverHostileSpecies=function(name){return !!NEVER_MAP[norm(name)];};
 
+/* Prezzario/Erbario: proprietà che il tool può dedurre dalla specie senza chiedere una casella manuale. */
+var EXOTIC=['Albero Carnivoro','Albero Medusa','Annientamento','Bebop Caraibica','Coccolacea','Erbaschiuma','Germogli Lamentosi','Loto di Mahoutokoro','Menta Tibetana','Orchidea Fantasma','Pianta Mangiauomini','Platano Colombiano','Prato Messicano','Stupefiore'];
+var CULT_ILLEGAL=['Albero Carnivoro','Albero di Biancaneve','Albero Medusa','Annientamento','Brugmansia','Canterose','Cicuta','Erba Stregata','Fungo Allucinogeno','Pianta Mangiauomini','Pianta Vampiro','Platano Colombiano','Platano Picchiatore','Pugnacio','Rampicanti Capovolti','Ruta',"Siepi dell'Ombra",'Starnutaria','Stupefiore','Tentacula Velenosa','Tranello del Diavolo'];
+var PURCHASE_RESTRICTED=['Aconito','Agrifoglio','Alioto','Asfodelo','Assenzio','Belladonna','Bucaneve','Erbaschiuma','Fagiolo Sopoforoso','Fagioli Sopoforosi','Ortica','Ricino','Verbena','Vischio'];
+function mapOf(a){var o={};a.forEach(function(x){o[norm(x)]=true;});return o;}
+var EXOTIC_MAP=mapOf(EXOTIC),CULT_ILLEGAL_MAP=mapOf(CULT_ILLEGAL),PURCHASE_RESTRICTED_MAP=mapOf(PURCHASE_RESTRICTED);
+var PRICE_LEGAL={X:150,XX:300,XXX:600,XXXX:1200,XXXXX:2400};
+function knownSpecies(name){var k=norm(name),opts=document.querySelectorAll('#erbSpeciesCatalog option');for(var i=0;i<opts.length;i++)if(norm(opts[i].value)===k)return true;return false;}
+function galleons(n){return Number(n||0).toLocaleString('it-IT')+' G';}
+function syncPurchaseAndLegality(name){
+ var prov=E('provenienzaPianta'),cl=E('classificazione'),hist=E('trattamentoGiaCompletato'),fase=E('faseInterazione'),info=E('erbPurchaseInfo'),illegal=E('piantaIllegaleSerra'),k=norm(name);
+ var known=!!name&&knownSpecies(name),cultIllegal=!!CULT_ILLEGAL_MAP[k];
+ /* La legalità della Coltivazione è una proprietà della specie: per specie note non deve dipendere dalla memoria del player. */
+ if(illegal&&known){illegal.checked=cultIllegal;illegal.disabled=true;}else if(illegal){illegal.disabled=false;}
+ if(!info)return;
+ if(!prov||prov.value!=='acquistata'){info.style.display='none';info.innerHTML='';return;}
+ /* Un nuovo acquisto avviene esclusivamente in Germinazione. Un esemplare storico già trattato può naturalmente essere cresciuto dopo l'acquisto. */
+ if(fase&&!(hist&&hist.checked)&&fase.value!=='germinazione'){fase.value='germinazione';try{fase.dispatchEvent(new Event('change',{bubbles:true}));}catch(e){}}
+ var cls=cl?cl.value:'',base=PRICE_LEGAL[cls]||0,mult=EXOTIC_MAP[k]?1.5:1,legal=Math.round(base*mult),black=Math.round(base*2*mult),parts=[];
+ parts.push('<b>Acquisto:</b> il negozio consegna esclusivamente un esemplare in <b>Germinazione</b>.');
+ if(EXOTIC_MAP[k])parts.push('<b>Esotica:</b> +50% al prezzo di listino.');
+ if(cultIllegal){parts.push('<b>Pianta illegale:</b> acquisto tramite <i>Il Terrifico</i> · prezzo '+galleons(black)+'. La Coltivazione è illegale e i relativi controlli vengono attivati automaticamente.');}
+ else if(PURCHASE_RESTRICTED_MAP[k]){var erb=E('pgErbologoMestiere')&&E('pgErbologoMestiere').checked;parts.push('<b>Acquisto soggetto a requisito:</b> legale soltanto per PG Pozionisti o Erbologi di mestiere. '+(erb?'Il profilo indica Erbologo di mestiere: prezzo legale '+galleons(legal)+'.':'Il tool non conosce un eventuale mestiere da Pozionista: prezzo legale '+galleons(legal)+' se il requisito è posseduto; altrimenti l’acquisto è illegale (listino Il Terrifico '+galleons(black)+').'));}
+ else parts.push('<b>Falce di Luna:</b> prezzo '+galleons(legal)+'.');
+ info.style.display='block';info.className='erb-auto-trait '+(cultIllegal?'auto-warn':'auto-neutral');info.innerHTML=parts.join('<br>');
+}
+
 function syncAutoTraits(){
  var specie=E('speciePiantaGuida'),name=specie?specie.value.trim():'',mai=E('interazioneMaiOstile'),sempre=E('interazioneSempreOstile');
  var host=E('erbAutoHostility'),seed=E('erbAutoSeedOrigin'),prov=E('provenienzaPianta'),seedCheck=E('piantaDaSemeColtivato');
  var isAlways=!!(name&&typeof window.rpIsAlwaysHostileSpecies==='function'&&window.rpIsAlwaysHostileSpecies(name));
  var isNever=!!(name&&window.rpIsNeverHostileSpecies(name));
+ syncPurchaseAndLegality(name);
  if(mai)mai.checked=isNever&&!isAlways;
  if(sempre)sempre.checked=isAlways;
  if(host){
@@ -6336,9 +6472,10 @@ function syncAutoTraits(){
 }
 window.erbSyncAutoTraits=syncAutoTraits;
 
-var specie=E('speciePiantaGuida'),prov=E('provenienzaPianta');
+var specie=E('speciePiantaGuida'),prov=E('provenienzaPianta'),prof=E('pgErbologoMestiere');
 if(specie){specie.addEventListener('change',function(){syncAutoTraits();if(typeof window.ricalcolaErbologia==='function')window.ricalcolaErbologia();});}
 if(prov){prov.addEventListener('change',function(){syncAutoTraits();if(typeof window.ricalcolaErbologia==='function')window.ricalcolaErbologia();});}
+if(prof){prof.addEventListener('change',function(){syncAutoTraits();if(typeof window.ricalcolaErbologia==='function')window.ricalcolaErbologia();});}
 
 /* Se la Pianta arriva dalla Ricerca, anche l'Orda e il numero di esemplari sono già noti. */
 window.erbApplyResearchEncounterMeta=function(n){
@@ -6375,7 +6512,7 @@ syncAutoTraits();
 <script id="erbologia-v70-species-class-sync">
 (function(){
 'use strict';
-var CLASS_BY_SPECIES={"Alloro":"X","Aloe":"X","Asfodelo":"X","Assenzio":"X","Belladonna":"X","Bucaneve (autunno/inverno) - Fico (primavera-estate)":"X","Centinodia":"X","Coclearia":"X","Erba Fondente":"X","Lavanda":"X","Starnutaria":"X","Valeriana":"X","Vischio":"X","Alioto":"XX","Giaggiolo Puzzolente":"XX","Giunchiglia strombazzante":"XX","Grinzafico":"XX","Radigorda":"XX","Arbusti Autofertilizzanti":"XXX","Cespuglio Farfallino":"XXX","Fagiolo Corridore":"XXX","Fungo Scoppiettante":"XXX","Mimbulus Mimbletonia":"XXX","Muschio del sud":"XXX","Pianta Stridula":"XXX","Bacche di Balzar":"XXXX","Erba Stregata":"XXXX","Felci Imitanti":"XXXX","Fiori Fabula":"XXXX","Fiori Floo":"XXXX","Moly":"XXXX","Primula Veris":"XXXX","Ruta":"XXXX","Agrifoglio":"X","Artemisia":"X","Bucaneve (autunno/inverno) - Fico (primavera-autunno)":"X","Brugmansia":"X","Menta Piperita":"X","Ortiche":"X","Frullobulbo":"XX","Fungo Saltellante":"XX","Horklump":"XX","Bubotubero":"XXX","Bulbo Balzellante":"XXX","Cavolo Carnivoro Cinese":"XXX","Cespuglio Spinoso":"XXX","Geranio Zannuto":"XXX","Puffagiolo":"XXX","Canterose":"XXXX","Mandragola":"XXXX","Pianta Fumogena":"XXXX","Bucaneve (se autunno/inverno) - Fico (se primavera/estate)":"X","Fagiolo Sopoforoso":"X","Levistico":"X","Menta peperita":"X","Ortica":"X","Papaveri":"X","Rosa":"X","Salvia":"X","Sanguinaria":"X","Zenzero":"X","Fungo Allucinogeno":"XXX","Pianta di Semi di Fuoco":"XXXX","Pianta Vampiro":"XXXX","Aconito":"X","Bucaneve (autunno/inverno) - Fico (primavera/estate)":"X","Dittamo":"X","Ricino":"X","Verbena":"X","Albero di Biancaneve":"XXXXX","Albero della Vita":"XXXXX","Amarantacea":"XXXXX","Platano Picchiatore":"XXXXX","Tentacula Velenosa":"XXXXX","Tranello del Diavolo":"XXXXX","Cicuta":"X","Albero di Cenere":"XXXXX","Pugnacio":"XXXXX","Rampicanti Capovolti":"XXXXX","Siepi dell'Ombra":"XXXXX","Algabranchia":"XXXXX","Bucaneve":"X","Fico":"X"};
+var CLASS_BY_SPECIES={"Alloro":"X","Aloe":"X","Asfodelo":"X","Assenzio":"X","Belladonna":"X","Bucaneve (autunno/inverno) - Fico (primavera-estate)":"X","Centinodia":"X","Coclearia":"X","Erba Fondente":"X","Lavanda":"X","Starnutaria":"X","Valeriana":"X","Vischio":"X","Alioto":"XX","Giaggiolo Puzzolente":"XX","Giunchiglia strombazzante":"XX","Grinzafico":"XX","Radigorda":"XX","Arbusti Autofertilizzanti":"XXX","Cespuglio Farfallino":"XXX","Fagiolo Corridore":"XXX","Fungo Scoppiettante":"XXX","Mimbulus Mimbletonia":"XXX","Muschio del sud":"XXX","Pianta Stridula":"XXX","Bacche di Balzar":"XXXX","Erba Stregata":"XXXX","Felci Imitanti":"XXXX","Fiori Fabula":"XXXX","Fiori Floo":"XXXX","Moly":"XXXX","Primula Veris":"XXXX","Ruta":"XXXX","Agrifoglio":"X","Artemisia":"X","Bucaneve (autunno/inverno) - Fico (primavera-autunno)":"X","Brugmansia":"X","Menta Piperita":"X","Ortiche":"X","Frullobulbo":"XX","Fungo Saltellante":"XX","Horklump":"XX","Bubotubero":"XXX","Bulbo Balzellante":"XXX","Cavolo Carnivoro Cinese":"XXX","Cespuglio Spinoso":"XXX","Geranio Zannuto":"XXX","Puffagiolo":"XXX","Canterose":"XXXX","Mandragola":"XXXX","Pianta Fumogena":"XXXX","Bucaneve (se autunno/inverno) - Fico (se primavera/estate)":"X","Fagiolo Sopoforoso":"X","Levistico":"X","Menta peperita":"X","Ortica":"X","Papaveri":"X","Rosa":"X","Salvia":"X","Sanguinaria":"X","Zenzero":"X","Fungo Allucinogeno":"XXX","Pianta di Semi di Fuoco":"XXXX","Pianta Vampiro":"XXXX","Aconito":"X","Bucaneve (autunno/inverno) - Fico (primavera/estate)":"X","Dittamo":"X","Ricino":"X","Verbena":"X","Albero di Biancaneve":"XXXXX","Albero della Vita":"XXXXX","Amarantacea":"XXXXX","Annientamento":"XXXX","Platano Picchiatore":"XXXXX","Tentacula Velenosa":"XXXXX","Tranello del Diavolo":"XXXXX","Cicuta":"X","Albero di Cenere":"XXXXX","Pugnacio":"XXXXX","Rampicanti Capovolti":"XXXXX","Siepi dell'Ombra":"XXXXX","Algabranchia":"XXXXX","Bucaneve":"X","Fico":"X","Fichi":"X","Albero Carnivoro":"XXXXX","Albero Medusa":"XXXXX","Bebop Caraibica":"XXX","Coccolacea":"XXXX","Erbaschiuma":"XXX","Germogli Lamentosi":"XX","Loto di Mahoutokoro":"XXX","Menta Tibetana":"XX","Orchidea Fantasma":"XXX","Pianta Mangiauomini":"XXXXX","Platano Colombiano":"XXXX","Prato Messicano":"XXX","Stupefiore":"XXXXX","Arbusto Autofertilizzante":"XXX","Rampicante Capovolto":"XXXXX","Papavero":"X"};
 function E(id){return document.getElementById(id);}
 function norm(v){
   v=String(v||'');
@@ -6384,6 +6521,10 @@ function norm(v){
 }
 var NORMALIZED={};
 Object.keys(CLASS_BY_SPECIES).forEach(function(k){NORMALIZED[norm(k)]={name:k,cls:CLASS_BY_SPECIES[k]};});
+var INTERNAL_CLASS_CONFLICTS={};
+INTERNAL_CLASS_CONFLICTS[norm('Felci Imitanti')]='L’indice e la tabella Valori della scheda indicano XXXX, ma l’esempio del Riconoscimento la descrive come XXX.';
+INTERNAL_CLASS_CONFLICTS[norm('Pianta Fumogena')]='L’indice dell’Erbario indica XXXX, mentre la tabella Valori della scheda indica XXX.';
+INTERNAL_CLASS_CONFLICTS[norm('Pianta di Semi di Fuoco')]='L’indice dell’Erbario indica XXXX, mentre la tabella Valori della scheda indica XXXXX.';
 function expected(name){return NORMALIZED[norm(name)]||null;}
 function fire(el){if(!el)return;try{el.dispatchEvent(new Event('change',{bubbles:true}));}catch(e){}}
 var syncing=false,lastSpecies=(E('speciePiantaGuida')||{value:''}).value.trim();
@@ -6414,17 +6555,19 @@ function sync(source){
     render('<b>'+name.replace(/[<>&]/g,'')+':</b> la specie non è presente negli elenchi incorporati della Ricerca, quindi la Classificazione non viene modificata automaticamente. Verificala nello specchietto della Pianta.','warn');
     return;
   }
+  var researchClass=sp.dataset.researchClass||'',internalConflict=INTERNAL_CLASS_CONFLICTS[norm(name)]||'';
   if(cl.value!==info.cls){
-    var old=cl.value;
     syncing=true;cl.value=info.cls;fire(cl);syncing=false;
-    /* La correzione è già stata applicata: non mostrarla come errore. */
-    render('', 'ok');
+  }
+  if(researchClass && researchClass!==info.cls){
+    render('<b>Classificazione discordante fra fonti:</b> la tabella di Ricerca ha estratto <b>'+researchClass+'</b>, mentre l’indice/catalogo dell’Erbario incorporato usa <b>'+info.cls+'</b>. La Ricerca mantiene il proprio esito; nella Guida viene usata la classificazione dell’indice.'+(internalConflict?'<br><b>Inoltre, la stessa fonte Erbario è internamente incoerente:</b> '+internalConflict:'') ,'warn');
+  }else if(internalConflict){
+    render('<b>Fonte interna incoerente sulla Classificazione:</b> '+internalConflict+' <b>Per i calcoli della Guida il tool usa '+info.cls+'</b>, cioè la classificazione dell’indice/catalogo, e mantiene visibile questo avviso finché il regolamento non viene uniformato.','warn');
   }else{
     var enc=sp.dataset.researchEncounter||'',extra='';
     if(enc){
-      var ph=phaseLabel((E('faseInterazione')||{}).value||'');
-      extra=' · importata dalla Ricerca, Incontro '+enc+(enc==='1'&&ph?' · Fase '+ph:'');
-      if(enc!=='1')extra+=' · la Fase Vitale non viene determinata negli Incontri II/III e va controllata nella Guida';
+      var ph=phaseLabel((E('faseInterazione')||{}).value||''),ex=(sp.dataset.researchExemplar||'');
+      extra=' · importata dalla Ricerca, Incontro '+enc+(ex?' · Esemplare '+ex:'')+(ph?' · Fase '+ph:'');
     }
     render('<b>Specie/Classificazione coerenti:</b> '+name.replace(/[<>&]/g,'')+' → <b>'+info.cls+'</b>'+extra+'.','ok');
   }
@@ -6494,6 +6637,15 @@ if(select){
 
 var lastCommitted=norm(input.value);
 
+function clearSpeciesSpecificStateIfChanged(oldName,newName){
+  /* v99: un valore ripristinato da Firebase non equivale a un nuovo cambio manuale di specie. */
+  if(window.__ERB_GUIDE_RESTORING===true)return;
+  var oldKey=norm(oldName),newKey=norm(newName);
+  if(!oldKey||oldKey===newKey)return;
+  var special=document.getElementById('erbSpeciesSpecialJson');
+  if(special)special.value='{}';
+}
+
 function syncSelect(){
   if(!select)return;
   var key=norm(input.value), canon=canonical[key];
@@ -6509,6 +6661,8 @@ function commitSpecies(canon,oldValue){
   }
 
   var old=String(oldValue!=null?oldValue:input.value).trim();
+  if(!old&&lastCommitted&&canonical[lastCommitted])old=canonical[lastCommitted];
+  clearSpeciesSpecificStateIfChanged(old,canon);
   input.dataset.v76PreviousSpecies=old;
   input.dataset.researchEncounter='';
   input.dataset.researchClass='';
@@ -6542,6 +6696,7 @@ if(select){
 }
 
 input.addEventListener('input',function(){
+  if(window.__ERB_GUIDE_RESTORING===true){lastCommitted=norm(input.value);syncSelect();return;}
   var key=norm(input.value),canon=canonical[key];
   if(canon && key!==lastCommitted){
     commitSpecies(canon,input.dataset.v76PreviousSpecies||'');
@@ -6555,9 +6710,13 @@ input.addEventListener('focus',function(){
 });
 
 input.addEventListener('change',function(){
+  if(window.__ERB_GUIDE_RESTORING===true){lastCommitted=norm(input.value);input.dataset.v76PreviousSpecies=input.value.trim();syncSelect();return;}
   var key=norm(input.value),canon=canonical[key];
+  var oldCanon=lastCommitted&&canonical[lastCommitted]?canonical[lastCommitted]:input.dataset.v76PreviousSpecies||'';
+  clearSpeciesSpecificStateIfChanged(oldCanon,canon||input.value);
   if(canon)input.value=canon;
   lastCommitted=norm(input.value);
+  input.dataset.v76PreviousSpecies=input.value.trim();
   syncSelect();
 });
 
@@ -6892,5 +7051,280 @@ if(typeof previous==='function'){
 }
 })();
 </script>
+\n<style id="erbologia-v86-styles">
+.rp-v86-attempt{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:8px 0 12px}.rp-v86-attempt span{color:#c8ad68;font-weight:bold}
+.erb-v86-roll{margin-top:10px;padding-top:10px;border-top:1px solid rgba(200,173,104,.22)}
+.erb-v86-roll:first-child{border-top:0;padding-top:0}.erb-v86-rule-title{font-weight:bold;color:#d7e4a4;margin-bottom:4px}
+.erb-v86-use{font-size:.82em;color:#b9c99e;margin-top:4px}.erb-v86-conflict{color:#ffd0c7}
+#erbV86ObjectRiskBox,#erbV86CultivationRiskBox{margin-top:12px}
+</style>
+<script id="erbologia-v86-regulatory-alignment">
+(function(){
+'use strict';
+function E(id){return document.getElementById(id);}function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function norm(v){v=String(v||'');try{v=v.normalize('NFD').replace(/[\u0300-\u036f]/g,'');}catch(e){}return v.toLowerCase().replace(/[’‘]/g,"'").replace(/\s+/g,' ').trim();}
+function jsonGet(id){var e=E(id);if(!e)return {};try{var x=JSON.parse(e.value||'{}');return x&&typeof x==='object'&&!Array.isArray(x)?x:{};}catch(_){return {};}}
+function jsonSet(id,x){var e=E(id);if(!e)return;e.value=JSON.stringify(x||{});try{e.dispatchEvent(new Event('change',{bubbles:true}));}catch(_){}if(typeof rpScheduleSave==='function')rpScheduleSave();}
+function validInt(el,min,max){if(!el||el.value==='')return null;var v=Number(el.value);return Number.isInteger(v)&&v>=min&&v<=max?v:null;}
+
+/* ---------- Zone estere: tabelle della Ricerca, inclusi pesi ripetuti ---------- */
+function rep(name,n){var a=[];for(var i=0;i<n;i++)a.push(name);return a;}function cat(){var a=[];for(var i=0;i<arguments.length;i++)a=a.concat(arguments[i]);return a;}
+var FOREIGN={
+'Coste del Mondo Magico — Europa':{
+ X:['Aconito','Aloe','Artemisia','Asfodelo','Assenzio','Belladonna','Brugmansia','Centinodia','Cicuta','Coclearia','Dittamo','Erba Fondente','Levistico','Ortica','Verbena'],XX:['Alioto','Giaggiolo Puzzolente','Horklump'],XXX:['Arbusto Autofertilizzante','Cespuglio Farfallino','Cespuglio Spinoso'],XXXX:['Algabranchia','Erba Stregata','Fiori Fabula','Fiori Floo','Moly','Ruta'],XXXXX:['Albero della Vita','Amarantacea','Tentacula Velenosa']},
+'Coste del Mondo Magico — America del Nord, Centrale e Caraibi':{
+ X:['Aconito','Artemisia','Asfodelo','Assenzio','Belladonna','Cicuta','Coclearia','Levistico','Menta Piperita','Sanguinaria','Verbena'],XX:['Giaggiolo Puzzolente','Giunchiglia Strombazzante'],XXX:cat(rep('Bebop Caraibica',5),['Cespuglio Farfallino','Geranio Zannuto']),XXXX:['Erba Stregata','Fiori Floo','Pianta Vampiro','Primula Veris','Ruta'],XXXXX:cat(['Pianta di Semi di Fuoco'],rep('Albero Medusa',6),['Platano Picchiatore','Tentacula Velenosa','Tranello del Diavolo'])},
+'Coste del Mondo Magico — America del Sud':{
+ X:['Aloe','Artemisia','Asfodelo','Assenzio','Belladonna','Brugmansia','Coclearia','Menta Piperita','Ortica','Ricino','Verbena'],XX:['Alioto','Fungo Saltellante','Giaggiolo Puzzolente'],XXX:cat(['Cespuglio Spinoso','Pianta Stridula'],rep('Prato Messicano',6)),XXXX:cat(rep('Coccolacea',5),['Ruta']),XXXXX:cat(rep('Albero Medusa',5),rep('Platano Colombiano',6),['Platano Picchiatore'])},
+'Coste del Mondo Magico — Africa':{
+ X:['Aconito','Aloe','Artemisia','Asfodelo','Assenzio','Belladonna','Coclearia','Levistico','Menta Piperita','Ortica','Papavero','Ricino','Verbena'],XX:['Giunchiglia Strombazzante','Radigorda'],XXX:['Geranio Zannuto','Muschio del Sud','Puffagiolo'],XXXX:cat(rep('Coccolacea',5),['Moly','Ruta']),XXXXX:cat(['Pianta di Semi di Fuoco','Platano Picchiatore','Rampicante Capovolto'],rep('Stupefiore',6))},
+'Coste del Mondo Magico — Medioriente':{
+ X:['Aloe','Artemisia','Asfodelo','Assenzio','Belladonna','Coclearia','Menta Piperita','Ortica','Ricino','Verbena'],XX:cat(rep('Germogli Lamentosi',5),['Radigorda']),XXX:['Muschio del Sud','Pianta Fumogena'],XXXX:['Moly','Ruta'],XXXXX:['Pianta di Semi di Fuoco','Tentacula Velenosa']},
+'Coste del Mondo Magico — Asia':{
+ X:['Aconito','Artemisia','Asfodelo','Assenzio','Belladonna','Cicuta','Coclearia','Dittamo','Erba Fondente','Levistico','Menta Piperita','Ortica','Rosa','Verbena','Zenzero'],XX:cat(rep('Menta Tibetana',5),['Radigorda']),XXX:cat(['Fungo Allucinogeno'],rep('Loto di Mahoutokoro',6),['Pianta Fumogena']),XXXX:['Bacche di Balzar','Erba Stregata','Fiori Fabula','Moly','Ruta'],XXXXX:['Albero della Vita','Amarantacea','Pianta di Semi di Fuoco','Rampicante Capovolto','Tentacula Velenosa']},
+'Coste del Mondo Magico — Australia e Oceania':{
+ X:['Aconito','Artemisia','Asfodelo','Assenzio','Belladonna','Cicuta','Coclearia','Levistico','Menta Piperita','Ortica','Papavero','Rosa','Verbena'],XX:cat(rep('Erbaschiuma',5),['Fungo Saltellante','Giaggiolo Puzzolente','Radigorda']),XXX:cat(['Cespuglio Spinoso','Geranio Zannuto'],rep('Orchidea Fantasma',6)),XXXX:['Felci Imitanti','Fiori Fabula','Pianta Vampiro','Ruta'],XXXXX:cat(['Amarantacea','Pianta di Semi di Fuoco'],rep('Pianta Mangiauomini',6),['Pugnacio','Rampicante Capovolto'])}
+};
+Object.keys(FOREIGN).forEach(function(k){EBX_ZONE_PLANTS[k]=FOREIGN[k];});
+/* compatibilità: vecchie sessioni generiche non vengono assegnate arbitrariamente */
+EBX_ZONE_ALIASES['Fuori dal Regno Unito — Coste/Foreste del Mondo Magico']='Fuori dal Regno Unito — seleziona la macroarea';
+
+/* ---------- Bolcino e rischio viaggio ---------- */
+function foreignZone(z){return /^Coste del Mondo Magico — /.test(z||'');}
+function bolcinoAllowed(){var z=ebxZoneNormalized();return !foreignZone(z)||z==='Coste del Mondo Magico — Europa';}
+function updateBolcino(){var allow=bolcinoAllowed();[1,2,3].forEach(function(n){var b=E('erbV86BolcinoBox'+n),inp=E('risultatoBolcino'+n);if(b)b.style.display=allow?'block':'none';if(!allow&&inp&&inp.value){inp.value='';}});}
+var oldBol=window.ebxRecomputeBolcino;window.ebxRecomputeBolcino=function(n){updateBolcino();if(!bolcinoAllowed())return;return oldBol?oldBol(n):undefined;};
+function updateMalaria(){var z=ebxZoneNormalized(),yes=['Coste del Mondo Magico — America del Sud','Coste del Mondo Magico — Africa','Coste del Mondo Magico — Australia e Oceania'].indexOf(z)>=0,box=E('erbV86MalariaBox'),inp=E('risultatoMalariaViaggio'),tag=E('tagMalariaViaggio');if(box)box.style.display=yes?'block':'none';if(!yes){if(inp)inp.value='';return;}if(typeof rpSetCode==='function')rpSetCode('codiceMalariaViaggio','Il PG contrae la Febbre Malarica al primo post in loco?','1. Contrae la Febbre Malarica (si manifesterà al rientro nel Regno Unito)\n2-15. Non la contrae','[dice=1d15]Controllo Febbre Malarica — viaggio estero[/dice]');var v=validInt(inp,1,15);if(!tag)return;if(v===null){tag.textContent=inp&&inp.value?'Risultato impossibile':'in attesa';tag.className='out-tag '+(inp&&inp.value?'out-fail':'out-neutral');}else{tag.textContent=v===1?'Febbre Malarica':'Nessun contagio';tag.className='out-tag '+(v===1?'out-fail':'out-ok');}}
+
+/* ---------- Bonus Ricerca: disponibilità, usi reali e Herbivicus ---------- */
+window.erbV86Attempt=function(n){var e=E('rpTrovaAttempt'+n),v=e?parseInt(e.value,10):1;return Number.isInteger(v)&&v>0?v:1;};
+function useKey(key,p){return p&&(['fortuna','talismano'].indexOf(p.stack)>=0)?('stack:'+p.stack):('preset:'+key);}
+function used(key){return Math.max(0,Number(jsonGet('ricercaUsiJson')[key]||0));}function applied(n,key){return !!jsonGet('ricercaApplicazioniJson')[n+'|'+erbV86Attempt(n)+'|'+key];}
+function presetValue(row,p){if(!p)return 0;if(p.resolver)return row.dataset.resolverReady==='1'?Math.max(0,Number(row.dataset.resolvedValue||0)):0;return Number(p.value||0);}
+function rowApplicable(row,n,consumeCheck){var key=(row.querySelector('.ebx-search-preset')||{}).value||'',p=EBX_SEARCH_PRESETS[key],sc=(row.querySelector('.ebx-search-scope')||{}).value||'all';if(sc!=='all'&&sc!==String(n))return false;if(!p)return key==='manual';if(key==='family_herbivicus' && !(n===1&&erbV86Attempt(n)===1))return false;var uk=useKey(key,p);if(p.uses!=null&&!applied(n,uk)&&used(uk)>=Number(p.uses))return false;return true;}
+var oldUpdateSearch=window.ebxUpdateSearchRow;window.ebxUpdateSearchRow=function(row){if(oldUpdateSearch)oldUpdateSearch(row);var key=(row.querySelector('.ebx-search-preset')||{}).value||'',p=EBX_SEARCH_PRESETS[key],scope=row.querySelector('.ebx-search-scope');if(key==='family_herbivicus'&&scope){scope.value='1';scope.disabled=true;}else if(scope)scope.disabled=false;var line=row.querySelector('.ebx-effect-line');if(p&&line){var uk=useKey(key,p);if(p.uses!=null)line.innerHTML+=(line.innerHTML?' ':'')+'<span class="erb-v86-use">Usi registrati: '+used(uk)+'/'+p.uses+' · '+Math.max(0,p.uses-used(uk))+' rimasti.</span>';if(key==='family_herbivicus')line.innerHTML+=(line.innerHTML?' ':'')+'<span class="erb-v86-use">Solo Primo Incontro, tentativo 1 · Fatica -1,5 quando il tiro viene effettuato.</span>';}};
+var oldMake=window.ebxMakeSearchRow;window.ebxMakeSearchRow=function(data){var r=oldMake?oldMake(data):null;if(r)ebxUpdateSearchRow(r);return r;};
+window.erbV86SearchSignature=function(n){return ebxSearchRows().map(function(r){var key=(r.querySelector('.ebx-search-preset')||{}).value||'',sc=(r.querySelector('.ebx-search-scope')||{}).value||'',p=EBX_SEARCH_PRESETS[key];return key+'@'+sc+'@'+(p&&p.resolver?(r.dataset.resolverReady+'@'+(r.dataset.resolvedValue||'')):(p?p.value:(r.querySelector('.ebx-search-value')||{}).value||''));}).join('|');};
+window.ebxSearchTotals=function(n){var out={empatia:0,possibilita:0},groups={empatia:{},possibilita:{}};ebxSearchRows().forEach(function(r){if(!rowApplicable(r,n,false))return;var key=(r.querySelector('.ebx-search-preset')||{}).value||'',p=EBX_SEARCH_PRESETS[key],kind,value,group='';if(key==='manual'){kind=(r.querySelector('.ebx-search-kind')||{}).value;value=Math.max(0,Number((r.querySelector('.ebx-search-value')||{}).value||0));}else if(p){kind=p.kind;value=presetValue(r,p);group=p.stack||'';}else return;if(!value)return;if(kind==='malusEmpatia'){out.empatia-=value;return;}var bucket=kind==='empatia'?'empatia':'possibilita';if(group)groups[bucket][group]=Math.max(groups[bucket][group]||0,value);else out[bucket]+=value;});Object.keys(groups.empatia).forEach(function(k){out.empatia+=groups.empatia[k];});Object.keys(groups.possibilita).forEach(function(k){out.possibilita+=groups.possibilita[k];});return out;};
+window.erbV86CommitSearchUse=function(n){var apps=jsonGet('ricercaApplicazioniJson'),uses=jsonGet('ricercaUsiJson'),changed=false;ebxSearchRows().forEach(function(r){if(!rowApplicable(r,n,true))return;var key=(r.querySelector('.ebx-search-preset')||{}).value||'',p=EBX_SEARCH_PRESETS[key];if(!p||key==='manual'||presetValue(r,p)<=0)return;var uk=useKey(key,p),ak=n+'|'+erbV86Attempt(n)+'|'+uk;if(apps[ak])return;apps[ak]=true;changed=true;if(p.uses!=null)uses[uk]=Math.min(Number(p.uses),Math.max(0,Number(uses[uk]||0))+1);});if(changed){jsonSet('ricercaApplicazioniJson',apps);jsonSet('ricercaUsiJson',uses);ebxSearchRows().forEach(ebxUpdateSearchRow);if(typeof ebxUpdateSearchSummary==='function')ebxUpdateSearchSummary();}};
+function updateAttempts(){[1,2,3].forEach(function(n){var a=erbV86Attempt(n),lab=E('rpTrovaAttemptLabel'+n),btn=E('rpRetryTrova'+n),inp=E('risultatoTrova'+n);if(lab)lab.textContent='Tentativo '+a;var v=validInt(inp,1,30),failure=v!==null&&v>rpTrovaThreshold(n);if(btn)btn.style.display=failure?'inline-flex':'none';});}
+[1,2,3].forEach(function(n){var b=E('rpRetryTrova'+n);if(b)b.addEventListener('click',function(){var inp=E('risultatoTrova'+n),v=validInt(inp,1,30);if(v===null||v<=rpTrovaThreshold(n))return;var a=E('rpTrovaAttempt'+n);a.value=String(erbV86Attempt(n)+1);inp.value='';if(typeof rpClearEncounterDownstream==='function')rpClearEncounterDownstream(n);if(typeof ricalcolaRicerca==='function')ricalcolaRicerca();inp.focus();});});
+
+/* ---------- v87: specie incontrata — automatici, esposizione malattie, Narratore ---------- */
+var ERB_V87_ALWAYS_HOSTILE={
+ 'albero carnivoro':1,'albero medusa':1,'annientamento':1,'pianta mangiauomini':1,'pianta vampiro':1,'platano colombiano':1,'platano picchiatore':1,'pugnacio':1,'rampicanti capovolti':1,'siepi dell’ombra':1,'siepi dell\'ombra':1,'stupefiore':1,'tranello del diavolo':1
+};
+var ERB_V87_RESEARCH_AUTO={
+ 'albero di cenere':[
+  {k:'augurey',faces:3,hit:[1],title:'Presenza di Augurey',ok:'Nessun Augurey',bad:'Trova anche un Augurey',positive:true},
+  {k:'fenice',faces:100,hit:[7],title:'Presenza di Fenice',ok:'Nessuna Fenice',bad:'Trova anche una Fenice',positive:true}
+ ],
+ 'cespuglio farfallino':[{k:'fate',faces:2,hit:[1],title:'Il Cespuglio custodisce Fate?',ok:'Nessuna Fata',bad:'Sono presenti Fate',positive:true,chain:{k:'fate_num',faces:10,title:'Quante Fate?',direct:true}}],
+ 'prato messicano':[{k:'fate',faces:3,hit:[1],title:'Il Prato ospita Fate?',ok:'Nessuna Fata',bad:'Sono presenti Fate',positive:true,chain:{k:'fate_num',faces:5,title:'Quante Fate?',direct:true}}],
+ 'orchidea fantasma':[{k:'orchidea_scova',special:'orchid'}]
+};
+var ERB_V87_RESEARCH_DISEASE={
+ 'albero di cenere':{faces:15,name:'Colpo della Fenice',wording:'encounter'},
+ 'albero medusa':{faces:15,name:'Medusite',wording:'encounter'},
+ 'arbusti autofertilizzanti':{faces:7,name:'Pelle Autofertilizzante',wording:'contact'},
+ 'arbusto autofertilizzante':{faces:7,name:'Pelle Autofertilizzante',wording:'contact'},
+ 'cespuglio farfallino':{faces:7,name:'Farfalle Vomitose',wording:'contact'},
+ 'cespuglio spinoso':{faces:20,name:'Spine Estroverse',wording:'encounter'},
+ 'erbaschiuma':{faces:7,name:'Erboruto',wording:'contact'},
+ 'fungo allucinogeno':{faces:15,name:'Spruzzolosi',wording:'contact',contagious:true},
+ 'fungo saltellante':{faces:15,name:'Spruzzolosi',wording:'contact',contagious:true},
+ 'fungo scoppiettante':{faces:15,name:'Spruzzolosi',wording:'contact',contagious:true},
+ 'orchidea fantasma':{faces:10,name:'Cataratta Spettrale',wording:'encounter'},
+ 'pianta di semi di fuoco':{faces:15,name:'Pustole di Fuoco',wording:'encounter'},
+ 'pianta stridula':{faces:7,name:'Stridulite',wording:'contact'},
+ 'pianta vampiro':{faces:7,name:'Voglia Vampirella',wording:'contact'},
+ 'prato messicano':{faces:7,name:'Solletico Messicano',wording:'contact'}
+};
+function riskStore(){return jsonGet('rpSpeciesRiskJson');}
+function riskVal(n,s,k){return riskStore()[n+'|'+norm(s)+'|'+k];}
+function riskPut(n,s,k,v){var x=riskStore();x[n+'|'+norm(s)+'|'+k]=v;jsonSet('rpSpeciesRiskJson',x);}
+function v87DiceText(title,faces,note){return typeof rpForumDiceBlock==='function'?rpForumDiceBlock(title,note||'', '[dice=1d'+faces+']'+title+'[/dice]'):'[dice=1d'+faces+']'+title+'[/dice]';}
+function dieHTML(n,s,r){var id='v87risk_'+n+'_'+r.k,old=riskVal(n,s,r.k);return '<div class="erb-v87-roll" data-rule="'+esc(r.k)+'"><div class="erb-v87-action-title">'+esc(r.title)+' — 1d'+r.faces+' <span class="erb-v87-kind pg">tiro PG</span></div><div class="result-line"><div class="dice-code" id="'+id+'">'+esc(v87DiceText(r.title,r.faces,r.direct?'Il risultato indica direttamente la quantità.':('Esito speciale: '+r.hit.join(', '))))+'</div><button type="button" class="copy-btn" data-copy-source="'+id+'">Copia</button></div><div class="result-line"><span>Risultato:</span><input type="number" data-v86-risk="'+esc(r.k)+'" min="1" max="'+r.faces+'" value="'+(old==null?'':esc(old))+'"><span class="out-tag out-neutral" data-v86-out="'+esc(r.k)+'">in attesa</span></div></div>';}
+function orchidHTML(n,s){var st=riskStore(),base=n+'|'+norm(s)+'|',per=st[base+'percezione']||'',oc=st[base+'occhiali']===true||st[base+'occhiali']==='true',rv=st[base+'orchidea_scova']||'';return '<div class="erb-v87-roll"><div class="erb-v87-action-title">Scovare l’Orchidea Fantasma <span class="erb-v87-kind pg">tiro PG</span></div><div class="nota-regole">È un tiro di individuazione della specie, non un tiro di malattia. Con gli Occhiali da sole previsti dall’Erbario è autoconclusivo.</div><div class="riga"><div class="campo"><label>Percezione</label><input type="number" data-v86-orchid="percezione" min="1" max="20" value="'+esc(per)+'"></div><label class="check-riga"><input type="checkbox" data-v86-orchid="occhiali" '+(oc?'checked':'')+'> Uso gli Occhiali da sole previsti</label></div><div data-v86-orchid-roll style="'+(oc?'display:none':'')+'"><div class="result-line"><div class="dice-code" id="v87orchidcode'+n+'">[dice=1d10]Scovare l’Orchidea Fantasma[/dice]</div><button type="button" class="copy-btn" data-copy-source="v87orchidcode'+n+'">Copia</button></div><div class="result-line"><span>Risultato 1d10:</span><input type="number" data-v86-orchid="orchidea_scova" min="1" max="10" value="'+esc(rv)+'"><span class="out-tag out-neutral" data-v86-orchid-out>in attesa</span></div></div></div>';}
+function evalRoll(box,r){var inp=box.querySelector('[data-v86-risk="'+r.k+'"]'),out=box.querySelector('[data-v86-out="'+r.k+'"]'),v=validInt(inp,1,r.faces);if(!out)return false;if(v===null){out.textContent=inp&&inp.value?'Risultato impossibile':'in attesa';out.className='out-tag '+(inp&&inp.value?'out-fail':'out-neutral');return false;}if(r.direct){out.textContent=String(v);out.className='out-tag out-ok';return true;}var hit=r.hit.indexOf(v)>=0;out.textContent=hit?r.bad:r.ok;out.className='out-tag '+(hit?(r.positive?'out-ok':'out-fail'):'out-ok');return hit;}
+function evalOrchid(box){var p=box.querySelector('[data-v86-orchid="percezione"]'),oc=box.querySelector('[data-v86-orchid="occhiali"]'),roll=box.querySelector('[data-v86-orchid-roll]'),inp=box.querySelector('[data-v86-orchid="orchidea_scova"]'),out=box.querySelector('[data-v86-orchid-out]');if(!out)return;if(oc&&oc.checked){if(roll)roll.style.display='none';out.textContent='';return;}if(roll)roll.style.display='block';var pv=validInt(p,1,20),rv=validInt(inp,1,10),thr=pv===null?0:(pv<=5?1:pv<=10?2:pv<=15?3:4);if(pv===null){out.textContent='Inserisci Percezione';out.className='out-tag out-neutral';}else if(rv===null){out.textContent='Scova con 1-'+thr+' su 1d10';out.className='out-tag out-neutral';}else{out.textContent=rv<=thr?'Orchidea scovata':'Non riesce a scovarla';out.className='out-tag '+(rv<=thr?'out-ok':'out-fail');}}
+function diseaseGateHTML(n,s,d){var k='exposure_'+norm(d.name),on=!!riskVal(n,s,k),rv=riskVal(n,s,'disease_'+norm(d.name)),hostile=!!ERB_V87_ALWAYS_HOSTILE[norm(s)];var label;if(hostile)label='Il Narratore ha confermato che il PG ha subito l’esposizione che richiede il controllo di '+d.name;else if(d.wording==='contact')label='Il PG è entrato effettivamente in contatto con la Pianta (non è sufficiente averla soltanto estratta OFFGame)';else label='La scena ONGame ha comportato l’esposizione prevista dalla scheda della Pianta';var id='v87dis_'+n+'_'+norm(d.name).replace(/[^a-z0-9]+/g,'_');var h='<div class="erb-v87-gate"><div class="erb-v87-action-title">'+esc(d.name)+' <span class="erb-v87-kind conditional">solo dopo esposizione</span></div><div class="check-riga"><input type="checkbox" data-v87-disease-gate="'+esc(k)+'" '+(on?'checked':'')+'><label>'+esc(label)+'</label></div>';if(on){h+='<div class="erb-v87-roll"><div class="nota-regole">Il dado compare solo ora perché hai confermato la condizione ONGame che espone al contagio.</div><div class="result-line"><div class="dice-code" id="'+id+'">[dice=1d'+d.faces+']Controllo '+esc(d.name)+'[/dice]</div><button type="button" class="copy-btn" data-copy-source="'+id+'">Copia</button></div><div class="result-line"><span>Risultato:</span><input type="number" data-v87-disease-result="'+esc(norm(d.name))+'" min="1" max="'+d.faces+'" value="'+(rv==null?'':esc(rv))+'"><span class="out-tag out-neutral" data-v87-disease-out="'+esc(norm(d.name))+'">in attesa</span></div></div>';}h+='</div>';return h;}
+function evalDisease(box,d){var on=box.querySelector('[data-v87-disease-gate="exposure_'+norm(d.name)+'"]');if(!on||!on.checked)return false;var inp=box.querySelector('[data-v87-disease-result="'+norm(d.name)+'"]'),out=box.querySelector('[data-v87-disease-out="'+norm(d.name)+'"]'),v=validInt(inp,1,d.faces);if(!out)return false;if(v===null){out.textContent=inp&&inp.value?'Risultato impossibile':'in attesa';out.className='out-tag '+(inp&&inp.value?'out-fail':'out-neutral');return false;}var hit=v===1;out.textContent=hit?'Contrae '+d.name:'Nessun contagio';out.className='out-tag '+(hit?'out-fail':'out-ok');return hit;}
+function spruzzolosiFollowHTML(n,s,d,contracted){if(!d.contagious||!contracted)return '';var on=!!riskVal(n,s,'spruzzolosi_secondary_gate'),rv=riskVal(n,s,'spruzzolosi_secondary');var h='<div class="erb-v87-gate"><div class="erb-v87-action-title">Contagio secondario da Spruzzolosi <span class="erb-v87-kind conditional">solo se esposto</span></div><div class="nota-regole">La scheda prevede 1d20 (1–2 = contagio) per gli altri PG che ruolano con il PG malato mentre manifesta ancora i sintomi. Ripeti il controllo separatamente per ogni PG realmente esposto.</div><div class="check-riga"><input type="checkbox" data-v87-spr-secondary-gate '+(on?'checked':'')+'><label>Sto risolvendo il controllo per un altro PG realmente esposto al PG malato</label></div>';if(on)h+='<div class="erb-v87-roll"><div class="result-line"><div class="dice-code" id="v87sprsec'+n+'">[dice=1d20]Spruzzolosi — contagio secondario[/dice]</div><button type="button" class="copy-btn" data-copy-source="v87sprsec'+n+'">Copia</button></div><div class="result-line"><span>Risultato:</span><input type="number" data-v87-spr-secondary min="1" max="20" value="'+(rv==null?'':esc(rv))+'"><span class="out-tag out-neutral" data-v87-spr-secondary-out>in attesa</span></div></div>';return h+'</div>';}
+function evalSprSecondary(box){var on=box.querySelector('[data-v87-spr-secondary-gate]');if(!on||!on.checked)return;var inp=box.querySelector('[data-v87-spr-secondary]'),out=box.querySelector('[data-v87-spr-secondary-out]'),v=validInt(inp,1,20);if(!out)return;if(v===null){out.textContent='in attesa';out.className='out-tag out-neutral';}else{out.textContent=v<=2?'Contrae la Spruzzolosi':'Nessun contagio';out.className='out-tag '+(v<=2?'out-fail':'out-ok');}}
+function renderSpeciesRules(n){var box=E('rpSpeciesSecondary'+n),s=(E('speciePianta'+n)||{}).value||'',k=norm(s),auto=ERB_V87_RESEARCH_AUTO[k]||[],d=ERB_V87_RESEARCH_DISEASE[k],hostile=!!ERB_V87_ALWAYS_HOSTILE[k];if(!box)return;if(!s||(!auto.length&&!d&&!hostile)){box.style.display='none';box.innerHTML='';box.dataset.species='';return;}var marker=k+'|'+String(!!riskVal(n,s,'exposure_'+(d?norm(d.name):'')))+'|'+String(riskVal(n,s,d?'disease_'+norm(d.name):'')||'')+'|'+String(riskVal(n,s,'spruzzolosi_secondary_gate')||'')+'|'+String(riskVal(n,s,'spruzzolosi_secondary')||'');if(box.dataset.renderMarker!==marker||box.dataset.species!==k){box.dataset.species=k;box.dataset.renderMarker=marker;var h='<h3 style="margin-top:0">Dadi specifici della Pianta trovata</h3><div class="nota-regole">Separati dal dado che estrae la specie: qui compaiono solo i controlli realmente pertinenti alla Pianta. <b>I dadi di malattia non partono automaticamente.</b></div>';if(hostile)h+='<div class="erb-v87-narrator"><span class="erb-narratore-call">NARRATORE</span>Questa Pianta è <b>sempre ostile</b>: la scena deve essere seguita dal Narratore. I dadi del PG restano distinti dai tiri che il Narratore eventualmente gestisce nella Quest.</div>';auto.forEach(function(r){h+=r.special==='orchid'?orchidHTML(n,s):dieHTML(n,s,r);});if(d)h+=diseaseGateHTML(n,s,d);box.innerHTML=h;box.style.display='block';setupNumericInputs();}
+ box.style.display='block';auto.forEach(function(r){if(r.special==='orchid'){evalOrchid(box);return;}var hit=evalRoll(box,r);if(r.chain){var existing=box.querySelector('[data-chain="'+r.chain.k+'"]');if(hit&&!existing){var wrap=document.createElement('div');wrap.setAttribute('data-chain',r.chain.k);wrap.innerHTML=dieHTML(n,s,r.chain);box.appendChild(wrap);setupNumericInputs();evalRoll(box,r.chain);}else if(!hit&&existing)existing.remove();else if(hit&&existing)evalRoll(box,r.chain);}});if(d){var contracted=evalDisease(box,d),f=box.querySelector('[data-v87-spr-follow]');if(f)f.remove();if(contracted&&d.contagious){var wrap=document.createElement('div');wrap.setAttribute('data-v87-spr-follow','1');wrap.innerHTML=spruzzolosiFollowHTML(n,s,d,true);box.appendChild(wrap);setupNumericInputs();evalSprSecondary(box);}}
+}
+[1,2,3].forEach(function(n){var box=E('rpSpeciesSecondary'+n);if(!box)return;function save(e){var s=(E('speciePianta'+n)||{}).value||'';if(e.target.matches('[data-v86-risk]'))riskPut(n,s,e.target.getAttribute('data-v86-risk'),e.target.value);if(e.target.matches('[data-v86-orchid]'))riskPut(n,s,e.target.getAttribute('data-v86-orchid'),e.target.type==='checkbox'?e.target.checked:e.target.value);if(e.target.matches('[data-v87-disease-gate]'))riskPut(n,s,e.target.getAttribute('data-v87-disease-gate'),e.target.checked);if(e.target.matches('[data-v87-disease-result]'))riskPut(n,s,'disease_'+e.target.getAttribute('data-v87-disease-result'),e.target.value);if(e.target.matches('[data-v87-spr-secondary-gate]'))riskPut(n,s,'spruzzolosi_secondary_gate',e.target.checked);if(e.target.matches('[data-v87-spr-secondary]'))riskPut(n,s,'spruzzolosi_secondary',e.target.value);box.dataset.renderMarker='';renderSpeciesRules(n);}box.addEventListener('input',save);box.addEventListener('change',save);});
+
+/* ---------- v87: Dadi specifici nella Guida — azione prima, dado poi ---------- */
+function gsStore(){return jsonGet('erbSpeciesSpecialJson');}
+function gsGet(spec,key,def){var v=gsStore()[norm(spec)+'|'+key];return v===undefined?def:v;}
+function gsSet(spec,key,val){var st=gsStore();st[norm(spec)+'|'+key]=val;jsonSet('erbSpeciesSpecialJson',st);}
+function gsSlug(s){return norm(s).replace(/[^a-z0-9]+/g,'_');}
+function gsGate(spec,key,label,body,kind){var on=!!gsGet(spec,key+'_on',false);return '<div class="erb-v87-gate"><div class="check-riga"><input type="checkbox" data-v87-gs-check="'+esc(key+'_on')+'" '+(on?'checked':'')+'><label>'+label+'</label></div>'+(on?body:'')+'</div>';}
+function gsRoll(spec,key,faces,title,evalFn,note){var rv=gsGet(spec,key+'_roll',''),v=rv===''?null:Number(rv),out='in attesa',cls='out-neutral';if(v!==null&&Number.isInteger(v)&&v>=1&&v<=faces){var r=evalFn?evalFn(v):{text:String(v),bad:false};out=r.text;cls=r.bad?'out-fail':'out-ok';}else if(rv!==''){out='Risultato impossibile';cls='out-fail';}var id='gsv87_'+gsSlug(spec)+'_'+gsSlug(key);return '<div class="erb-v87-roll"><div class="erb-v87-action-title">'+title+' — 1d'+faces+' <span class="erb-v87-kind pg">tiro PG</span></div>'+(note?'<div class="nota-regole">'+note+'</div>':'')+'<div class="result-line"><div class="dice-code" id="'+id+'">[dice=1d'+faces+']'+title+'[/dice]</div><button type="button" class="copy-btn" data-copy-source="'+id+'">Copia</button></div><div class="result-line"><span>Risultato:</span><input type="number" data-v87-gs-val="'+esc(key+'_roll')+'" min="1" max="'+faces+'" value="'+esc(rv)+'"><span class="out-tag '+cls+'">'+esc(out)+'</span></div></div>';}
+function gsParamRoll(spec,key,paramLabel,paramMax,faces,title,thresholdFn,extraNote){var pv=gsGet(spec,key+'_param',''),p=Number(pv),thr=(Number.isInteger(p)&&p>=1&&p<=paramMax)?thresholdFn(p):0;var body='<div class="riga"><div class="campo"><label>'+paramLabel+'</label><input type="number" data-v87-gs-val="'+key+'_param" min="1" max="'+paramMax+'" value="'+esc(pv)+'"></div></div>';body+=gsRoll(spec,key,faces,title,function(v){if(!thr)return{text:'Inserisci '+paramLabel,bad:false};return{text:(v<=thr?'Successo':'Fallimento')+' — range 1-'+thr,bad:v>thr};},(extraNote?extraNote+' · ':'')+(thr?'Range attuale: 1-'+thr+'.':'Inserisci prima '+paramLabel+'.'));return body;}
+function gsOpposed(spec,key,oppFaces,oppLabel,note){var dexRaw=gsGet(spec,key+'_dex',''),dex=Number(dexRaw),pgRaw=gsGet(spec,key+'_pg',''),oppRaw=gsGet(spec,key+'_opp',''),pgv=Number(pgRaw),ov=Number(oppRaw),validDex=Number.isInteger(dex)&&dex>=1&&dex<=50,pgok=validDex&&Number.isInteger(pgv)&&pgv>=1&&pgv<=dex,ook=Number.isInteger(ov)&&ov>=1&&ov<=oppFaces,id='gsv87_'+gsSlug(spec)+'_'+key;var h='<div class="riga"><div class="campo"><label>Destrezza del PG</label><input type="number" data-v87-gs-val="'+key+'_dex" min="1" max="50" value="'+esc(dexRaw)+'"></div></div>';if(!validDex)return h+'<div class="nota-regole">Inserisci la Destrezza del PG: il tool genererà il suo dado reale 1d[Destrezza], senza inventarla.</div>';h+='<div class="erb-v87-roll"><div class="erb-v87-action-title">Confronto di Destrezza <span class="erb-v87-kind pg">tiri PG</span></div><div class="nota-regole">'+(note||'Il risultato più alto vince; in caso di parità applica quanto previsto dalla scheda.')+'</div><div class="result-line"><div class="dice-code" id="'+id+'_pgcode">[dice=1d'+dex+']Destrezza PG[/dice]</div><button type="button" class="copy-btn" data-copy-source="'+id+'_pgcode">Copia</button></div><div class="result-line"><span>Risultato PG:</span><input type="number" data-v87-gs-val="'+key+'_pg" min="1" max="'+dex+'" value="'+esc(pgRaw)+'"></div><div class="result-line"><div class="dice-code" id="'+id+'_oppcode">[dice=1d'+oppFaces+']Destrezza '+esc(oppLabel)+'[/dice]</div><button type="button" class="copy-btn" data-copy-source="'+id+'_oppcode">Copia</button></div><div class="result-line"><span>Risultato '+esc(oppLabel)+':</span><input type="number" data-v87-gs-val="'+key+'_opp" min="1" max="'+oppFaces+'" value="'+esc(oppRaw)+'"><span class="out-tag '+((pgok&&ook)?(pgv>ov?'out-ok':pgv<ov?'out-fail':'out-neutral'):'out-neutral')+'">'+((pgok&&ook)?(pgv>ov?'Vince il PG':pgv<ov?'Vince '+esc(oppLabel):'Parità'):'in attesa')+'</span></div></div>';return h;}
+function gsNarrator(msg){return '<div class="erb-v87-narrator"><span class="erb-narratore-call">NARRATORE</span>'+msg+'</div>';}
+function gsConflict(msg){return '<div class="erb-v87-source-conflict"><b>Conflitto nella fonte — non automatizzato:</b> '+msg+'</div>';}
+function gsProfileQuantity(spec,key,label,mode){var pg=leggiPG(),sap=Number(pg.sapienzaErbologica||0),direct=null,base=0,faces=0;if(mode==='alioto'){if(pg.tipo==='studente')direct=1;else if(sap<=0){faces=2;}else if(sap<=5)direct=2;else if(sap<=10){base=1;faces=2;}else if(sap<=15)direct=3;else if(sap<=20){base=2;faces=2;}else direct=4;}else{if(pg.tipo==='studente'){faces=3;}else if(sap<=0){base=1;faces=2;}else if(sap<=5)direct=3;else if(sap<=10){base=2;faces=2;}else if(sap<=15)direct=4;else if(sap<=20){base=3;faces=2;}else direct=5;}if(direct!==null)return '<div class="erb-v87-roll"><div class="erb-v87-action-title">'+label+'</div><div class="out-tag out-ok">Quantità determinata: '+direct+'</div></div>';var rv=gsGet(spec,key+'_roll',''),v=rv===''?null:Number(rv),tot=(Number.isInteger(v)&&v>=1&&v<=faces)?base+v:null,id='gsv87_'+gsSlug(spec)+'_'+key;return '<div class="erb-v87-roll"><div class="erb-v87-action-title">'+label+' — '+(base?base+' + ':'')+'1d'+faces+' <span class="erb-v87-kind pg">tiro PG</span></div><div class="result-line"><div class="dice-code" id="'+id+'">[dice=1d'+faces+']'+label+'[/dice]</div><button type="button" class="copy-btn" data-copy-source="'+id+'">Copia</button></div><div class="result-line"><span>Risultato:</span><input type="number" data-v87-gs-val="'+key+'_roll" min="1" max="'+faces+'" value="'+esc(rv)+'"><span class="out-tag '+(tot===null?'out-neutral':'out-ok')+'">'+(tot===null?'in attesa':'Totale: '+tot)+'</span></div></div>';}
+function gsDurationBonus(spec){var lv=Number(leggiPG().livColtivatore||0);if(!lv)return '<div class="nota-regole">Nessun bonus durata: Coltivatore di Piante Magiche non posseduto.</div>';if(lv===1)return '<div class="out-tag out-ok">Bonus durata: +1 post</div>';if(lv===3)return '<div class="out-tag out-ok">Bonus durata: +2 post</div>';if(lv===5)return '<div class="out-tag out-ok">Bonus durata: +3 post</div>';var base=lv===4?1:0;return gsRoll(spec,'duration_bonus',2,'Bonus durata da Coltivatore '+(lv===2?'II':'IV'),function(v){return{text:'Bonus durata totale: +'+(base+v)+' post',bad:false};},base?'Formula: 1 + 1d2 post.':'Formula: +1d2 post.');}
+var ERB_V87_DURATION_SPECIES={'algabranchia':1,'amarantacea':1,'felci imitanti':1,'fungo allucinogeno':1,'giaggiolo puzzolente':1,'horklump':1,'menta tibetana':1,'moly':1,'orchidea fantasma':1,'radigorda':1};
+function renderGuideSpeciesSpecial(){var box=E('erbSpeciesSpecialBox'),spec=(E('speciePiantaGuida')||{}).value||'',k=norm(spec);if(!box)return;var pg=leggiPG(),h='',has=false;if(ERB_V87_ALWAYS_HOSTILE[k]){has=true;h+=gsNarrator('La scheda definisce questa Pianta <b>sempre ostile</b>. In free role, quando l’ostilità entra realmente in gioco, il Narratore deve seguire la scena. Questo non trasforma automaticamente ogni dado indicato dalla scheda in un “dado del Narratore”: i tiri del PG restano identificati come tali.');}
+ var guideDisease=ERB_V87_RESEARCH_DISEASE[k];
+ if(guideDisease){has=true;var gdKey='guide_disease_'+gsSlug(guideDisease.name),gdLabel=guideDisease.wording==='contact'?'Il PG è entrato realmente in contatto con questa Pianta e non beneficia dell’immunità ottenuta coltivandola':'Sto risolvendo una role/evento esterno al pannello Ricerca in cui il PG ha realmente subito l’incontro/esposizione previsto dalla scheda';var gdRoll=gsRoll(spec,gdKey+'_roll',guideDisease.faces,'Controllo '+guideDisease.name,function(v){return{text:v===1?'Contrae '+guideDisease.name:'Nessun contagio',bad:v===1};},'Questo controllo non compare al semplice inserimento della specie: attivalo solo quando la condizione ONGame si è realmente verificata. Se lo hai già risolto nel pannello Ricerca, non ripeterlo qui.');var gdVal=Number(gsGet(spec,gdKey+'_roll',''));if(guideDisease.contagious&&gdVal===1)gdRoll+=gsGate(spec,gdKey+'_secondary','Sto risolvendo il rischio per un altro PG realmente esposto al PG malato mentre manifesta ancora i sintomi',gsRoll(spec,gdKey+'_secondary_roll',20,'Spruzzolosi — contagio secondario',function(v){return{text:v<=2?'Contrae la Spruzzolosi':'Nessun contagio',bad:v<=2};},'1–2 = contagio; esegui un controllo distinto per ogni PG realmente esposto.'),'disease');h+=gsGate(spec,gdKey,gdLabel,gdRoll,'disease');}
+
+ if(ERB_V87_DURATION_SPECIES[k]){has=true;h+=gsGate(spec,'duration','Sto usando l’effetto della Pianta coltivata personalmente e devo determinare l’eventuale bonus di durata da Coltivatore di Piante Magiche',gsDurationBonus(spec),'pg');}
+ if(k==='algabranchia'){has=true;h+=gsGate(spec,'alga_use','Il PG ha usato ONGame l’Algabranchia ed è appena uscito dall’acqua',gsRoll(spec,'alga_disease',10,'Algabranchite',function(v){return{text:v<=3?'Contrae l’Algabranchite':'Nessun contagio',bad:v<=3};},'Solo in questa condizione: 1–3 = contagio.'),'disease');}
+ if(k==='radigorda'){has=true;h+=gsGate(spec,'radi_use','Il PG sta usando la Radigorda in purezza oppure per creare una Pozione ON/OFFGame',gsRoll(spec,'radi_disease',10,'Radigordillo',function(v){return{text:v===1?'Contrae il Radigordillo':'Nessun contagio',bad:v===1};},'Il semplice possesso o la coltivazione non attivano questo tiro.'),'disease');}
+ if(k==='arbusto autofertilizzante'||k==='arbusti autofertilizzanti'){has=true;h+=gsGate(spec,'arb_concime','Sto usando una dose del concime dell’Arbusto Autofertilizzante in Coltivazione/Produzione',gsRoll(spec,'arb_forza',10,'Bonus Forza da concime',function(v){return{text:'Bonus Forza: +'+v,bad:false};},'Il risultato di 1d10 è il bonus di Forza.'),'pg');}
+ if(k==='bebop caraibica'){has=true;h+=gsGate(spec,'bebop_bite','La Bebop ha effettivamente morso il bersaglio',gsRoll(spec,'bebop_count',3,'Numero di fiori che mordono',function(v){return{text:v+' morso/i',bad:false};},'Ogni Pianta ha 3 fiori; il tiro stabilisce quanti mordono.'),'pg');}
+ if(k==='bubotubero'){has=true;h+=gsGate(spec,'bubo_extract','Sto estraendo il Pus del Bubotubero prima di aver completato correttamente l’Interazione',gsNarrator('La scheda non assegna un dado autonomo al player: in questa situazione dice espressamente di <b>rivolgersi al Narratore</b>. Se l’Interazione è già riuscita, l’estrazione è autoconclusiva con guanti di pelle di Drago o Flipendo.'),'narrator');}
+ if(k==='canterose'){has=true;h+=gsGate(spec,'cant_loop','Il PG è realmente sotto l’effetto del loop delle Canterose',gsParamRoll(spec,'cant_escape','Volontà',20,10,'Resistere / liberarsi dal canto',function(p){return p<=5?1:p<=10?2:p<=15?3:4;},'Da ripetere a ogni nuovo post finché necessario. Se la Pianta è ostile, la scena richiede il Narratore'),'pg');}
+ if(k==='germogli lamentosi'){has=true;h+=gsGate(spec,'germ_song','Il PG sta realmente ascoltando il canto ammaliatore dei Germogli',gsParamRoll(spec,'germ_resist','Volontà',20,5,'Resistere al canto',function(p){return p<=5?1:p<=10?2:p<=15?3:4;},'Se l’ostilità è attiva, il Narratore segue la scena'),'pg');}
+ if(k==='tranello del diavolo'){has=true;h+=gsGate(spec,'tranello_grab','Il PG è stato effettivamente afferrato dal Tranello del Diavolo',gsParamRoll(spec,'tranello_escape','Volontà',20,7,'Liberarsi dal Tranello',function(p){return p<=5?1:p<=10?2:p<=15?3:4;},'Pianta sempre ostile: il Narratore segue la scena'),'pg');}
+ if(k==='annientamento'||k==='rampicanti capovolti'){has=true;var nm=k==='annientamento'?'Annientamento':'Rampicanti Capovolti';var body=gsParamRoll(spec,'root_escape','Resistenza',20,10,'Liberarsi dalla Pianta',function(p){return p<=5?1:p<=10?2:p<=15?3:4;},'Pianta sempre ostile: il Narratore segue la scena');var wand=Number(gsGet(spec,'root_wand',''));var magicBody=gsRoll(spec,'root_wand',3,'Perdita della bacchetta',function(v){return{text:v===1?'Perde la bacchetta':'Mantiene la bacchetta',bad:v===1};},'1 = perde la bacchetta. Il tiro successivo compare solo se la bacchetta rimane al PG.');if(wand>=2&&wand<=3)magicBody+=gsRoll(spec,'root_aim',5,'Prendere la mira',function(v){return{text:v===1?'Riesce a colpire la Pianta':'Fallisce; aumenta la sua ostilità',bad:v!==1};},'1 = successo.');else if(wand===1)magicBody+='<div class="nota-regole">La bacchetta è stata persa: il tiro per prendere la mira non si applica.</div>';body+=gsGate(spec,'root_magic','Il PG, ancora intrappolato, prova invece a usare la magia',magicBody,'pg');h+=gsGate(spec,'root_caught','Il PG è stato effettivamente catturato da '+nm,body,'pg');}
+ if(k==='albero medusa'){has=true;h+=gsGate(spec,'medusa_caught','Il PG è stato effettivamente intrappolato dai rami dell’Albero Medusa',gsParamRoll(spec,'medusa_escape','Resistenza',20,10,'Districarsi dai rami',function(p){return p<=5?1:p<=10?2:p<=15?3:4;},'Pianta sempre ostile: il Narratore segue la scena')+gsGate(spec,'medusa_scar','I tentacoli velenosi hanno effettivamente colpito il PG',gsRoll(spec,'medusa_scar_roll',10,'Cicatrici da tentacoli',function(v){return{text:v<=3?'Restano cicatrici':'Nessuna cicatrice',bad:v<=3};},'1–3 = cicatrici.'),'pg'),'pg');}
+ if(k==='albero carnivoro'){has=true;var rv=gsGet(spec,'carn_res',''),res=Number(rv),faces=res>=1&&res<=5?4:res<=10?3:res<=15?2:0;var wake='<div class="riga"><div class="campo"><label>Resistenza</label><input type="number" data-v87-gs-val="carn_res" min="1" max="20" value="'+esc(rv)+'"></div></div>';wake+=faces?gsRoll(spec,'carn_wake',faces,'Post di svenimento',function(v){return{text:'Si risveglia dopo '+v+' post',bad:false};},'Con Resistenza 16–20 il risveglio è dopo 1 post e non serve dado.'):(res>=16&&res<=20?'<div class="out-tag out-ok">Si risveglia dopo 1 post: nessun dado.</div>':'<div class="nota-regole">Inserisci Resistenza per sapere se serve 1d4, 1d3, 1d2 o nessun dado.</div>');wake+=gsRoll(spec,'carn_wand',5,'Esito della bacchetta dopo il colpo dei fiori',function(v){return{text:v===1?'La bacchetta cade':v===2?'La bacchetta si rompe':'Nessuna conseguenza alla bacchetta',bad:v<=2};},'1 = cade; 2 = si rompe.');h+=gsGate(spec,'carn_hit','I fiori dell’Albero Carnivoro hanno effettivamente colpito e stordito il PG',wake,'pg');h+=gsGate(spec,'carn_acid_inside','Il PG è rimasto intrappolato nell’Albero Carnivoro per almeno 10 post ed è stato esposto all’acido',gsRoll(spec,'carn_acid_scar_inside',10,'Sfigurazione da acido — prigioniero',function(v){var posts=Math.max(10,Number(gsGet(spec,'carn_acid_posts','10'))||10),thr=Math.min(10,1+Math.max(0,posts-10));return{text:(v<=thr?'Il PG viene sfigurato':'Nessuna sfigurazione')+' — possibilità attuale 1-'+thr+' su 10',bad:v<=thr};},'A 10 post la base è 1 su 10; le possibilità aumentano di 1 per ogni post ulteriore. Inserisci sotto i post effettivi.')+'<div class="riga"><div class="campo"><label>Post trascorsi all’interno</label><input type="number" data-v87-gs-val="carn_acid_posts" min="10" max="99" value="'+esc(gsGet(spec,'carn_acid_posts','10'))+'"></div></div>','pg');h+=gsGate(spec,'carn_acid_pure','Il PG è stato effettivamente colpito da acido di Albero Carnivoro usato in purezza',gsRoll(spec,'carn_acid_scar_pure',10,'Sfigurazione da acido in purezza',function(v){return{text:v<=3?'Il PG viene sfigurato':'Nessuna sfigurazione',bad:v<=3};},'1–3 su 1d10 = sfigurazione.'),'pg');}
+ if(k==='alioto'){has=true;h+=gsGate(spec,'alioto_attack','L’Alioto ha effettivamente sputato palline contro il bersaglio',gsProfileQuantity(spec,'alioto_qty','Quante palline sputa l’Alioto','alioto')+'<div class="nota-regole">Dopo aver ottenuto la quantità, risolvi un confronto separato per <b>ogni pallina</b>.</div>'+gsGate(spec,'alioto_dex','Devo risolvere una singola pallina',gsOpposed(spec,'alioto_dodge',20,'pallina di Alioto','Il risultato più alto vince. Ripeti questo confronto una volta per ciascuna pallina effettivamente lanciata.'),'pg'),'pg');}
+ if(k==='mimbulus mimbletonia'){has=true;h+=gsGate(spec,'mimb_attack','La Mimbulus ha effettivamente spruzzato Puzzalinfa',gsProfileQuantity(spec,'mimb_qty','Quanti spruzzi emette','standard')+'<div class="nota-regole">Risolvi un confronto separato per ogni spruzzo; Protego può difendere contemporaneamente da tutti gli schizzi.</div>'+gsGate(spec,'mimb_dex','Devo risolvere un singolo spruzzo',gsOpposed(spec,'mimb_dodge',20,'spruzzo di Puzzalinfa','Il risultato più alto vince.'),'pg'),'pg');}
+ if(k==='cespuglio spinoso'){has=true;h+=gsGate(spec,'spine_attack','Il Cespuglio Spinoso sta effettivamente lanciando spine',gsProfileQuantity(spec,'spine_qty','Numero di spine lanciate','standard')+'<div class="nota-regole">Se è ostile continua a lanciare spine a ogni turno finché viene fermato; in una scena di ostilità il Narratore deve seguire la role.</div>','pg');}
+ if(k==='felci imitanti'){has=true;h+=gsGate(spec,'felci_msg','Il PG sta cercando di far trasmettere volutamente un messaggio alle Felci Imitanti',gsRoll(spec,'felci_msg_roll',5,'Trasmettere il messaggio',function(v){var e=Number(pg.empatia||0),thr=e<=5?1:e<=10?2:e<=15?3:4;return{text:(v<=thr?'Messaggio trasmesso':'Non riesce a trasmetterlo')+' — range 1-'+thr,bad:v>thr};},'Il range dipende dall’Empatia del PG; per semplice colore la comunicazione può essere autoconclusiva.'),'pg');}
+ if(k==='fiori fabula'){has=true;var hostile=!!gsGet(spec,'fab_hostile',false),vol=gsGet(spec,'fab_vol',''),vv=Number(vol),bonus=vv>=1&&vv<=5?1:vv<=10?2:vv<=15?3:vv<=20?4:0,faces=hostile?15:10,thr=1+bonus;var body='<div class="riga"><div class="campo"><label>Volontà</label><input type="number" data-v87-gs-val="fab_vol" min="1" max="20" value="'+esc(vol)+'"></div></div><div class="check-riga"><input type="checkbox" data-v87-gs-check="fab_hostile" '+(hostile?'checked':'')+'><label>I Fiori sono ostili (il dado passa a 1d15)</label></div>';body+=gsRoll(spec,'fab_spell',faces,'Riuscire a evocare l’Incantesimo',function(v){return{text:(v<=thr?'Incantesimo evocato':'Incantesimo impedito')+' — range 1-'+thr,bad:v>thr};},'Base: esito 1; la Volontà aggiunge +1/+2/+3/+4 esiti positivi.');h+=gsGate(spec,'fab_presence','Il PG sta cercando di evocare un Incantesimo mentre è a contatto con i Fiori Fabula',body,'pg');}
+ if(k==='fagiolo corridore'||k==='fungo saltellante'||k==='fungo scoppiettante'){has=true;var target=k==='fagiolo corridore'?20:15,nm=k==='fagiolo corridore'?'Fagiolo Corridore':'Fungo';h+=gsGate(spec,'oppose','Si è verificata la situazione specifica in cui devo bloccare / inseguire il '+nm,gsOpposed(spec,'oppose_roll',target,nm,'Il risultato più alto vince; ripeti il confronto quando la scheda lo richiede.'),'pg');}
+ if(k==='canterose'||k==='germogli lamentosi'||k==='tranello del diavolo'){} /* già gestiti sopra */
+ if(k==='platano picchiatore'){has=true;var emp=Number(pg.empatia||0),am=Number(pg.livAmico||0),base=emp<=5?1:emp<=10?2:emp<=15?3:4,thr=Math.min(10,base+am);var main=gsRoll(spec,'plat_point',10,'Scovare il Punto Platano',function(v){return{text:(v<=thr?'Punto Platano individuato':'Fallimento')+' — range 1-'+thr,bad:v>thr};},'Empatia + bonus di Amico delle Piante Magiche. Dopo ogni fallimento va controllato anche il possibile colpo.');var last=Number(gsGet(spec,'plat_point_roll',''));if(last&&last>thr)main+=gsRoll(spec,'plat_hit',2,'Il Platano prova a colpire dopo il fallimento',function(v){return{text:v===1?'Il Platano colpisce / tenta il colpo':'Non colpisce',bad:v===1};},'1 su 1d2. Dopo tre fallimenti consecutivi diventa inevitabilmente ostile.');h+=gsGate(spec,'plat_search','Il PG sta effettivamente cercando il Punto Platano',main,'pg');}
+ if(k==='orchidea fantasma'){has=true;h+=gsGate(spec,'orch_petals','Il PG ha effettivamente ingerito i petali dell’Orchidea Fantasma',gsRoll(spec,'orch_invis',3,'Durata invisibilità',function(v){return{text:'Durata base: '+v+' post',bad:false};},'A questa durata si aggiunge l’eventuale bonus di Coltivatore già mostrato separatamente.'),'pg');h+=gsGate(spec,'orch_hostile','L’Orchidea è diventata ostile oppure viene usata contro un nemico',gsRoll(spec,'orch_blind',7,'Durata iniziale dell’illusione',function(v){return{text:'Cecità/illusione: '+v+' post',bad:false};},'Per liberarsi prima bisogna individuare/colpire l’Orchidea con un ulteriore 1d7 basato sulla Percezione; in una scena ostile il Narratore segue la role.')+gsParamRoll(spec,'orch_find_hostile','Percezione',20,7,'Individuare l’Orchidea ostile',function(p){return p<=5?1:p<=10?2:p<=15?3:4;},'Fallendo: +1 post se tentava senza magia, +3 se tentava con magia'),'pg');}
+ if(k==='pianta stridula'){has=true;h+='<div class="nota-regole">Cattura ingredienti: la scheda indica coerentemente 1d10 per ogni ingrediente extra; i dadi preliminari di quantità dipendono da Empatia e Sapienza.</div>';h+=gsGate(spec,'strid_hunt','Il PG Adulto ha concluso una role in cui ha usato la Pianta Stridula per catturare ingredienti',ingredientHuntHtml(spec,'strid',10,false),'pg');}
+ if(k==='cavolo carnivoro cinese'){has=true;h+=gsConflict('la regola scrive <b>1d9 per ogni ingrediente extra</b>, ma elenca 10 possibili ingredienti e l’esempio usa <b>1d10</b>. Finché la fonte non viene uniformata il dado finale non viene generato automaticamente.');h+=gsGate(spec,'cav_hunt','Il PG Adulto ha concluso una role in cui ha usato il Cavolo per catturare ingredienti',ingredientHuntHtml(spec,'cav',0,true),'pg');}
+ if(k==='pianta vampiro'){has=true;h+=gsConflict('la regola principale indica <b>1d8</b> e contiene 8 animali, ma l’esempio conclusivo riporta <b>4d10</b>. Il tool non sceglie arbitrariamente tra le due formulazioni.');h+=gsGate(spec,'vamp_hunt','Il PG ha concluso una role in cui ha usato la Pianta Vampiro per catturare animali',ingredientHuntHtml(spec,'vamp',0,true),'pg');}
+ if(k==='coccolacea'){has=true;var cd=gsGet(spec,'cocc_dial',''),cdv=Number(cd),cEmp=Number(pg.empatia||0),cAm=Number(pg.livAmico||0),cThr=Math.max(0,Math.min(35,cEmp+(Number.isFinite(cdv)?cdv:0)+cAm));var cBody='<div class="riga"><div class="campo"><label>Dialettica del PG</label><input type="number" data-v87-gs-val="cocc_dial" min="0" max="50" value="'+esc(cd)+'"></div></div>'+gsRoll(spec,'cocc_convince',35,'Convincere la Coccolacea',function(v){return{text:(v<=cThr?'La Coccolacea si convince e libera il PG':'Non si convince')+' — range 1-'+cThr,bad:v>cThr};},'Formula: Empatia + Dialettica + livello di Amico delle Piante Magiche. Se la Coccolacea è ostile e ha intrappolato il PG, il Narratore segue la scena.');h+=gsGate(spec,'cocc_trapped','La Coccolacea è diventata ostile e ha effettivamente intrappolato il PG',gsNarrator('La scena di ostilità deve essere seguita dal Narratore; il <b>1d35 di convincimento</b> resta però il tiro previsto per il PG.')+cBody,'pg');}
+ if(k==='pianta mangiauomini'){has=true;h+=gsConflict('la descrizione parla di permanenza naturale di <b>1d10 post</b>, mentre l’esempio usa un risultato di <b>1d20</b>. <b>Solo quel dado di permanenza</b> resta non automatizzato; gli altri tiri non contraddittori dello specchietto sono disponibili qui.');var md=gsGet(spec,'mang_dial',''),mdv=Number(md),mRes=gsGet(spec,'mang_res',''),mrv=Number(mRes),mForceFails=Math.max(0,Number(gsGet(spec,'mang_force_fails','0'))||0),mMagicFails=Math.max(0,Number(gsGet(spec,'mang_magic_fails','0'))||0),mThr=Math.max(0,Math.min(35,Number(pg.empatia||0)+(Number.isFinite(mdv)?mdv:0)+Number(pg.livAmico||0)-2*mForceFails-5*mMagicFails));var conv='<div class="riga"><div class="campo"><label>Dialettica</label><input type="number" data-v87-gs-val="mang_dial" min="0" max="50" value="'+esc(md)+'"></div><div class="campo"><label>Fallimenti precedenti con la forza</label><input type="number" data-v87-gs-val="mang_force_fails" min="0" max="99" value="'+esc(mForceFails)+'"></div><div class="campo"><label>Fallimenti precedenti con la magia</label><input type="number" data-v87-gs-val="mang_magic_fails" min="0" max="99" value="'+esc(mMagicFails)+'"></div></div>'+gsRoll(spec,'mang_convince',35,'Convincere la Pianta della propria bontà',function(v){return{text:(v<=mThr?'La Pianta si convince':'Non si convince')+' — range 1-'+mThr,bad:v>mThr};},'Formula: Empatia + Dialettica + Amico delle Piante Magiche −2 per ogni tentativo di forza fallito −5 per ogni tentativo magico fallito.');var fThr=Number.isInteger(mrv)&&mrv>=1&&mrv<=20?(mrv<=5?1:mrv<=10?2:mrv<=15?3:4):0;var force='<div class="riga"><div class="campo"><label>Resistenza</label><input type="number" data-v87-gs-val="mang_res" min="1" max="20" value="'+esc(mRes)+'"></div></div>';force+=fThr?gsRoll(spec,'mang_force',10,'Liberarsi con la forza',function(v){return{text:(v<=fThr?'Riesce a liberarsi':'Fallisce: registra un fallimento con la forza')+' — range 1-'+fThr,bad:v>fThr};},'Ogni fallimento con la forza riduce di 2 il successivo range di convincimento.'):'<div class="nota-regole">Inserisci Resistenza per calcolare il range del 1d10.</div>';var mw=Number(gsGet(spec,'mang_wand','')),magic=gsRoll(spec,'mang_wand',3,'Perdita della bacchetta',function(v){return{text:v===1?'Perde la bacchetta':'Mantiene la bacchetta',bad:v===1};},'1 = perde la bacchetta. Se la mantiene, può tentare la magia; se il tentativo fallisce, registra un fallimento magico (-5 al convincimento).');if(mw>=2&&mw<=3)magic+='<div class="nota-regole">Bacchetta mantenuta: puoi risolvere l’Incantesimo. Se l’azione magica fallisce, aumenta di 1 il campo “Fallimenti precedenti con la magia”.</div>';h+=gsGate(spec,'mang_caught','Il PG è stato effettivamente catturato dalla Pianta Mangiauomini',conv+gsGate(spec,'mang_force_gate','Prova a liberarsi con la forza',force,'pg')+gsGate(spec,'mang_magic_gate','Prova a liberarsi usando la magia',magic,'pg'),'pg');}
+ if(k==='puffagiolo'){has=true;h+=gsConflict('nell’esempio il Puffagiolo usa Destrezza 15, mentre lo specchietto valori riporta Destrezza 20 in corsa. Il confronto di Destrezza non viene generato automaticamente finché la fonte non viene uniformata.');}
+ if(k==='siepi dell’ombra'||k==='siepi dell\'ombra'){has=true;var sh=gsOpposed(spec,'siepe_opp',20,'Siepe dell’Ombra','Il confronto di Destrezza stabilisce l’esito dell’attacco/aggancio secondo lo specchietto.');var sr=gsGet(spec,'siepe_res',''),srv=Number(sr),sth=Number.isInteger(srv)&&srv>=1&&srv<=20?(srv<=5?1:srv<=10?2:srv<=15?3:4):0;sh+='<div class="riga"><div class="campo"><label>Resistenza</label><input type="number" data-v87-gs-val="siepe_res" min="1" max="20" value="'+esc(sr)+'"></div></div>';if(sth)sh+=gsRoll(spec,'siepe_escape_roll',10,'Liberarsi dalla Siepe',function(v){if(v===7)return{text:'Recupera la bacchetta, ma rimane intrappolato',bad:false};return{text:(v<=sth?'Si libera':'Rimane intrappolato')+' — range di liberazione 1-'+sth,bad:v>sth};},'Il 7 è un esito speciale: recupera la bacchetta pur restando intrappolato. Pianta sempre ostile: Narratore richiesto.');else sh+='<div class="nota-regole">Inserisci Resistenza per determinare il range del 1d10.</div>';h+=gsGate(spec,'siepe_caught','Il PG è stato effettivamente coinvolto nell’attacco / catturato dalla Siepe dell’Ombra',sh,'pg');}
+ if(!has){box.style.display='none';box.innerHTML='';return;}box.style.display='block';box.innerHTML='<h3>Dadi e regole specifiche — '+esc(spec)+'</h3><div class="nota-regole">Audit dello specchietto della Pianta: i tiri compaiono <b>solo dopo l’azione o la conseguenza che li attiva</b>. Le malattie non vengono lanciate per il solo fatto di aver selezionato la specie.</div>'+h;setupNumericInputs();}
+function ingredientQtySpec(pg){var e=Number(pg.empatia||0),s=Number(pg.sapienzaErbologica||0);function part(v,bonus){if(!bonus){if(v<=5)return{base:1};if(v<=10)return{dice:2};if(v<=15)return{base:1,dice:2};return{base:3};}if(v<=0)return{base:0};if(v<=5)return{base:1};if(v<=10)return{dice:2};if(v<=15)return{base:2};if(v<=20)return{base:1,dice:2};return{base:3};}return{a:part(e,false),b:part(s,true)};}
+function ingredientHuntHtml(spec,prefix,finalFaces,conflict){var pg=leggiPG(),q=ingredientQtySpec(pg);function resolvePart(part,key,label){if(!part.dice)return '<div class="out-tag out-ok">'+label+': '+(part.base||0)+'</div>';var rv=gsGet(spec,key+'_roll',''),v=Number(rv),ok=Number.isInteger(v)&&v>=1&&v<=part.dice,tot=ok?(part.base||0)+v:null,id='gsv87_'+gsSlug(spec)+'_'+key;return '<div class="erb-v87-roll"><div class="erb-v87-action-title">'+label+' — '+((part.base||0)?(part.base+' + '):'')+'1d'+part.dice+'</div><div class="result-line"><div class="dice-code" id="'+id+'">[dice=1d'+part.dice+']'+label+'[/dice]</div><button type="button" class="copy-btn" data-copy-source="'+id+'">Copia</button></div><div class="result-line"><span>Risultato:</span><input type="number" data-v87-gs-val="'+key+'_roll" min="1" max="'+part.dice+'" value="'+esc(rv)+'"><span class="out-tag '+(ok?'out-ok':'out-neutral')+'">'+(ok?tot:'in attesa')+'</span></div></div>';}
+ var a=resolvePart(q.a,prefix+'_emp','Quantità da Empatia'),b=resolvePart(q.b,prefix+'_sap','Bonus da Sapienza');var av=q.a.dice?Number(gsGet(spec,prefix+'_emp_roll','')):0,bv=q.b.dice?Number(gsGet(spec,prefix+'_sap_roll','')):0,aok=!q.a.dice||(Number.isInteger(av)&&av>=1&&av<=q.a.dice),bok=!q.b.dice||(Number.isInteger(bv)&&bv>=1&&bv<=q.b.dice),total=aok&&bok?(q.a.base||0)+(q.a.dice?av:0)+(q.b.base||0)+(q.b.dice?bv:0):null;var tail=total===null?'<div class="nota-regole">Completa prima i dadi di quantità.</div>':'<div class="out-tag out-ok">Ingredienti extra totali: '+total+'</div>';if(total!==null&&finalFaces>0)tail+='<div class="nota-regole">Dado finale: <b>'+total+'d'+finalFaces+'</b>, uno per ciascun ingrediente.</div><div class="result-line"><div class="dice-code" id="gsv87_'+prefix+'_final">[dice='+total+'d'+finalFaces+']Quali ingredienti extra?[/dice]</div><button type="button" class="copy-btn" data-copy-source="gsv87_'+prefix+'_final">Copia</button></div>';if(total!==null&&conflict)tail+='<div class="nota-regole">Il totale è calcolabile, ma il dado che identifica gli ingredienti resta sospeso a causa del conflitto della fonte indicato sopra.</div>';return a+b+tail;}
+var gsBox=E('erbSpeciesSpecialBox');if(gsBox){function gsSave(e){var spec=(E('speciePiantaGuida')||{}).value||'';if(e.target.matches('[data-v87-gs-check]'))gsSet(spec,e.target.getAttribute('data-v87-gs-check'),e.target.checked);if(e.target.matches('[data-v87-gs-val]'))gsSet(spec,e.target.getAttribute('data-v87-gs-val'),e.target.value);renderGuideSpeciesSpecial();}gsBox.addEventListener('input',gsSave);gsBox.addEventListener('change',gsSave);}
+
+/* ---------- Coltivazione: malattie che scattano con il dado Ingredienti / uso Serra ---------- */
+var CULT={
+ 'albero di cenere':{faces:15,name:'Colpo della Fenice',hit:[1],mode:'ingredienti'},
+ 'albero medusa':{faces:15,name:'Medusite',hit:[1],mode:'ingredienti'},
+ 'cespuglio spinoso':{faces:20,name:'Spine Estroverse',hit:[1],mode:'ingredienti'},
+ 'orchidea fantasma':{faces:10,name:'Cataratta Spettrale',hit:[1],mode:'ingredienti'},
+ 'pianta di semi di fuoco':{faces:15,name:'Pustole di Fuoco',hit:[1],mode:'ingredienti'},
+ 'lavanda':{faces:10,name:'Lavandite',hit:[1],mode:'serra'}
+};
+function cultivationEligible(r){var tag=(E('tagColtivazione')||{}).textContent||'',stage=(E('faseColtivazione')||{}).value||'',type=(E('tipoCicloColtivazione')||{}).value||'ingredienti',inp=E('risultatoColtivazione'),v=Number(inp&&inp.value),rolled=Number.isInteger(v)&&v>=1&&v<=10;if(!rolled||!/^Riuscita (0|33|66|100)%$/.test(tag))return false;if(r&&r.mode==='serra')return true;return stage!=='seme'&&type==='ingredienti';}
+function renderCultRisk(){var box=E('erbV86CultivationRiskBox'),s=(E('speciePiantaGuida')||{}).value||'',r=CULT[norm(s)];if(!box)return;if(!r||!cultivationEligible(r)){box.style.display='none';box.innerHTML='';return;}var st=jsonGet('erbSpeciesRiskJson'),key=norm(s)+'|'+((E('faseColtivazione')||{}).value||'')+'|'+((E('tipoCicloColtivazione')||{}).value||'ingredienti')+'|'+r.name,val=st[key]||'',id='v87cultcode';box.style.display='block';box.innerHTML='<h3 style="margin-top:0">Rischio specifico della Coltivazione</h3><div class="nota-regole">'+(r.mode==='serra'?'La Lavandite va controllata <b>ad ogni effettivo utilizzo della Serra per coltivare la Lavanda</b>; il dado appare dopo un tiro realmente eseguito anche se il ciclo fallisce.':'La scheda prescrive questo controllo <b>insieme ad ogni dado di Produzione degli Ingredienti</b>: compare anche se quel tiro dà 0% perché l’esposizione è avvenuta comunque. Non compare durante una semplice Riproduzione di Semi o prima che il tiro sia stato realmente eseguito.')+'</div><div class="result-line"><div class="dice-code" id="'+id+'">[dice=1d'+r.faces+']Controllo '+esc(r.name)+' — Coltivazione[/dice]</div><button type="button" class="copy-btn" data-copy-source="'+id+'">Copia</button></div><div class="result-line"><span>Risultato:</span><input type="number" id="v86CultRisk" min="1" max="'+r.faces+'" value="'+esc(val)+'"><span class="out-tag out-neutral" id="v86CultRiskOut">in attesa</span></div>';setupNumericInputs();var inp=E('v86CultRisk'),out=E('v86CultRiskOut'),v=validInt(inp,1,r.faces);if(out){if(v===null){out.textContent=inp&&inp.value?'Risultato impossibile':'in attesa';out.className='out-tag '+(inp&&inp.value?'out-fail':'out-neutral');}else{var hit=r.hit.indexOf(v)>=0;out.textContent=hit?'Contrae '+r.name:'Nessun contagio';out.className='out-tag '+(hit?'out-fail':'out-ok');}}if(inp)inp.oninput=function(){var x=jsonGet('erbSpeciesRiskJson');x[key]=inp.value;jsonSet('erbSpeciesRiskJson',x);renderCultRisk();};}
+
+/* ---------- Rischi secondari degli oggetti diretti ---------- */
+function renderObjectRisk(){var box=E('erbV86ObjectRiskBox');if(!box)return;var items=[],fert=(E('ebxFertilizzantePost')||{}).value||'0',vaso=(E('ebxVasoSemi')||{}).value||'0',moon=(E('ebxMooncalfOrda')||{}).value||'0';if(fert==='20b'||fert==='80')items.push({k:'fert_'+fert,faces:10,title:'Rischio Fertilizzante Il Terrifico',map:function(v){return v<=3?'La Pianta si ammala':v<=5?'La Pianta muore':'Nessuna conseguenza';},bad:function(v){return v<=5;}});var type=(E('tipoCicloColtivazione')||{}).value||'ingredienti',stage=(E('faseColtivazione')||{}).value||'';if(vaso==='60'&&stage==='riproduzione'&&type==='semi')items.push({k:'vaso60',faces:3,title:'Semi extra — Vaso Il Terrifico',map:function(v){return v===1?'I Semi extra muoiono':'I Semi extra sopravvivono';},bad:function(v){return v===1;}});if(moon==='terrifico')items.push({k:'moon_terrifico',special:'moon'});if(!items.length){box.style.display='none';box.innerHTML='';return;}box.style.display='block';var st=jsonGet('erbObjectRiskJson');box.innerHTML='<h3 style="margin-top:0">Tiri secondari degli Oggetti selezionati</h3>'+items.map(function(it){if(it.special==='moon'){return '<div class="erb-v86-roll"><div class="erb-v86-rule-title">Fertilizzante Mooncalf Il Terrifico — per ogni Pianta extra</div><div class="nota-regole">Per ogni Pianta a cui estendi la Fiducia: 1d4; 1 = diventa ostile, 2 = muore, 3-4 = nessuna conseguenza. Inserisci qui un singolo tiro alla volta.</div><div class="result-line"><div class="dice-code" id="v86obj_moon_code">[dice=1d4]Rischio Mooncalf — Pianta extra[/dice]</div><button type="button" class="copy-btn" data-copy-source="v86obj_moon_code">Copia</button></div><div class="result-line"><span>Risultato:</span><input type="number" data-v86-object="moon_terrifico" min="1" max="4" value="'+esc(st.moon_terrifico||'')+'"><span class="out-tag out-neutral" data-v86-object-out="moon_terrifico">in attesa</span></div></div>';}return '<div class="erb-v86-roll"><div class="erb-v86-rule-title">'+esc(it.title)+'</div><div class="result-line"><div class="dice-code" id="v86obj_'+it.k+'_code">[dice=1d'+it.faces+']'+esc(it.title)+'[/dice]</div><button type="button" class="copy-btn" data-copy-source="v86obj_'+it.k+'_code">Copia</button></div><div class="result-line"><span>Risultato:</span><input type="number" data-v86-object="'+it.k+'" min="1" max="'+it.faces+'" value="'+esc(st[it.k]||'')+'"><span class="out-tag out-neutral" data-v86-object-out="'+it.k+'">in attesa</span></div></div>';}).join('');setupNumericInputs();items.forEach(function(it){var inp=box.querySelector('[data-v86-object="'+it.k+'"]'),o=box.querySelector('[data-v86-object-out="'+it.k+'"]'),max=it.special==='moon'?4:it.faces,v=validInt(inp,1,max);if(!o)return;if(v===null){o.textContent=inp&&inp.value?'Risultato impossibile':'in attesa';o.className='out-tag '+(inp&&inp.value?'out-fail':'out-neutral');return;}var text,bad;if(it.special==='moon'){text=v===1?'La Pianta diventa ostile':v===2?'La Pianta muore':'Nessuna conseguenza';bad=v<=2;}else{text=it.map(v);bad=it.bad(v);}o.textContent=text;o.className='out-tag '+(bad?'out-fail':'out-ok');});}
+var objBox=E('erbV86ObjectRiskBox');if(objBox)objBox.addEventListener('input',function(e){if(!e.target.matches('[data-v86-object]'))return;var x=jsonGet('erbObjectRiskJson');x[e.target.getAttribute('data-v86-object')]=e.target.value;jsonSet('erbObjectRiskJson',x);renderObjectRisk();});
+
+/* Pala Il Terrifico: il rischio scatta quando il preset è davvero applicato in una fase. */
+function renderPalaRisks(){document.querySelectorAll('#modoErbologia .erb-bonus-row[data-ebx-preset="pala_terrifico"]').forEach(function(row){var old=row.querySelector('.erb-v86-pala-risk'),apply=row.querySelector('.erb-apply');if(!apply||!apply.checked){if(old)old.remove();return;}if(!old){var d=document.createElement('div');d.className='erb-v86-pala-risk erb-v86-roll';var phase=row.getAttribute('data-phase')||'';var key='pala|'+phase;var st=jsonGet('erbObjectRiskJson');d.innerHTML='<div class="erb-v86-rule-title">Pala Sterilizzata Il Terrifico — rischio 1d10</div><div class="result-line"><div class="dice-code" id="v86pala_'+phase+'">[dice=1d10]Rischio Pala Sterilizzata Il Terrifico — '+phase+'[/dice]</div><button type="button" class="copy-btn" data-copy-source="v86pala_'+phase+'">Copia</button></div><div class="result-line"><span>Risultato:</span><input type="number" data-v86-pala="'+phase+'" min="1" max="10" value="'+esc(st[key]||'')+'"><span class="out-tag out-neutral" data-v86-pala-out>in attesa</span></div>';row.appendChild(d);setupNumericInputs();d.addEventListener('input',function(e){if(!e.target.matches('[data-v86-pala]'))return;var x=jsonGet('erbObjectRiskJson');x['pala|'+phase]=e.target.value;jsonSet('erbObjectRiskJson',x);renderPalaRisks();});}var inp=old?old.querySelector('[data-v86-pala]'):row.querySelector('[data-v86-pala]'),o=row.querySelector('[data-v86-pala-out]'),v=validInt(inp,1,10);if(o){if(v===null){o.textContent=inp&&inp.value?'Risultato impossibile':'in attesa';o.className='out-tag '+(inp&&inp.value?'out-fail':'out-neutral');}else{o.textContent=v<=3?'La Pianta si ammala':v<=5?'La Pianta muore':'Nessuna conseguenza';o.className='out-tag '+(v<=5?'out-fail':'out-ok');}}});}
+
+/* ---------- Recompute integration ---------- */
+var oldResearch=window.ricalcolaRicerca;window.ricalcolaRicerca=function(){var r=oldResearch?oldResearch.apply(this,arguments):undefined;updateBolcino();updateMalaria();updateAttempts();[1,2,3].forEach(renderSpeciesRules);return r;};
+var oldGuide=window.ricalcolaErbologia;window.ricalcolaErbologia=function(){var r=oldGuide?oldGuide.apply(this,arguments):undefined;renderGuideSpeciesSpecial();renderCultRisk();renderObjectRisk();renderPalaRisks();return r;};
+document.addEventListener('change',function(e){if(e.target&&e.target.id==='zonaRicerca'){updateBolcino();updateMalaria();}if(e.target&&['ebxFertilizzantePost','ebxVasoSemi','ebxMooncalfOrda','faseColtivazione','tipoCicloColtivazione','speciePiantaGuida','livColtivatore','livAmico','pgTipo','sapienzaErbologicaGuida','empatia'].indexOf(e.target.id)>=0){renderGuideSpeciesSpecial();renderCultRisk();renderObjectRisk();}if(e.target&&e.target.closest&&e.target.closest('#ebxResearchBonusRows')){setTimeout(function(){ebxSearchRows().forEach(ebxUpdateSearchRow);updateAttempts();},0);}},true);
+document.addEventListener('input',function(e){if(e.target&&e.target.id==='risultatoMalariaViaggio')updateMalaria();if(e.target&&e.target.id==='risultatoColtivazione')renderCultRisk();},true);
+/* old generic foreign sessions: no guessing; force explicit macroarea before species extraction */
+var oldZoneNorm=window.ebxZoneNormalized;window.ebxZoneNormalized=function(){var z=typeof rpZona==='function'?rpZona():'';if(z==='Fuori dal Regno Unito — Coste/Foreste del Mondo Magico')return 'Fuori dal Regno Unito — seleziona la macroarea';return EBX_ZONE_ALIASES[z]||z;};
+/* Refresh rows restored before v86 overrides. */
+setTimeout(function(){ebxSearchRows().forEach(ebxUpdateSearchRow);if(typeof ricalcolaRicerca==='function')ricalcolaRicerca();if(typeof ricalcolaErbologia==='function')ricalcolaErbologia();},0);
+})();
+</script>\n
+
+<style id="erbologia-v90-direct-uses-css">
+.erb-direct-item-card .erb-direct-counter{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 4px;padding:7px 9px;border:1px solid rgba(134,172,95,.36);border-radius:6px;background:rgba(17,34,13,.52)}
+.erb-direct-item-card .erb-direct-counter label{font-size:.76em;color:#dcebd2;font-weight:700}.erb-direct-item-card .erb-direct-counter input{width:72px!important;flex:0 0 72px}.erb-direct-use-status{font-size:.78em;color:#d5e8c7;line-height:1.35}.erb-direct-use-status.exhausted{color:#ffc5b6;font-weight:700}.erb-direct-use-status.applied{color:#dff6bb;font-weight:700}
+.erb-direct-moon-card{margin:10px 0 12px!important;background:#213719!important;border-color:#7ba15b!important;color:#eef8e7!important}.erb-direct-moon-card h4{color:#d8efb7!important}.erb-direct-moon-card .campo label{color:#e8f4df!important}.erb-direct-moon-card .nota-regole{color:#d8e8ce!important}
+#erbMooncalfRiskBox{margin-top:10px!important;background:#2d1e17!important;border-color:#a36a45!important}#erbMooncalfRiskBox h4{color:#ffd0ab!important}.erb-direct-limit-note{margin-top:6px;font-size:.78em;color:#d8e8ce}
+</style>
+<script id="erbologia-v90-direct-uses-js">
+(function(){
+'use strict';
+function E(id){return document.getElementById(id);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+var DEF={used:{},cult:{fert:'',vaso:''},moon:{key:''}};
+var FERT={
+ '5':{key:'fert:bava_elfi',max:3,label:'Bava di Gnomo — Mercato degli Elfi'},
+ '10':{key:'fert:bava_standard',max:3,label:'Bava di Gnomo — standard'},
+ '20b':{key:'fert:bava_terrifico',max:3,label:'Bava di Gnomo — Il Terrifico',risk:10},
+ '20d':{key:'fert:drago_elfi',max:3,label:'Sterco di Drago — Mercato degli Elfi'},
+ '40':{key:'fert:drago_standard',max:3,label:'Sterco di Drago — standard'},
+ '80':{key:'fert:drago_terrifico',max:3,label:'Sterco di Drago — Il Terrifico',risk:10}
+};
+var VASO={
+ '15':{key:'vaso:elfi',max:2,label:'Vaso — Mercato degli Elfi'},
+ '30':{key:'vaso:standard',max:5,label:'Vaso — standard'},
+ '60':{key:'vaso:terrifico',max:10,label:'Vaso — Il Terrifico',risk:3}
+};
+var MOON={
+ 'elfi':{key:'moon:elfi',max:3,label:'Mooncalf — Mercato degli Elfi',plants:1,pg:1},
+ 'standard':{key:'moon:standard',max:3,label:'Mooncalf — standard',plants:2,pg:1},
+ 'terrifico':{key:'moon:terrifico',max:3,label:'Mooncalf — Il Terrifico',plants:4,pg:2,risk:4}
+};
+var restoredCultHold=false,restoredMoonHold=false;
+function clone(v){try{return JSON.parse(JSON.stringify(v));}catch(e){return {};}}
+function state(){var h=E('erbDirectItemUsageJson'),o={};try{o=JSON.parse((h&&h.value)||'{}')||{};}catch(e){};if(!o.used)o.used={};if(!o.cult)o.cult={fert:'',vaso:''};if(!o.moon)o.moon={key:''};return o;}
+function save(o){var h=E('erbDirectItemUsageJson');if(h)h.value=JSON.stringify(o||{});}
+function n(v){v=Number(v);return Number.isFinite(v)?Math.max(0,Math.floor(v)):0;}
+function info(map,val){return map[String(val||'')]||null;}
+function used(o,key){return key?n(o.used[key]):0;}
+function setUsed(o,key,v,max){if(!key)return;o.used[key]=Math.max(0,Math.min(max,n(v)));}
+function clearRisk(prefix){var h=E('erbObjectRiskJson'),o={};try{o=JSON.parse((h&&h.value)||'{}')||{};}catch(e){};Object.keys(o).forEach(function(k){if(k.indexOf(prefix)===0)delete o[k];});if(h)h.value=JSON.stringify(o);}
+function riskState(){var h=E('erbObjectRiskJson'),o={};try{o=JSON.parse((h&&h.value)||'{}')||{};}catch(e){};return o;}
+function saveRisk(o){var h=E('erbObjectRiskJson');if(h)h.value=JSON.stringify(o||{});}
+function currentCultValid(){var r=E('risultatoColtivazione'),tag=E('tagColtivazione');var v=Number(r&&r.value);return Number.isInteger(v)&&v>=1&&v<=10&&/^Riuscita (0|33|66|100)%$/.test((tag&&tag.textContent)||'');}
+function currentCultSuccess(){var tag=E('tagColtivazione');return /^Riuscita (33|66|100)%$/.test((tag&&tag.textContent)||'');}
+function vasoEligible(){return ((E('faseColtivazione')||{}).value||'')==='riproduzione'&&((E('tipoCicloColtivazione')||{}).value||'')==='semi';}
+function guideRestoring(){return window.__ERB_GUIDE_RESTORING===true;}
+function consume(o,it){if(!it)return false;var u=used(o,it.key);if(u>=it.max)return false;setUsed(o,it.key,u+1,it.max);return true;}
+function statusText(it,u,committed,where){if(!it)return '';var rem=Math.max(0,it.max-u);return u+'/'+it.max+' usi · '+rem+' rimasti'+(committed?' · applicato '+where:'')+(rem===0?' · ESAURITO':'');}
+function syncSelectOptions(sel,map,o,currentKey){if(!sel)return;Array.prototype.forEach.call(sel.options,function(op){var it=info(map,op.value);if(!it)return;op.disabled=used(o,it.key)>=it.max&&currentKey!==it.key;});}
+function renderCounter(selId,inputId,statusId,map,currentKey,where){var sel=E(selId),inp=E(inputId),st=E(statusId),o=state(),it=info(map,sel&&sel.value);if(!inp||!st)return;var wrap=inp.closest('.erb-direct-counter');if(!it){if(wrap)wrap.style.display='none';st.textContent='';syncSelectOptions(sel,map,o,currentKey);return;}if(wrap)wrap.style.display='flex';var u=used(o,it.key);inp.max=String(it.max);if(document.activeElement!==inp)inp.value=String(u);var committed=currentKey===it.key;st.textContent=statusText(it,u,committed,where);st.className='erb-direct-use-status'+(u>=it.max?' exhausted':'')+(committed?' applied':'');syncSelectOptions(sel,map,o,currentKey);}
+function renderAllCounters(){var o=state();renderCounter('ebxFertilizzantePost','erbFertilizzanteUsed','erbFertilizzanteUseStatus',FERT,o.cult.fert,'al ciclo corrente');renderCounter('ebxVasoSemi','erbVasoUsed','erbVasoUseStatus',VASO,o.cult.vaso,'alla Riproduzione corrente');renderCounter('ebxMooncalfOrda','erbMooncalfUsed','erbMooncalfUseStatus',MOON,o.moon.key,'all’Interazione corrente');}
+function sanitizeExhaustedSelections(){var o=state(),changed=false;[[E('ebxFertilizzantePost'),FERT,o.cult.fert],[E('ebxVasoSemi'),VASO,o.cult.vaso],[E('ebxMooncalfOrda'),MOON,o.moon.key]].forEach(function(x){var sel=x[0],map=x[1],current=x[2],it=info(map,sel&&sel.value);if(sel&&it&&used(o,it.key)>=it.max&&current!==it.key){sel.value='0';changed=true;}});if(changed)renderMoonRecipients();return changed;}
+function bindCounter(inputId,selId,map){var inp=E(inputId),sel=E(selId);if(!inp||!sel)return;inp.addEventListener('input',function(){var it=info(map,sel.value);if(!it)return;var o=state();setUsed(o,it.key,inp.value,it.max);save(o);sanitizeExhaustedSelections();renderAllCounters();});}
+function onDirectSelect(selId,map,type){var sel=E(selId);if(!sel)return;sel.addEventListener('change',function(){var o=state(),it=info(map,sel.value);if(type==='fert'&&o.cult.fert&&(!it||it.key!==o.cult.fert)&&currentCultValid()){var old=Object.keys(FERT).filter(function(k){return FERT[k].key===o.cult.fert;})[0]||'0';sel.value=old;window.alert('Il Fertilizzante è già stato registrato per il ciclo corrente. Azzera il risultato della Coltivazione prima di cambiarlo.');}
+ if(type==='vaso'&&o.cult.vaso&&(!it||it.key!==o.cult.vaso)&&currentCultValid()){var ov=Object.keys(VASO).filter(function(k){return VASO[k].key===o.cult.vaso;})[0]||'0';sel.value=ov;window.alert('Il Vaso è già stato registrato per la Riproduzione corrente. Azzera il risultato della Coltivazione prima di cambiarlo.');}
+ if(type==='moon'&&o.moon.key&&(!it||it.key!==o.moon.key)&&moonSuccess()){var om=Object.keys(MOON).filter(function(k){return MOON[k].key===o.moon.key;})[0]||'0';sel.value=om;window.alert('Il Fertilizzante Mooncalf è già stato registrato per l’Interazione corrente. Risolvi/azzera l’Interazione prima di cambiarlo.');}
+ renderAllCounters();setTimeout(function(){syncAll(false);},0);});}
+function syncCult(){var o=state(),valid=currentCultValid();if(guideRestoring()){if(valid)restoredCultHold=true;return;}if(!valid){if(o.cult.fert||o.cult.vaso){o.cult.fert='';o.cult.vaso='';save(o);}restoredCultHold=false;renderAllCounters();return;}if(restoredCultHold){renderAllCounters();return;}
+ var fs=E('ebxFertilizzantePost'),fi=info(FERT,fs&&fs.value);if(fi&&!o.cult.fert){if(consume(o,fi)){o.cult.fert=fi.key;clearRisk('v90|fert|');}else if(fs){fs.value='0';}}
+ var vs=E('ebxVasoSemi'),vi=info(VASO,vs&&vs.value);if(!vasoEligible()){if(o.cult.vaso)o.cult.vaso='';}else if(vi&&!o.cult.vaso){if(consume(o,vi)){o.cult.vaso=vi.key;clearRisk('v90|vaso|');}else if(vs){vs.value='0';}}
+ save(o);renderAllCounters();}
+function moonSuccess(){try{return !!(E('interazioneOrda')&&E('interazioneOrda').checked&&typeof window.interazioneStato==='function'&&window.interazioneStato()==='riuscita');}catch(e){return false;}}
+function clampRecipients(it){var p=E('erbMooncalfExtraPlants'),g=E('erbMooncalfExtraPg');if(!it){if(p)p.value='0';if(g)g.value='0';return {plants:0,pg:0};}if(p){p.max=String(it.plants);if(n(p.value)>it.plants)p.value=String(it.plants);}if(g){g.max=String(it.pg);if(n(g.value)>it.pg)g.value=String(it.pg);}return {plants:n(p&&p.value),pg:n(g&&g.value)};}
+function renderMoonRecipients(){var card=E('erbDirectMoonCard'),sel=E('ebxMooncalfOrda'),wrap=E('erbMooncalfRecipients'),orda=E('interazioneOrda'),it=info(MOON,sel&&sel.value);if(card)card.style.display=orda&&orda.checked?'block':'none';if(wrap)wrap.style.display=it?'block':'none';var r=clampRecipients(it),note=E('ebxMooncalfNote');if(note&&it)note.innerHTML='<b>Limiti per uso:</b> fino a '+it.plants+' '+(it.plants===1?'Pianta':'Piante')+' extra e '+it.pg+' '+(it.pg===1?'altro PG':'altri PG')+'. L’uso viene consumato soltanto dopo un’Interazione positiva e se indichi almeno un destinatario.'+(it.risk?' Per ogni Pianta extra: 1d4; 1 ostile, 2 muore.':'');return r;}
+function syncMoon(){var o=state(),ok=moonSuccess(),sel=E('ebxMooncalfOrda'),it=info(MOON,sel&&sel.value),rec=renderMoonRecipients();if(guideRestoring()){if(ok)restoredMoonHold=true;return;}if(!ok){if(o.moon.key){o.moon.key='';save(o);}restoredMoonHold=false;renderAllCounters();return;}if(restoredMoonHold){renderAllCounters();return;}if(!it||!rec||(rec.plants+rec.pg)<=0){renderAllCounters();return;}if(!o.moon.key){if(consume(o,it)){o.moon.key=it.key;clearRisk('v90|moon|');}else if(sel){sel.value='0';renderMoonRecipients();}}save(o);renderAllCounters();}
+function riskInputHtml(key,faces,title,desc){var rs=riskState(),v=rs[key]||'',id='v90risk_'+key.replace(/[^a-z0-9]+/gi,'_');return '<div class="erb-v86-roll"><div class="erb-v86-rule-title">'+esc(title)+'</div>'+(desc?'<div class="nota-regole">'+desc+'</div>':'')+'<div class="result-line"><div class="dice-code" id="'+id+'">[dice=1d'+faces+']'+esc(title)+'[/dice]</div><button type="button" class="copy-btn" data-copy-source="'+id+'">Copia</button></div><div class="result-line"><span>Risultato:</span><input type="number" data-v90-object-risk="'+esc(key)+'" data-v90-faces="'+faces+'" min="1" max="'+faces+'" value="'+esc(v)+'"><span class="out-tag out-neutral" data-v90-risk-out="'+esc(key)+'">in attesa</span></div></div>';}
+function renderDirectRisks(){var o=state(),box=E('erbV86ObjectRiskBox'),html=[];if(box){var fk=o.cult.fert;if(fk==='fert:bava_terrifico'||fk==='fert:drago_terrifico')html.push(riskInputHtml('v90|fert|'+fk,10,'Rischio Fertilizzante Il Terrifico','Il dado compare solo perché il Fertilizzante è stato effettivamente consumato nel ciclo corrente. 1-3: la Pianta si ammala; 4-5: muore; 6-10: nessuna conseguenza.'));if(o.cult.vaso==='vaso:terrifico'&&currentCultSuccess())html.push(riskInputHtml('v90|vaso|terrifico',3,'Semi extra — Vaso Il Terrifico','Il controllo esiste solo dopo una Riproduzione di Semi riuscita in cui il Vaso è stato realmente usato. Con 1 muoiono i Semi extra.'));if(!html.length){box.style.display='none';box.innerHTML='';}else{box.style.display='block';box.innerHTML='<h3 style="margin-top:0">Tiri secondari degli Oggetti realmente usati</h3>'+html.join('');}}
+ var mb=E('erbMooncalfRiskBox'),mi=o.moon.key==='moon:terrifico'?MOON.terrifico:null,rec=renderMoonRecipients();if(mb){if(mi&&rec.plants>0){var mh='<h4>Rischi delle Piante extra — Mooncalf Il Terrifico</h4><div class="nota-regole">Un 1d4 distinto per ogni Pianta cui stai estendendo la Fiducia: 1 = diventa ostile; 2 = muore; 3-4 = nessuna conseguenza. Questi sono tiri del PG; l’eventuale scena ostile resta da gestire col Narratore.</div>';for(var i=1;i<=rec.plants;i++)mh+=riskInputHtml('v90|moon|'+i,4,'Mooncalf — Pianta extra '+i,'');mb.style.display='block';mb.innerHTML=mh;}else{mb.style.display='none';mb.innerHTML='';}}
+ if(typeof setupNumericInputs==='function')setupNumericInputs();updateRiskOutputs();}
+function updateRiskOutputs(){document.querySelectorAll('[data-v90-object-risk]').forEach(function(inp){var key=inp.getAttribute('data-v90-object-risk'),faces=Number(inp.getAttribute('data-v90-faces')||0),v=Number(inp.value),out=document.querySelector('[data-v90-risk-out="'+CSS.escape(key)+'"]');if(!out)return;if(!Number.isInteger(v)||v<1||v>faces){out.textContent=inp.value?'Risultato impossibile':'in attesa';out.className='out-tag '+(inp.value?'out-fail':'out-neutral');return;}var txt='Nessuna conseguenza',bad=false;if(key.indexOf('v90|fert|')===0){if(v<=3){txt='La Pianta si ammala';bad=true;}else if(v<=5){txt='La Pianta muore';bad=true;}}else if(key==='v90|vaso|terrifico'){txt=v===1?'I Semi extra muoiono':'I Semi extra sopravvivono';bad=v===1;}else if(key.indexOf('v90|moon|')===0){txt=v===1?'La Pianta diventa ostile':v===2?'La Pianta muore':'Nessuna conseguenza';bad=v<=2;}out.textContent=txt;out.className='out-tag '+(bad?'out-fail':'out-ok');});}
+function syncAll(render){sanitizeExhaustedSelections();syncCult();syncMoon();sanitizeExhaustedSelections();renderMoonRecipients();renderAllCounters();if(render!==false)renderDirectRisks();}
+function moveMoon(){var c=E('erbDirectMoonCard'),anchor=E('opzioniOrdaInterazione');if(c&&anchor&&c.previousElementSibling!==anchor)anchor.insertAdjacentElement('afterend',c);renderMoonRecipients();}
+function bind(){moveMoon();bindCounter('erbFertilizzanteUsed','ebxFertilizzantePost',FERT);bindCounter('erbVasoUsed','ebxVasoSemi',VASO);bindCounter('erbMooncalfUsed','ebxMooncalfOrda',MOON);onDirectSelect('ebxFertilizzantePost',FERT,'fert');onDirectSelect('ebxVasoSemi',VASO,'vaso');onDirectSelect('ebxMooncalfOrda',MOON,'moon');
+ document.addEventListener('input',function(e){if(e.target&&e.target.matches('[data-v90-object-risk]')){var rs=riskState();rs[e.target.getAttribute('data-v90-object-risk')]=e.target.value;saveRisk(rs);updateRiskOutputs();return;}if(e.target&&['risultatoColtivazione','risultatoInterazione','risultatoOrdaInterazione','erbMooncalfExtraPlants','erbMooncalfExtraPg'].indexOf(e.target.id)>=0)setTimeout(function(){syncAll(true);},0);},true);
+ document.addEventListener('change',function(e){if(e.target&&['faseColtivazione','tipoCicloColtivazione','interazioneOrda','numeroPianteOrda','interazioneRisoltaEsternamente','interazioneMaiOstile','interazioneSempreOstile','faseInterazione','secondoTentativoInterazione','erbMooncalfExtraPlants','erbMooncalfExtraPg'].indexOf(e.target.id)>=0)setTimeout(function(){syncAll(true);},0);},true);
+ var old=window.ricalcolaErbologia;window.ricalcolaErbologia=function(){sanitizeExhaustedSelections();var r=old?old.apply(this,arguments):undefined;syncAll(true);return r;};
+ var oldReset=window.resetGuidaErbologia;if(typeof oldReset==='function')window.resetGuidaErbologia=function(){var r=oldReset.apply(this,arguments);var h=E('erbDirectItemUsageJson');if(h)h.value='{}';['erbFertilizzanteUsed','erbVasoUsed','erbMooncalfUsed'].forEach(function(id){var x=E(id);if(x)x.value='0';});restoredCultHold=false;restoredMoonHold=false;syncAll(true);return r;};
+ if(typeof setupNumericInputs==='function')setupNumericInputs();renderAllCounters();syncAll(true);
+ window.__V91TEST={state:state,save:save,syncCult:syncCult,syncMoon:syncMoon,syncAll:syncAll,renderDirectRisks:renderDirectRisks,renderMoonRecipients:renderMoonRecipients,sanitizeExhaustedSelections:sanitizeExhaustedSelections,FERT:FERT,VASO:VASO,MOON:MOON};window.__V90TEST=window.__V91TEST;
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind);else bind();
+})();
+</script>
+
+<style id="erbologia-v101-import-css">
+.outcome-import-row{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap}.outcome-import-choice{display:flex;flex-direction:column;gap:4px;font-size:.8em;font-weight:700}.outcome-import-choice select{min-width:260px}
+</style>
 </body>
 </html>
