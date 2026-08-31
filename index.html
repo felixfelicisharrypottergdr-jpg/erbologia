@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <!-- v130: sessioni Ricerca Creature condivise tra dispositivi, chiave stabile per PG, recupero sessioni legacy e rimozione vincolo ownerUid -->
 
@@ -12894,7 +12895,34 @@ function updateResearch(n){
    var don=checked(p+'doxyNarrDo');show(p+'doxyNarrWrap',don);if(don){var extra=val('mzV78_'+n+'_doxyOrda'),total=extra==null?null:1+extra,thr=total==null?0:(total<=5?2:total<=15?4:6),dr=val(p+'doxyNarrRoll'),doo=E(p+'doxyNarrOut');if(doo)doo.innerHTML=total==null?'Determina prima quanti Doxy sono presenti.':dr==null?'<b>Infestazione '+(total<=5?'lieve':total<=15?'media':'grave')+':</b> il Narratore provoca danni con 1–'+thr+' su 1d10.':dr<=thr?'<b>Danni a beni/strutture:</b> il Narratore determina le conseguenze concrete.':'Nessun danno ambientale in questo giro.';if(dr!=null&&total!=null)tag(p+'doxyNarrRoll',dr<=thr?'danni':'nessun danno',dr<=thr?false:true);}
  }
  if(k==='lobalug'){
-   var on=checked(p+'lobDo');show(p+'lobWrap',on);if(!on)return;var trust=checked(p+'lobTrust'),lv=cust(),pre=E(p+'lobPre'),extW=E(p+'lobExtractWrap'),auto=E(p+'lobAuto'),er=val(p+'lobExtract'),thr=1+lv;if(pre)pre.style.display=!trust?'':'none';if(extW)extW.style.display=lv>=5?'none':'';if(auto)auto.style.display=lv>=5?'':'none';var success=lv>=5||(er!=null&&er<=thr),failed=lv<5&&er!=null&&er>thr;show(p+'lobPost',failed);var illegal=success&&!isMagizoologo(),iw=E(p+'lobIllegal');if(iw)iw.style.display=illegal?'':'none';var narr=checked(p+'lobNarrated'),ip=E(p+'lobIllegalPlayer');if(ip)ip.style.display=illegal?'':'none';var won=checked(p+'lobWeaponDo'),ww=E(p+'lobWeaponWrap');if(ww)ww.style.display=won?'':'none';if(won){var s=sap(),own=checked(p+'lobWeaponOwned'),cmdW=E(p+'lobWeaponCommandWrap'),shotsW=E(p+'lobWeaponShotsWrap'),cmd=val(p+'lobWeaponCommand'),gate=E(p+'lobWeaponGate'),ready=false;if(cmdW)cmdW.style.display=(s>=25&&!own)?'':'none';if(s<25){if(gate)gate.innerHTML='<b>Non disponibile:</b> serve Sapienza Magizoologica 25.';}else if(own){if(gate)gate.innerHTML='<b>Lobalug della propria Riserva:</b> nessun 1d50 di comando; determina direttamente gli schizzi.';ready=true;}else if(cmd==null){if(gate)gate.innerHTML='<b>Lobalug non proprio:</b> lancia 1d50 ≤ Empatia + Sapienza = '+(empathy()+s)+'.';}else if(cmd<=empathy()+s){if(gate)gate.innerHTML='<b>Comando riuscito:</b> determina il numero di schizzi.';ready=true;}else if(gate)gate.innerHTML='<b>Comando fallito:</b> nessuno schizzo in questo tentativo.';if(shotsW)shotsW.style.display=ready?'':'none';var sh=val(p+'lobWeaponShots');if(sh!=null)tag(p+'lobWeaponShots',String(sh),true);}
+   /* v137 — Estrazione del Veleno e uso come arma sono azioni indipendenti. */
+   var on=checked(p+'lobDo'),lobWrap=E(p+'lobWrap');
+   if(lobWrap)lobWrap.style.display=on?'':'none';
+   if(on){
+     var trust=checked(p+'lobTrust'),lv=cust(),pre=E(p+'lobPre'),extW=E(p+'lobExtractWrap'),auto=E(p+'lobAuto'),er=val(p+'lobExtract'),thr=1+lv;
+     if(pre)pre.style.display=!trust?'':'none';
+     if(extW)extW.style.display=lv>=5?'none':'';
+     if(auto)auto.style.display=lv>=5?'':'none';
+     var success=lv>=5||(er!=null&&er<=thr),failed=lv<5&&er!=null&&er>thr;
+     show(p+'lobPost',failed);
+     var illegal=success&&!isMagizoologo(),iw=E(p+'lobIllegal');
+     if(iw)iw.style.display=illegal?'':'none';
+     var ip=E(p+'lobIllegalPlayer');
+     if(ip)ip.style.display=illegal?'':'none';
+   }
+   var won=checked(p+'lobWeaponDo'),ww=E(p+'lobWeaponWrap');
+   if(ww)ww.style.display=won?'':'none';
+   if(won){
+     var s=sap(),own=checked(p+'lobWeaponOwned'),cmdW=E(p+'lobWeaponCommandWrap'),shotsW=E(p+'lobWeaponShotsWrap'),cmd=val(p+'lobWeaponCommand'),gate=E(p+'lobWeaponGate'),ready=false;
+     if(cmdW)cmdW.style.display=(s>=25&&!own)?'':'none';
+     if(s<25){if(gate)gate.innerHTML='<b>Non disponibile:</b> serve Sapienza Magizoologica 25.';}
+     else if(own){if(gate)gate.innerHTML='<b>Lobalug della propria Riserva:</b> nessun 1d50 di comando; determina direttamente gli schizzi.';ready=true;}
+     else if(cmd==null){if(gate)gate.innerHTML='<b>Lobalug non proprio:</b> lancia 1d50 ≤ Empatia + Sapienza = '+(empathy()+s)+'.';}
+     else if(cmd<=empathy()+s){if(gate)gate.innerHTML='<b>Comando riuscito:</b> determina il numero di schizzi.';ready=true;}
+     else if(gate)gate.innerHTML='<b>Comando fallito:</b> nessuno schizzo in questo tentativo.';
+     if(shotsW)shotsW.style.display=ready?'':'none';
+     var sh=val(p+'lobWeaponShots');if(sh!=null)tag(p+'lobWeaponShots',String(sh),true);
+   }
  }
  if(k==='drago'){
    if(race==='Drago Specchio'){var on=checked(p+'mirrorDo');show(p+'mirrorWrap',on);var r=val(p+'mirrorRoll'),o=E(p+'mirrorOut');if(o)o.innerHTML=!on?'':r==null?'Lancio del Narratore in attesa.':'<b>Effetto:</b> '+esc(MIRROR[r]||'—')+'.';if(r!=null)tag(p+'mirrorRoll',MIRROR[r]||'esito',null);}
@@ -12932,6 +12960,7 @@ function init(){setTimeout(function(){buildGuide(false);for(var n=1;n<=3;n++)bui
 
 <style id="v136-contrast-final-audit">
 /* v136 — audit finale esclusivamente grafico. Nessuna logica di gioco modificata. */
+/* v137 — fix funzionale: nel Lobalug di Ricerca, estrazione del Veleno e uso come arma restano azioni indipendenti. */
 
 /* Schede chiare: testo principale sempre scuro. */
 .scheda,.blocco-incontro{color:#2f180d!important;}
