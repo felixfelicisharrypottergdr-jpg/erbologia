@@ -4,6 +4,7 @@
 <!-- Erbologia tool v109 — integrazione branch 01/09/2026 + Regolamento Ingredienti: Repello Babbanum +1; export Elfo arricchito; legalità Ingredienti allineata al Glossario autoritativo, senza falso tiro di scoperta alla sola Produzione; distinzione Erbologo/Pozionista preservata. -->
 <!-- Erbologia tool v108 — audit 01/09/2026: alias specie Produzione, invalidazione distribuzione dipendente dal contesto e versioni di persistenza allineate; preservate correzioni v107. -->
 <!-- Erbologia tool v113 — avviso evidente quando si tenta di aprire la Ricerca senza aver inserito il nome del PG. -->
+<!-- Erbologia tool v114 — rimosso il comando manuale Aggiorna dall’elenco Ricerche; il caricamento resta automatico nei flussi già previsti. -->
 <!DOCTYPE html>
 <!-- Erbologia tool v101 — importazione multi-esemplare: scelta esplicita dell’esemplare II/III Incontro, Fase Vitale e Salute preservate nella Guida -->
 <!-- Erbologia tool v100 — restore a due passaggi: cache tecniche azzerate prima di ricreare righe dinamiche; nessuna invalidazione durante il caricamento -->
@@ -2661,7 +2662,6 @@ function ebxEl(id){ return document.getElementById(id); }
       <div id="rp-firebase-auth-status" class="session-status">Connessione a Firebase…</div>
       <div class="session-new-row">
         <button class="session-btn" id="rp-btn-new-session" type="button" data-session-control="1">+ Nuova Ricerca</button>
-        <button class="session-btn ghost" id="rp-btn-refresh-sessions" type="button" data-session-control="1">↻ Aggiorna</button>
       </div>
       <div id="rp-session-home-msg" class="session-status"></div>
       <div id="rp-session-list"></div>
@@ -5500,7 +5500,7 @@ function rpDelete(){
 function rpBack(){if(RP_DELETING)return;var btn=rpEl('rp-btn-back-sessions');if(btn)btn.disabled=true;var p=RP_CURRENT_ID&&rpSessionCanEdit(RP_CURRENT_DATA)?rpSaveNow():Promise.resolve(true);p.then(function(){rpNavigateDashboard();}).catch(function(){if(btn)btn.disabled=false;rpStatus('rp-save-status','Non posso tornare all’elenco: il salvataggio non è riuscito. Riprova quando Firebase è disponibile.','bad');});}
 
 function rpSetupControls(){
-  rpEl('rp-btn-new-session').addEventListener(evtClick,rpCreateSession);rpEl('rp-btn-refresh-sessions').addEventListener(evtClick,rpLoadSessions);rpEl('rp-btn-back-sessions').addEventListener(evtClick,rpBack);rpEl('rp-btn-delete-session').addEventListener(evtClick,rpOpenDelete);rpEl('rp-btn-cancel-delete').addEventListener(evtClick,rpCloseDelete);rpEl('rp-delete-session-check').addEventListener('change',function(){rpEl('rp-btn-confirm-delete').disabled=!this.checked;});rpEl('rp-btn-confirm-delete').addEventListener(evtClick,rpDelete);rpEl('rp-delete-session-modal').addEventListener(evtClick,function(e){if(e.target===this)rpCloseDelete();});
+  rpEl('rp-btn-new-session').addEventListener(evtClick,rpCreateSession);rpEl('rp-btn-back-sessions').addEventListener(evtClick,rpBack);rpEl('rp-btn-delete-session').addEventListener(evtClick,rpOpenDelete);rpEl('rp-btn-cancel-delete').addEventListener(evtClick,rpCloseDelete);rpEl('rp-delete-session-check').addEventListener('change',function(){rpEl('rp-btn-confirm-delete').disabled=!this.checked;});rpEl('rp-btn-confirm-delete').addEventListener(evtClick,rpDelete);rpEl('rp-delete-session-modal').addEventListener(evtClick,function(e){if(e.target===this)rpCloseDelete();});
   document.querySelectorAll('#piante-workspace [data-rp-page]').forEach(function(b){b.addEventListener(evtClick,function(){rpGoto(b.getAttribute('data-rp-page'));});});
   document.querySelectorAll('#piante-workspace [data-rp-goto]').forEach(function(b){b.addEventListener(evtClick,function(){rpGoto(b.getAttribute('data-rp-goto'));});});
   rpWorkspace().addEventListener('input',function(e){if(RP_RESTORING||RP_READONLY)return;ricalcolaRicerca();rpUpdateToolbar();rpScheduleSave();},true);rpWorkspace().addEventListener('change',function(e){if(RP_RESTORING||RP_READONLY)return;ricalcolaRicerca();rpUpdateToolbar();rpScheduleSave();},true);
