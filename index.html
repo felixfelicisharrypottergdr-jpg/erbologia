@@ -3,6 +3,7 @@
 <!-- Erbologia tool v110 — audit finale di regressione 01/09/2026: corretto ReferenceError degli alias Ingredienti; alias specie spostati nel catalogo Produzione; Pianta Mangiauomini e Siepi dell'Ombra non generano quantità Ingredienti; persistenza/distribuzione riallineate a v110. -->
 <!-- Erbologia tool v109 — integrazione branch 01/09/2026 + Regolamento Ingredienti: Repello Babbanum +1; export Elfo arricchito; legalità Ingredienti allineata al Glossario autoritativo, senza falso tiro di scoperta alla sola Produzione; distinzione Erbologo/Pozionista preservata. -->
 <!-- Erbologia tool v108 — audit 01/09/2026: alias specie Produzione, invalidazione distribuzione dipendente dal contesto e versioni di persistenza allineate; preservate correzioni v107. -->
+<!-- Erbologia tool v113 — avviso evidente quando si tenta di aprire la Ricerca senza aver inserito il nome del PG. -->
 <!DOCTYPE html>
 <!-- Erbologia tool v101 — importazione multi-esemplare: scelta esplicita dell’esemplare II/III Incontro, Fase Vitale e Salute preservate nella Guida -->
 <!-- Erbologia tool v100 — restore a due passaggi: cache tecniche azzerate prima di ricreare righe dinamiche; nessuna invalidazione durante il caricamento -->
@@ -1306,6 +1307,27 @@ input[readonly]{opacity:1!important;cursor:default!important}
   border-radius:999px;
   background:rgba(0,0,0,.10);
   font-size:.72em!important;
+}
+#modoPersonaggio .session-status.research-warning{
+  display:flex;
+  width:100%;
+  box-sizing:border-box;
+  min-height:auto;
+  margin-top:10px!important;
+  padding:10px 12px;
+  border:1px solid #8e3c2d;
+  border-left:5px solid #8e3c2d;
+  border-radius:8px;
+  background:#f0c4a8;
+  color:#531b10!important;
+  font-size:.84em!important;
+  font-weight:800;
+  line-height:1.4;
+}
+#pgNomeSessione.research-required{
+  outline:3px solid #9a3e2d!important;
+  outline-offset:2px;
+  box-shadow:0 0 0 4px rgba(154,62,45,.16)!important;
 }
 #modoPersonaggio .check-riga{
   padding:10px 12px;
@@ -5374,7 +5396,7 @@ function rpCreateProfileSessionRecord(name){if(RP_CREATING)return RP_PROFILE_SES
 function rpEnsureProfileSession(createIfMissing){var name=rpProfileName();if(!name){rpProfileStatus('Inserisci il nome del PG per collegare la sessione Firebase.','bad');return Promise.reject(new Error('Nome del PG mancante.'));}if(!RP_FB.user||!RP_FB.db){rpProfileStatus('Collegamento a Firebase in corso…','');return Promise.reject(new Error('Firebase non è ancora pronto.'));}if(RP_CURRENT_ID&&rpSessionCanEdit(RP_CURRENT_DATA)&&rpNormName(rpCurrentName())===rpNormName(name)){rpRememberProfileSession(RP_CURRENT_ID,RP_CURRENT_DATA,name);rpProfileStatus('Sessione Firebase pronta ✓','ok');return Promise.resolve({id:RP_CURRENT_ID,data:RP_CURRENT_DATA});}if(RP_PROFILE_SESSION_ID&&rpNormName(RP_PROFILE_SESSION_NAME)===rpNormName(name)){rpProfileStatus('Sessione Firebase pronta ✓','ok');return Promise.resolve({id:RP_PROFILE_SESSION_ID,data:RP_PROFILE_SESSION_DATA});}if(RP_PROFILE_SESSION_PROMISE)return RP_PROFILE_SESSION_PROMISE;rpProfileStatus('Collegamento del PG a Firebase…','');RP_PROFILE_SESSION_PROMISE=rpFindOwnSessionForProfile(name).then(function(found){if(found){RP_PROFILE_PENDING_CREATE=false;rpRememberProfileSession(found.id,found.data,name);rpProfileStatus('Sessione Firebase pronta ✓','ok');return found;}if(!createIfMissing){rpProfileStatus('PG salvato su Firebase · nessuna Ricerca in corso.','ok');return null;}rpProfileStatus('Creo la sessione Firebase del PG…','');return rpCreateProfileSessionRecord(name).then(function(created){RP_PROFILE_PENDING_CREATE=false;rpProfileStatus('Sessione Firebase creata ✓','ok');return created;});}).catch(function(err){console.error(err);rpProfileStatus('Errore Firebase: '+(err.message||err),'bad');throw err;}).finally(function(){RP_PROFILE_SESSION_PROMISE=null;});return RP_PROFILE_SESSION_PROMISE;}
 function rpReleaseCurrentForProfile(name){if(!RP_CURRENT_ID)return Promise.resolve();if(rpNormName(rpCurrentName())===rpNormName(name))return Promise.resolve();var p=(!RP_READONLY&&rpSessionCanEdit(RP_CURRENT_DATA))?rpSaveNow():Promise.resolve(true);return p.then(function(){RP_CURRENT_ID='';RP_CURRENT_DATA=null;RP_READONLY=false;rpWorkspace().style.display='none';rpEl('piante-session-home').style.display='block';if(/^#session=/.test(String(window.location.hash||''))){try{history.replaceState(null,'',window.location.pathname+window.location.search);}catch(e){}}});}
 function rpProfileNameCommitted(createIfMissing){var name=rpProfileName();RP_PROFILE_SESSION_ID='';RP_PROFILE_SESSION_DATA=null;RP_PROFILE_SESSION_NAME='';RP_PROFILE_PENDING_CREATE=!!(createIfMissing!==false);if(!name){RP_PROFILE_PENDING_CREATE=false;rpProfileStatus('Inserisci il nome del PG.','');return Promise.resolve(null);}return rpReleaseCurrentForProfile(name).then(function(){return rpEnsureProfileSession(createIfMissing!==false);}).then(function(found){RP_PROFILE_PENDING_CREATE=false;return found;});}
-function rpEnterResearchFromProfile(){var name=rpProfileName();if(!name){mostraModo('Personaggio');rpProfileStatus('Inserisci prima il nome del PG.','bad');var f=rpEl('pgNomeSessione');if(f)f.focus();return;}/* La scheda Ricerca deve essere cliccabile subito: Firebase può terminare il collegamento dopo. */mostraModo('Ricerca');rpEl('piante-session-home').style.display='block';rpWorkspace().style.display='none';rpStatus('rp-session-home-msg','Apro la Ricerca di '+name+'…','');if(typeof window.erbGuideBeforeResearch==='function')window.erbGuideBeforeResearch();if(!RP_FB.user||!RP_FB.db){RP_PROFILE_OPEN_PENDING=true;rpProfileStatus('Collegamento del PG a Firebase in corso…','');rpStatus('rp-session-home-msg','Collegamento a Firebase in corso… la Ricerca si aprirà automaticamente.','');return;}RP_PROFILE_OPEN_PENDING=false;rpProfileStatus('Apro la Ricerca del PG…','');rpReleaseCurrentForProfile(name).then(function(){return rpEnsureProfileSession(true);}).then(function(found){if(!found||!found.id)return;try{history.replaceState(null,'',window.location.pathname+window.location.search+'#session='+encodeURIComponent(found.id));}catch(e){}if(RP_CURRENT_ID===found.id&&RP_CURRENT_DATA){rpEl('piante-session-home').style.display='none';rpWorkspace().style.display='block';rpStatus('rp-session-home-msg','','');rpApplyFlow();rpUpdateToolbar();return;}return rpLoadSession(found.id);}).catch(function(err){rpStatus('rp-session-home-msg','Non riesco ad aprire la Ricerca: '+(err.message||err),'bad');rpProfileStatus('Non riesco ad aprire la Ricerca: '+(err.message||err),'bad');});}
+function rpEnterResearchFromProfile(){var name=rpProfileName();var f=rpEl('pgNomeSessione');if(!name){mostraModo('Personaggio');rpProfileStatus('⚠ Inserisci prima il nome del PG per accedere alla Ricerca.','bad research-warning');if(f){f.classList.add('research-required');f.focus();try{f.scrollIntoView({behavior:'smooth',block:'center'});}catch(e){}}return;}if(f)f.classList.remove('research-required');/* La scheda Ricerca deve essere cliccabile subito: Firebase può terminare il collegamento dopo. */mostraModo('Ricerca');rpEl('piante-session-home').style.display='block';rpWorkspace().style.display='none';rpStatus('rp-session-home-msg','Apro la Ricerca di '+name+'…','');if(typeof window.erbGuideBeforeResearch==='function')window.erbGuideBeforeResearch();if(!RP_FB.user||!RP_FB.db){RP_PROFILE_OPEN_PENDING=true;rpProfileStatus('Collegamento del PG a Firebase in corso…','');rpStatus('rp-session-home-msg','Collegamento a Firebase in corso… la Ricerca si aprirà automaticamente.','');return;}RP_PROFILE_OPEN_PENDING=false;rpProfileStatus('Apro la Ricerca del PG…','');rpReleaseCurrentForProfile(name).then(function(){return rpEnsureProfileSession(true);}).then(function(found){if(!found||!found.id)return;try{history.replaceState(null,'',window.location.pathname+window.location.search+'#session='+encodeURIComponent(found.id));}catch(e){}if(RP_CURRENT_ID===found.id&&RP_CURRENT_DATA){rpEl('piante-session-home').style.display='none';rpWorkspace().style.display='block';rpStatus('rp-session-home-msg','','');rpApplyFlow();rpUpdateToolbar();return;}return rpLoadSession(found.id);}).catch(function(err){rpStatus('rp-session-home-msg','Non riesco ad aprire la Ricerca: '+(err.message||err),'bad');rpProfileStatus('Non riesco ad aprire la Ricerca: '+(err.message||err),'bad');});}
 function rpUpdateToolbar(){if(!RP_CURRENT_DATA)return;var mine=RP_FB.user&&RP_CURRENT_DATA.ownerUid===RP_FB.user.uid,narr=RP_FB.user&&RP_FB.user.uid===RP_NARRATOR_UID,parts=[];rpEl('rp-current-session-title').textContent=rpCurrentName()+' — '+(rpTipo()==='attiva'?'Ricerca Attiva':'Ricerca Passiva');parts.push(mine?'Sessione creata da questo browser':(narr?'Gestione Narratore':'Sessione di un altro giocatore'));var t=rpFormatTs(RP_CURRENT_DATA.updatedAt);if(t)parts.push('ultimo salvataggio '+t);rpEl('rp-current-session-meta').textContent=parts.join(' · ');rpEl('rp-readonly-banner').style.display=RP_READONLY?'block':'none';rpEl('rp-btn-delete-session').style.display=rpSessionCanEdit(RP_CURRENT_DATA)?'inline-block':'none';}
 function rpSetReadonly(ro){RP_READONLY=!!ro;var w=rpWorkspace();if(!w)return;var fields=w.querySelectorAll('input,select,textarea');for(var i=0;i<fields.length;i++)fields[i].disabled=RP_READONLY;var buttons=w.querySelectorAll('button');for(var j=0;j<buttons.length;j++){var b=buttons[j];if(!RP_READONLY)continue;if(b.getAttribute('data-session-control')==='1'||b.classList.contains('copy-btn')||b.classList.contains('flow-page-btn')||b.classList.contains('flow-action-btn'))b.disabled=false;else b.disabled=true;}rpApplyFlow();rpUpdateToolbar();}
 function rpPayload(){var st=rpCollectState();return {ownerUid:RP_CURRENT_DATA.ownerUid,initialPgName:RP_CURRENT_DATA.initialPgName||rpCurrentName(),pgName:rpCurrentName(),tipoRicerca:rpTipo(),createdAt:RP_CURRENT_DATA.createdAt||null,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),toolVersion:'standard-ricerca-v1',state:st};}
@@ -5590,6 +5612,16 @@ function mostraModo(nome){var nomi=['Personaggio','Erbologia','Ricerca'];for(var
 rpEl('modoPersonaggioBtn').addEventListener(evtClick,function(){mostraModo('Personaggio');});
 rpEl('modoErbologiaBtn').addEventListener(evtClick,function(){mostraModo('Erbologia');});
 rpEl('modoRicercaBtn').addEventListener(evtClick,rpEnterResearchFromProfile);
+document.addEventListener('input',function(e){
+  if(e.target&&e.target.id==='pgNomeSessione'&&String(e.target.value||'').trim()){
+    e.target.classList.remove('research-required');
+    var s=rpEl('rp-profile-session-status');
+    if(s&&s.classList.contains('research-warning')){
+      s.textContent='';
+      s.className='session-status';
+    }
+  }
+},true);
 document.addEventListener('input',function(e){var p=rpEl('modoPersonaggio'),g=rpEl('modoErbologia'),isName=!!(e.target&&e.target.id==='pgNomeSessione'),isDirectUseCounter=!!(e.target&&/^(?:erbFertilizzanteUsed|erbVasoUsed|erbMooncalfUsed)$/.test(e.target.id));/* Il nome e i contatori diretti non influenzano la formula mentre vengono digitati: il loro gestore aggiorna lo stato prima del ricalcolo successivo. */if(!isName&&!isDirectUseCounter&&((p&&p.contains(e.target))||(g&&g.contains(e.target))))ricalcolaErbologia();if(isName){if(RP_PROFILE_NAME_TIMER)clearTimeout(RP_PROFILE_NAME_TIMER);var typed=rpProfileName();RP_PROFILE_NAME_TIMER=setTimeout(function(){RP_PROFILE_NAME_TIMER=null;if(typed&&rpNormName(typed)===rpNormName(rpProfileName()))rpProfileNameCommitted(true).catch(function(){});},900);}if(e.target&&(e.target.id==='empatia'||e.target.id==='sapienzaErbologicaGuida'))rpSincronizzaProfiloRicerca();},true);
 document.addEventListener('change',function(e){var p=rpEl('modoPersonaggio'),g=rpEl('modoErbologia'),isName=!!(e.target&&e.target.id==='pgNomeSessione');if(!isName&&((p&&p.contains(e.target))||(g&&g.contains(e.target))))ricalcolaErbologia();if(isName){if(RP_PROFILE_NAME_TIMER){clearTimeout(RP_PROFILE_NAME_TIMER);RP_PROFILE_NAME_TIMER=null;}rpProfileNameCommitted(true).catch(function(){});}if(e.target&&(e.target.id==='pgTipo'||e.target.id==='empatia'||e.target.id==='sapienzaErbologicaGuida')){aggiornaCampiTipoPG();rpSincronizzaProfiloRicerca();}},true);
 erbInitBonusUI();ripristinaStatoErbologia();aggiornaCampiTipoPG();rpSincronizzaProfiloRicerca();ricalcolaRicerca();
