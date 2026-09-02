@@ -1,3 +1,4 @@
+<!-- Erbologia tool v112 — altezza iframe compatta: misura solo il contenuto reale; rimossi i due segni residui visibili a fondo pagina. -->
 <!-- Erbologia tool v111 — collegamenti contestuali al regolamento in UI e BBCode; nome Pianta e Classificazione evidenziati insieme; barra regolamento centrata, nella posizione originale e aderente al bordo superiore durante lo scorrimento. -->
 <!-- Erbologia tool v110 — audit finale di regressione 01/09/2026: corretto ReferenceError degli alias Ingredienti; alias specie spostati nel catalogo Produzione; Pianta Mangiauomini e Siepi dell'Ombra non generano quantità Ingredienti; persistenza/distribuzione riallineate a v110. -->
 <!-- Erbologia tool v109 — integrazione branch 01/09/2026 + Regolamento Ingredienti: Repello Babbanum +1; export Elfo arricchito; legalità Ingredienti allineata al Glossario autoritativo, senza falso tiro di scoperta alla sola Produzione; distinzione Erbologo/Pozionista preservata. -->
@@ -6315,15 +6316,15 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   var timer=0,last=0;
 
   function measure(){
-    var de=document.documentElement, b=document.body, c=document.querySelector('.contenitore');
-    var h=0;
-    if(de) h=Math.max(h,de.scrollHeight,de.offsetHeight,de.clientHeight);
-    if(b) h=Math.max(h,b.scrollHeight,b.offsetHeight,b.clientHeight);
-    if(c){
-      var r=c.getBoundingClientRect();
-      h=Math.max(h,Math.ceil(r.bottom+(window.pageYOffset||0)));
-    }
-    return Math.max(600,Math.ceil(h+100));
+    var c=document.querySelector('.contenitore');
+    if(!c) return 600;
+    var r=c.getBoundingClientRect();
+    /* Misura esclusivamente il contenuto reale del tool.
+       Non usare scrollHeight/clientHeight di html/body: dentro un iframe
+       includerebbero anche l'altezza assegnata dal Forum e lascerebbero
+       una lunga coda vuota sotto al contenuto. */
+    var h=Math.ceil(r.bottom+(window.pageYOffset||0)+20);
+    return Math.max(600,h);
   }
 
   function send(force){
@@ -7278,7 +7279,7 @@ if(typeof previous==='function'){
 }
 })();
 </script>
-\n<style id="erbologia-v86-styles">
+<style id="erbologia-v86-styles">
 .rp-v86-attempt{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:8px 0 12px}.rp-v86-attempt span{color:#c8ad68;font-weight:bold}
 .erb-v86-roll{margin-top:10px;padding-top:10px;border-top:1px solid rgba(200,173,104,.22)}
 .erb-v86-roll:first-child{border-top:0;padding-top:0}.erb-v86-rule-title{font-weight:bold;color:#d7e4a4;margin-bottom:4px}
@@ -7501,7 +7502,7 @@ var oldZoneNorm=window.ebxZoneNormalized;window.ebxZoneNormalized=function(){var
 /* Refresh rows restored before v86 overrides. */
 setTimeout(function(){ebxSearchRows().forEach(ebxUpdateSearchRow);if(typeof ricalcolaRicerca==='function')ricalcolaRicerca();if(typeof ricalcolaErbologia==='function')ricalcolaErbologia();},0);
 })();
-</script>\n
+</script>
 
 <style id="erbologia-v90-direct-uses-css">
 .erb-direct-item-card .erb-direct-counter{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 4px;padding:7px 9px;border:1px solid rgba(134,172,95,.36);border-radius:6px;background:rgba(17,34,13,.52)}
