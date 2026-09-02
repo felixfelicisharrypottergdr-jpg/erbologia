@@ -1,3 +1,104 @@
+Pasted text(20260902-203903).txt
+Documento
+Pasted text (2)(20260902-204026).txt
+Documento
+vorrei fare la stessa cosa anche qui mettendo i link degli specchietti dei singoli giochi, ma temo si confondano con i bottoni
+Pasted text(20260902-204716).txt
+Documento
+<div style="width:100%; max-width:1100px; margin:0 auto; overflow:hidden;"> 
+ <iframe 
+ id="magizoologiaFrame" 
+ src="https://felixfelicisharrypottergdr-jpg.github.io/creature/" 
+ style=" 
+ display:block; 
+ width:100%; 
+ height:1600px; 
+ border:0; 
+ margin:0; 
+ padding:0; 
+ overflow:hidden; 
+ background:#241b15; 
+ " 
+ scrolling="no" 
+ frameborder="0"> 
+ </iframe> 
+</div> 
+ 
+<script type="text/javascript"> 
+(function () { 
+ var frame = document.getElementById("magizoologiaFrame"); 
+ if (!frame) return; 
+ 
+ window.addEventListener("message", function (event) { 
+ if (event.origin !== "https://felixfelicisharrypottergdr-jpg.github.io") { 
+ return; 
+ } 
+ 
+ if (!event.data) return; 
+ 
+ var altezza = null; 
+ 
+ if ( 
+ event.data.tipo === "altezzaMagizoologia" && 
+ event.data.altezza 
+ ) { 
+ altezza = event.data.altezza; 
+ } 
+ 
+ if ( 
+ event.data.tipo === "altezzaTool" && 
+ event.data.tool === "magizoologia" && 
+ event.data.altezza 
+ ) { 
+ altezza = event.data.altezza; 
+ } 
+ 
+ if (altezza) { 
+ altezza = Math.ceil(Number(altezza)); 
+ 
+ if (altezza > 0) { 
+ frame.style.height = altezza + "px"; 
+ } 
+ } 
+ }); 
+})(); 
+</script>la parte sotto si ricarica all'infinito, risolvi
+
+Sì, individuato il problema. Non è davvero un “ricaricamento”: è un loop di ridimensionamento dell’iframe.
+
+Il tool misurava anche documentElement.scrollHeight e body.scrollHeight e poi aggiungeva altri 90px. Poiché nel CSS html e body hanno anche min-height:100%, l’altezza assegnata dal Forum diventava a sua volta parte dell’altezza misurata: 1600 → 1690 → 1780 → 1870..., quindi lo spazio marrone sotto continuava a crescere.
+
+Ho corretto la v141 in modo che:
+
+misuri soltanto l’altezza reale della .contenitore;
+non usi più l’altezza della viewport dell’iframe;
+non reinvii continuamente la stessa misura dopo un resize;
+continui comunque ad aggiornarsi quando apri pannelli, cambi campi, passi da una fase all’altra, ecc.
+
+Il codice iframe che hai messo nel Forum può restare quello che hai già.
+
+Scarica Magizoologia v141 con fix altezza iframe
+
+magizoologia_v141_altezza_iframe_fix.html
+HTML
+l'iframe rimane uguale?
+
+Sì, l’iframe può rimanere esattamente quello che mi hai mandato. La correzione è tutta dentro al tool Magizoologia v141: continua a inviare tipo: "altezzaMagizoologia", quindi il tuo script sul Forum lo riceve già correttamente.
+
+Anche questo può restare:
+
+height:1600px;
+
+È solo l’altezza iniziale mentre il tool si carica; subito dopo viene sostituita automaticamente dall’altezza reale.
+
+L’unica condizione è che tu sostituisca il file pubblicato all’indirizzo attuale:
+
+https://felixfelicisharrypottergdr-jpg.github.io/creature/
+
+Se la v141 viene caricata nello stesso percorso, non devi modificare una riga dell’iframe.
+
+Pasted text(20260902-205050).txt
+Documento
 <div style="width:100%; max-width:1100px; margin:0 auto; overflow:visible;"> 
  <iframe 
  id="erbologiaFrame" 
@@ -71,3 +172,121 @@
  setTimeout(chiediAltezza, 1000); 
 })(); 
 </script>
+
+idem
+scusa, non idem, non corre all'infinito ma è troppo lunga sotto e ci sono due segni in più sotto
+
+9999
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+<!-- Erbologia tool v111 — collegamenti contestuali al regolamento in UI e BBCode; nome Pianta e Classificazione evidenziati insieme; barra regolamento centrata, nella posizione originale e aderente al bordo superiore durante lo scorrimento. -->
+<!-- Erbologia tool v110 — audit finale di regressione 01/09/2026: corretto ReferenceError degli alias Ingredienti; alias specie spostati nel catalogo Produzione; Pianta Mangiauomini e Siepi dell'Ombra non generano quantità Ingredienti; persistenza/distribuzione riallineate a v110. -->
+<!-- Erbologia tool v109 — integrazione branch 01/09/2026 + Regolamento Ingredienti: Repello Babbanum +1; export Elfo arricchito; legalità Ingredienti allineata al Glossario autoritativo, senza falso tiro di scoperta alla sola Produzione; distinzione Erbologo/Pozionista preservata. -->
+<!-- Erbologia tool v108 — audit 01/09/2026: alias specie Produzione, invalidazione distribuzione dipendente dal contesto e versioni di persistenza allineate; preservate correzioni v107. -->
+<!DOCTYPE html>
+<!-- Erbologia tool v101 — importazione multi-esemplare: scelta esplicita dell’esemplare II/III Incontro, Fase Vitale e Salute preservate nella Guida -->
+<!-- Erbologia tool v100 — restore a due passaggi: cache tecniche azzerate prima di ricreare righe dinamiche; nessuna invalidazione durante il caricamento -->
+<!-- Erbologia tool v99 — restore Firebase protetto: i listener di cambio specie distinguono ripristino da modifica manuale -->
+<!-- Erbologia tool v98 — ripristino Firebase: reset delle sole cache tecniche prima del ricalcolo -->
+
+
+<!-- Erbologia tool v97 — input numerici allineati a Magizoologia: valori fuori dado/limite vengono svuotati subito -->
+
+
+<html lang="it">
+<!-- v96: audit protocollo completo — acquisto/prezzario integrati (Germinazione, prezzi per classe, +50% Esotiche, listino illegale); illegalità di Coltivazione automatica per specie regolamentate; mantiene conflitti Classificazione e reset A→B→A; nota storica: Repello Babbanum era allora sospeso, risolto in v109 a +1. -->
+<!-- v85: audit reset — azzeramento esplicito dei campi tecnici hidden/derivati e dello storico tentativi; evita che defaultValue dei campi hidden conservi valori modificati dopo Azzera Guida -->
+<!-- v84: regressione v83 — pulizia esplicita anche delle etichette/UI di Pax, Tocco Verde e controlli illegali quando cambia la Pianta; evita esiti visivi obsoleti quando lo Studente deve ancora reinserire il voto specifico -->
+<!-- v83: secondo audit di robustezza — viewport mobile reale; cambio PG azzera anche il voto specifico; cambio contesto Pianta invalida Pax/Tocco Verde/controlli illegali e forza un ricalcolo pulito -->
+<!-- v82: audit fruibilità completo; preservata classe speciale Riepilogo durante la navigazione; allineamenti v80-v81 mantenuti -->
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Erbologia - Strumenti Interattivi</title>
+<!-- v79: specie in un unico campo scrivibile con tendina catalogo; correzione automatica Classificazione senza falso avviso di errore -->
+<!-- v77: dati Elfo spostati nel Riepilogo finale + post del ciclo; riga verde specie/classificazione rimossa -->
+<!-- v76: vera tendina catalogo sempre apribile anche con specie già importata -->
+<!-- v53: apertura Ricerca immediata + aggancio Firebase del PG durante la compilazione -->
+<style>
+/* v38 allineata alla Magizoologia - Quote BBCode esplicativi estesi anche alla Guida all'Erbologia: soglie, esiti semantici e formule senza enumerazioni aritmetiche ridondanti. */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css');
+@font-face {
+  font-family:'magic';
+  src:url('https://dl.dropboxusercontent.com/scl/fi/nbzmrri4qyvc3tzx96911/HarryBeastDisplay-Regular.woff2?rlkey=he290voe32k33gowug23c1osc&st=nj9fgly1') format('woff2');
+  font-weight:normal;
+  font-style:normal;
+  font-display:swap;
+}
+Scegli una sintassi
+javascript
+typescript
+bash
+zsh
+html
+css
+python
+json
+sql
+go
+yaml
+java
+rust
+cpp
+swift
+php
+xml
+ruby
+haskell
+kotlin
+csharp
+vb
+c
+objectivec
+r
+lua
+dart
+scala
+perl
+commonlisp
+clojure
+ocaml
+powershell
+verilog
+dockerfile
+vue
+other
+Chiudi
