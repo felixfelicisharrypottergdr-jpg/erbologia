@@ -1,3 +1,4 @@
+<!-- Erbologia tool v111 — collegamenti contestuali al regolamento in UI e BBCode; nome Pianta e Classificazione evidenziati insieme; barra regolamento centrata, nella posizione originale e aderente al bordo superiore durante lo scorrimento. -->
 <!-- Erbologia tool v110 — audit finale di regressione 01/09/2026: corretto ReferenceError degli alias Ingredienti; alias specie spostati nel catalogo Produzione; Pianta Mangiauomini e Siepi dell'Ombra non generano quantità Ingredienti; persistenza/distribuzione riallineate a v110. -->
 <!-- Erbologia tool v109 — integrazione branch 01/09/2026 + Regolamento Ingredienti: Repello Babbanum +1; export Elfo arricchito; legalità Ingredienti allineata al Glossario autoritativo, senza falso tiro di scoperta alla sola Produzione; distinzione Erbologo/Pozionista preservata. -->
 <!-- Erbologia tool v108 — audit 01/09/2026: alias specie Produzione, invalidazione distribuzione dipendente dal contesto e versioni di persistenza allineate; preservate correzioni v107. -->
@@ -7740,6 +7741,107 @@ function suppressVaseRisk(){var box=E('erbV86ObjectRiskBox');if(!box)return;var 
 function init(){var prev=window.ricalcolaErbologia;window.aggiornaRiepilogoPostColtivazione=updatePostSummary;window.aggiornaProduzioneQuantita=updateQuantity;window.ricalcolaErbologia=function(){if(window.__ERB_GUIDE_RESTORING!==true)updateContexts();var r=prev?prev.apply(this,arguments):undefined;updateContexts();updatePostSummary();updateQuantity();updateCycles();updateParamBonus();suppressVaseRisk();return r;};['postBaseColtivazione','malusPostPax','risultatoProduzioneIngredienti','risultatoProduzioneSemi','risultatoMalusSemiTrattamento','erbHorklumpRemuvoOk','erbCycleGerminazione','erbCycleVegetazione','erbCycleRiproduzioneIng','erbCycleRiproduzioneSemi','erbCycleSenescenza'].forEach(function(id){var x=E(id);if(!x)return;x.addEventListener('input',function(){if(id.indexOf('erbCycle')===0)updateCycles();else{updatePostSummary();updateQuantity();}});x.addEventListener('change',function(){if(id.indexOf('erbCycle')===0)updateCycles();else{updatePostSummary();updateQuantity();}});});['speciePiantaGuida','provenienzaPianta','classificazione','faseColtivazione','tipoCicloColtivazione','pgTipo','livColtivatore','sapienzaErbologicaGuida','risultatoColtivazione','risultatoEsportazione','risultatoCollocazione','trattamentoGiaCompletato','collocazioneAltroPG','ebxVasoSemi','ebxFertilizzantePost','ebxToccoVerde','ebxToccoVerdeEff','ebxPaxProductionConsumed'].forEach(function(id){var x=E(id);if(!x)return;x.addEventListener('change',function(){if(id==='speciePiantaGuida'&&window.__ERB_GUIDE_RESTORING!==true){['erbCycleGerminazione','erbCycleVegetazione','erbCycleRiproduzioneIng','erbCycleRiproduzioneSemi','erbCycleSenescenza'].forEach(function(cid){var c=E(cid);if(c)c.value='0';});}setTimeout(function(){updateContexts();updatePostSummary();updateQuantity();updateCycles();updateParamBonus();suppressVaseRisk();},0);});});var rb=E('erbV86ObjectRiskBox');if(rb&&window.MutationObserver)new MutationObserver(function(){suppressVaseRisk();}).observe(rb,{childList:true,subtree:true});if(typeof setupNumericInputs==='function')setupNumericInputs();updateContexts();updatePostSummary();updateQuantity();updateCycles();updateParamBonus();setTimeout(suppressVaseRisk,0);window.__V105TEST={postContext:postContext,productionContext:productionContext,qtySpec:qtySpec,vaseExtra:function(base,p){return Math.floor(base*p/100);},mandrakeMax:7,noIngredientSpecies:noIngredientSpecies,cycleCaps:{germinazione:2,vegetazione:3,riproduzioneIngredienti:5,riproduzioneSemi:1,senescenza:2},PARAMS:PARAMS};window.__V104TEST=window.__V105TEST;window.__V103TEST=window.__V105TEST;}
 window.__V110PURE={qtySpec:qtySpec,vaseExtra:function(base,p){return Math.floor(base*p/100);},mandrakeMax:7,noIngredientSpecies:noIngredientSpecies,cycleCaps:{germinazione:2,vegetazione:3,riproduzioneIngredienti:5,riproduzioneSemi:1,senescenza:2}};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else setTimeout(init,0);
+})();
+</script>
+
+<style id="erbologia-v111-links-identity-style">
+.erb-v111-rule-links{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0 14px;padding:9px 11px;border:1px solid #789b5d;border-radius:7px;background:rgba(12,25,9,.58);color:#e4f0da;font-size:.84em;line-height:1.35}
+.erb-v111-rule-links>strong{color:#d9f0b4!important;margin-right:2px}
+.erb-v111-rule-link{display:inline-flex;align-items:center;padding:3px 8px;border:1px solid #88ad68;border-radius:999px;background:#29451f;color:#f7fff1!important;text-decoration:none;font-weight:700}
+.erb-v111-rule-link:hover{background:#41682f;color:#fff!important;text-decoration:none}
+#erbV111PersistentLinks{position:relative;z-index:50;width:100%;box-sizing:border-box;justify-content:center;text-align:center;margin:0;border-color:#89ae69;background:linear-gradient(135deg,#29491f,#162b12);box-shadow:0 7px 20px rgba(0,0,0,.32)}
+#erbV111PersistentLinks.is-stuck{position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:9999;width:min(920px,calc(100vw - 32px));border-top:0;border-radius:0 0 8px 8px}
+#erbV111PersistentLinks>strong{color:#e7f8c9!important}
+#erbV111PersistentSlot{display:block;width:100%;height:58px;margin:10px 0 8px}
+.erb-v111-link-details{margin:0 0 14px;border:1px solid #789b5d;border-radius:7px;background:#172713;color:#e4f0da}
+.erb-v111-link-details>summary{padding:9px 11px;cursor:pointer;color:#d9f0b4;font-weight:800}
+.erb-v111-link-details>.erb-v111-rule-links{margin:0;border:0;border-top:1px solid #789b5d;border-radius:0 0 7px 7px}
+.scheda .erb-v111-rule-links,.blocco-incontro .erb-v111-rule-links,#modoPersonaggio .erb-v111-rule-links{background:#e5f0d2;color:#203719;border-color:#88a569}
+.scheda .erb-v111-rule-links>strong,.blocco-incontro .erb-v111-rule-links>strong,#modoPersonaggio .erb-v111-rule-links>strong{color:#294c20!important}
+.scheda .erb-v111-rule-link,.blocco-incontro .erb-v111-rule-link,#modoPersonaggio .erb-v111-rule-link{background:#41642f;color:#fff!important;border-color:#6f9453}
+.erb-v111-identity{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:10px 0 14px;padding:11px 13px;border:1px solid #89ae69;border-left:5px solid #b7db83;border-radius:8px;background:linear-gradient(135deg,#29491f,#162b12);color:#f5fbeF;box-shadow:0 5px 16px rgba(0,0,0,.2)}
+.erb-v111-identity-kind{font-size:.72em;font-weight:800;letter-spacing:.11em;text-transform:uppercase;color:#c9e69f}
+.erb-v111-identity-name{font-size:1.12em;font-weight:800;color:#fbfff7}
+.erb-v111-identity-name a{color:#fbfff7!important;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.48)}
+.erb-v111-classification{margin-left:auto;display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border:1px solid #c8e69c;border-radius:999px;background:#4b7136;color:#fbfff7;font-size:1em;font-weight:800;letter-spacing:.02em}
+.erb-v111-classification a{color:#fbfff7!important;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.45)}
+.scheda>.erb-v111-identity,.blocco-incontro>.erb-v111-identity{background:linear-gradient(135deg,#55793a,#304d25);border-color:#789b5d}
+.erb-v111-bonus-rule{margin-top:6px;font-size:.8em}
+#erbGuidePlantSummary .erb-guide-summary-card:nth-child(1),#erbGuidePlantSummary .erb-guide-summary-card:nth-child(2),#erbGuidePlantSummary .erb-guide-summary-card:nth-child(3){border:2px solid #789b5d!important;background:#edf5e4!important;box-shadow:0 4px 12px rgba(31,69,23,.12);font-size:1.03em;font-weight:700;color:#17300f!important}
+#erbGuidePlantSummary .erb-guide-summary-card:nth-child(1) b,#erbGuidePlantSummary .erb-guide-summary-card:nth-child(2) b,#erbGuidePlantSummary .erb-guide-summary-card:nth-child(3) b{color:#315c24!important}
+@media(max-width:620px){.erb-v111-classification{margin-left:0}.erb-v111-identity{align-items:flex-start}#erbV111PersistentLinks{gap:5px;padding:8px}#erbV111PersistentLinks.is-stuck{top:0;width:calc(100vw - 16px)}#erbV111PersistentLinks .erb-v111-rule-link{padding:3px 7px;font-size:.92em}}
+</style>
+<script id="erbologia-v111-links-identity">
+(function(){
+'use strict';
+var BASE='https://felixfelicisharrypottergdr.forumfree.it/?t=80407809#';
+var RULE_TERMS=[
+ ['Custode delle Piante Magiche: Insieme per sempre','insieme'],['Custode delle Piante Magiche: Richiamare le Piante Magiche','richiamare'],
+ ['Tecniche e Incantesimi Erbologici','conoerbo'],['Relazionarsi alle Piante Magiche','relazionarsi'],
+ ['Trattamento delle Piante Magiche','trattamento'],['Coltivazione e Riproduzione','coltivazioneriproduzione'],
+ ['Cicli di Produzione e Fasi Vitali','cicli'],['Cicli di Produzione','cicli'],['Ciclo di Produzione','cicli'],['Fasi Vitali','cicli'],
+ ['Produzione di Ingredienti','cheingredsemi'],['Quanti Ingredienti o Semi','cheingredsemi'],['Bonus della Pianta coltivata personalmente','bonus'],
+ ['Guida all’Erbologia','guidaerbo'],["Guida all'Erbologia",'guidaerbo'],['Riassunto introduttivo','riassunto'],
+ ['Conoscenze Avanzate','avanzate'],['Conoscenze Extra','extra'],['Classificazione delle Piante Magiche','classipiante'],
+ ['Glossario delle Piante','glossario'],['Herbivicus','herbivicus'],['Oxygeni','oxygeni'],['Planto','planto'],
+ ['Pollice Verde','pollice'],['Sectis','sectis'],['Sradico','sradico'],['Tocco Verde','tocco'],['Erborista','erborista'],
+ ['Amico delle Piante','amicoPiante'],['Custode delle Piante','custodePiante'],['Coltivatore di Piante','coltivatorePiante'],['Pax','pax'],
+ ['Riconoscimento','riconoscimento'],['Interazione','interazione'],['Esportazione','esportazione'],['Collocazione','collocazione'],
+ ['Orde','orde'],['Orda','orde'],['Serre','serre'],['Serra','serre'],['Valigia Magica','valigiapiante'],['Collaboratori','collaboratori'],['Erbario','erbario']
+];
+var GLOBAL_LINKS=[['Guida','guidaerbo'],['Tecniche e Incantesimi','conoerbo'],['Erbario','erbario'],['Cicli e Fasi','cicli']];
+var PHASE_RULES={
+ pannelloRiconoscimento:[['Riconoscimento','riconoscimento'],['Se fallisce','fallirerico']],
+ pannelloInterazione:[['Interazione','interazione'],['Se fallisce','fallireintera']],
+ pannelloTrattamento:[['Trattamento','trattamento'],['Esportazione','esportazione'],['Collocazione','collocazione']],
+ pannelloColtivazione:[['Coltivazione e Riproduzione','coltivazioneriproduzione'],['Cicli e Fasi Vitali','cicli'],['Quantità ottenute','cheingredsemi'],['Bonus coltivazione personale','bonus']],
+ pannelloRiepilogo:[['Orde','orde'],['Serre','serre'],['Valigia Magica','valigiapiante'],['Collaboratori','collaboratori'],['Classificazione','classipiante'],['Glossario','glossario'],['Erbario','erbario']]
+};
+var TECHNIQUE_LINKS=[['Herbivicus','herbivicus'],['Oxygeni','oxygeni'],['Planto','planto'],['Pollice Verde','pollice'],['Sectis','sectis'],['Sradico','sradico'],['Tocco Verde','tocco'],['Erborista','erborista'],['Amico delle Piante','amicoPiante'],['Custode delle Piante','custodePiante'],['Coltivatore di Piante','coltivatorePiante'],['Pax','pax'],['Insieme per sempre','insieme'],['Richiamare le Piante','richiamare']];
+var BONUS_ANCHORS={'herbivicus':'herbivicus','oxygeni':'oxygeni','planto':'planto','pollice verde':'pollice','sectis':'sectis','sradico':'sradico','tocco verde':'tocco','erborista':'erborista','amico delle piante':'amicoPiante','custode delle piante':'custodePiante','coltivatore di piante':'coltivatorePiante','pax':'pax'};
+function el(id){return document.getElementById(id);}
+function htmlEscape(v){return String(v==null?'':v).replace(/[&<>\"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c];});}
+function bbSafe(v){return String(v==null?'':v).replace(/[\[\]\r\n]/g,' ').replace(/\s+/g,' ').trim();}
+function norm(v){return String(v||'').trim().toLocaleLowerCase('it-IT');}
+function url(anchor){return BASE+anchor;}
+function htmlLink(label,anchor){return '<a class="erb-v111-rule-link" href="'+url(anchor)+'" target="_blank" rel="noopener">'+htmlEscape(label)+'</a>';}
+function bbLink(label,anchor){return '[url='+url(anchor)+']'+bbSafe(label)+'[/url]';}
+function plantMap(){var out={},src=window.RP_SPEC_LINKS||{};Object.keys(src).forEach(function(k){var v=src[k];if(Array.isArray(v))return;out[norm(k)]={label:k,anchor:v};});return out;}
+function plantAnchor(name){return plantMap()[norm(name)]||null;}
+function plantBB(name){var s=plantAnchor(name);return bbLink(name||'Pianta',s?s.anchor:'erbario');}
+function plantHTML(name){var s=plantAnchor(name),a=document.createElement('a');a.href=url(s?s.anchor:'erbario');a.target='_blank';a.rel='noopener';a.textContent=name||'Pianta non selezionata';return a;}
+function linkPlainBB(text,seen){
+ var out=String(text==null?'':text),placeholders=[];
+ out=out.replace(/\[url=[^\]]+\][\s\S]*?\[\/url\]|\[dice=[^\]]+\][\s\S]*?\[\/dice\]/gi,function(x){var token='\u0000'+placeholders.length+'\u0000';placeholders.push(x);return token;});
+ var byTerm={};RULE_TERMS.forEach(function(pair){byTerm[norm(pair[0])]=pair[1];});
+ var alternatives=RULE_TERMS.map(function(pair){return pair[0];}).sort(function(a,b){return b.length-a.length;}).map(function(term){return term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');});
+ out=out.replace(new RegExp(alternatives.join('|'),'gi'),function(m){var anchor=byTerm[norm(m)];if(!anchor||seen[anchor])return m;seen[anchor]=1;return bbLink(m,anchor);});
+ return out.replace(/\u0000(\d+)\u0000/g,function(_,i){return placeholders[Number(i)];});
+}
+window.erbV111LinkBBText=function(text){var seen={},parts=String(text==null?'':text).split(/(\[url=[^\]]+\][\s\S]*?\[\/url\]|\[dice=[^\]]+\][\s\S]*?\[\/dice\])/gi);return parts.map(function(part){return /^\[(?:url|dice)=/i.test(part)?part:linkPlainBB(part,seen);}).join('');};
+function ruleStrip(id,links){var root=el(id);if(!root||root.querySelector(':scope > .erb-v111-rule-links'))return;var strip=document.createElement('div');strip.className='erb-v111-rule-links';strip.innerHTML='<strong>Regolamento:</strong> '+links.map(function(x){return htmlLink(x[0],x[1]);}).join(' ');var heading=root.querySelector(':scope > h2,:scope > h3,.session-card-head,.guide-firebase-bar');if(heading&&heading.parentNode===root)heading.insertAdjacentElement('afterend',strip);else root.insertBefore(strip,root.firstChild);}
+function ensureRuleStrips(){Object.keys(PHASE_RULES).forEach(function(id){ruleStrip(id,PHASE_RULES[id]);});}
+function ensurePersistentRuleBar(){if(el('erbV111PersistentLinks'))return;var nav=document.querySelector('.barra-modo');if(!nav)return;var slot=document.createElement('div');slot.id='erbV111PersistentSlot';var bar=document.createElement('div');bar.id='erbV111PersistentLinks';bar.className='erb-v111-rule-links';bar.innerHTML='<strong>Regolamento:</strong> '+GLOBAL_LINKS.map(function(x){return htmlLink(x[0],x[1]);}).join(' ');slot.appendChild(bar);nav.insertAdjacentElement('afterend',slot);syncPersistentRuleSpace();syncPersistentRuleState();if(window.ResizeObserver){var ro=new ResizeObserver(syncPersistentRuleSpace);ro.observe(bar);}}
+function syncPersistentRuleSpace(){var slot=el('erbV111PersistentSlot'),bar=el('erbV111PersistentLinks');if(slot&&bar)slot.style.height=(Math.ceil(bar.getBoundingClientRect().height)+12)+'px';}
+function syncPersistentRuleState(){var slot=el('erbV111PersistentSlot'),bar=el('erbV111PersistentLinks');if(!slot||!bar)return;bar.classList.toggle('is-stuck',slot.getBoundingClientRect().top<=0);}
+var scrollQueued=false;function schedulePersistentRuleState(){if(scrollQueued)return;scrollQueued=true;var run=function(){scrollQueued=false;syncPersistentRuleState();};if(window.requestAnimationFrame)window.requestAnimationFrame(run);else window.setTimeout(run,0);}
+function ensureTechniqueIndex(){var root=el('modoErbologia');if(!root||el('erbV111TechniqueLinks'))return;var d=document.createElement('details');d.id='erbV111TechniqueLinks';d.className='erb-v111-link-details';d.innerHTML='<summary>Tecniche e Conoscenze collegate</summary><div class="erb-v111-rule-links"><strong>Apri la regola:</strong> '+TECHNIQUE_LINKS.map(function(x){return htmlLink(x[0],x[1]);}).join(' ')+'</div>';var first=root.querySelector(':scope > .scheda');if(first)first.insertAdjacentElement('beforebegin',d);else root.insertBefore(d,root.firstChild);}
+function guideIdentity(){var name=((el('speciePiantaGuida')||{}).value||'').trim(),cls=((el('classificazione')||{}).value||'—').trim();return {name:name||'Pianta non selezionata',cls:cls};}
+function researchClass(n){var tag=el('tagClasse'+n),m=((tag||{}).textContent||'').match(/Classificazione\s+(X{1,5})/i);return m?m[1]:'';}
+function researchIdentity(n){var name=((el('speciePianta'+n)||{}).value||'').trim(),cls=researchClass(n);return name?{name:name,cls:cls||'—'}:null;}
+function makeIdentity(identity){var bar=document.createElement('div');bar.className='erb-v111-identity';bar.setAttribute('data-v111-identity','1');var k=document.createElement('span');k.className='erb-v111-identity-kind';k.textContent='Pianta';bar.appendChild(k);var n=document.createElement('strong');n.className='erb-v111-identity-name';n.appendChild(plantHTML(identity.name));bar.appendChild(n);var c=document.createElement('span');c.className='erb-v111-classification';c.innerHTML='Classificazione: <a href="'+url('classipiante')+'" target="_blank" rel="noopener">'+htmlEscape(identity.cls)+'</a>';bar.appendChild(c);return bar;}
+function upsertIdentity(root,identity){if(!root||!identity)return;var old=root.querySelector(':scope > .erb-v111-identity'),sig=identity.name+'|'+identity.cls;if(old&&old.dataset.sig===sig)return;var bar=makeIdentity(identity);bar.dataset.sig=sig;if(old)old.replaceWith(bar);else{var heading=root.querySelector(':scope > h2,:scope > h3');if(heading)heading.insertAdjacentElement('afterend',bar);else root.insertBefore(bar,root.firstChild);}}
+function enhanceContexts(){var guide=el('modoErbologia'),identity=guideIdentity();if(guide){var main=Array.prototype.find.call(guide.children,function(x){return x.classList&&x.classList.contains('scheda');});if(main)upsertIdentity(main,identity);}for(var n=1;n<=3;n++){var ri=researchIdentity(n),box=el('ebxSpecieBox'+n);if(ri&&box&&box.style.display!=='none')upsertIdentity(box,ri);}}
+function codeContext(code){if(code.closest('#modoErbologia'))return guideIdentity();var id=code.id||'',m=id.match(/(?:Trova|Classe|Specie|Fase|Salute|Esemplari|Bolcino)([123])$/i);if(!m){var block=code.closest('[id^="blocco"]');if(block)m=(block.id||'').match(/([123])$/);}return m?researchIdentity(Number(m[1])):null;}
+function contextHeader(identity){return '[b]PIANTA: '+plantBB(identity.name)+' · CLASSIFICAZIONE: '+bbLink(identity.cls,'classipiante')+'[/b]\n';}
+function syncCode(code){if(!code||code.id==='erbElfoTransferText')return;var text=code.textContent||'',identity=codeContext(code);text=text.replace(/^\[b\]PIANTA:.*?\[\/b\]\n?/i,'');if(text.trim()&&identity&&identity.name&&identity.name!=='Pianta non selezionata')text=contextHeader(identity)+text;text=window.erbV111LinkBBText(text);if(code.textContent!==text)code.textContent=text;}
+function syncCodes(){document.querySelectorAll('.dice-code,.research-bbcode').forEach(syncCode);}
+function bonusAnchorFor(text){text=norm(text);var keys=Object.keys(BONUS_ANCHORS).sort(function(a,b){return b.length-a.length;});for(var i=0;i<keys.length;i++)if(text.indexOf(keys[i])>=0)return BONUS_ANCHORS[keys[i]];return '';}
+function enhanceBonusRows(){document.querySelectorAll('#modoErbologia .erb-bonus-row[data-ebx-preset]').forEach(function(row){var key=row.getAttribute('data-ebx-preset')||'',p=window.EBX_PHASE_PRESETS&&window.EBX_PHASE_PRESETS[key],label=p&&(p.source||p.label)||'',anchor=bonusAnchorFor(label),old=row.querySelector('.erb-v111-bonus-rule');if(!anchor){if(old)old.remove();return;}if(old&&old.dataset.anchor===anchor)return;if(old)old.remove();var d=document.createElement('div');d.className='erb-v111-bonus-rule';d.dataset.anchor=anchor;d.innerHTML=htmlLink('Apri la regola di '+label,anchor);row.appendChild(d);});}
+function sync(){ensurePersistentRuleBar();ensureRuleStrips();ensureTechniqueIndex();enhanceContexts();enhanceBonusRows();syncCodes();}
+var queued=false;function schedule(){if(queued)return;queued=true;var run=function(){queued=false;sync();};if(window.requestAnimationFrame)window.requestAnimationFrame(run);else window.setTimeout(run,0);}
+document.addEventListener('change',schedule,true);document.addEventListener('input',schedule,true);window.addEventListener('scroll',schedulePersistentRuleState,{passive:true});window.addEventListener('resize',function(){syncPersistentRuleSpace();syncPersistentRuleState();schedule();});
+var observer=new MutationObserver(schedule);observer.observe(document.body,{subtree:true,childList:true,characterData:true});window.addEventListener('load',schedule);schedule();
 })();
 </script>
 
