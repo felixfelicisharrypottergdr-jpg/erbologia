@@ -14,6 +14,7 @@
 <!-- Erbologia tool v114 — rimosso il comando manuale Aggiorna dall’elenco Ricerche; il caricamento resta automatico nei flussi già previsti. -->
 <!-- Erbologia tool v138 — export Elfo: malus permanente Cicli strutturato (+10 altro PG), senza doppio conteggio sul ciclo corrente.
 <!-- Erbologia tool v137 — audit persistenza multi-PG: ogni Ricerca salva una fotografia delle immunità del proprio PG; le sessioni storiche non leggono più immunità di un profilo diverso; preservate correzioni v136. -->
+<!-- erbologia_tool_v139 — fix loop codice Ricerca: header PIANTA/Classificazione HTML deduplicato; nessuna crescita infinita del testo copiabile. -->
 <!DOCTYPE html>
 <!-- Erbologia tool v130 — secondo audit letture Firebase: query escludono i documenti Guida a monte, niente doppia query su #session, cache invalidate al cambio utente; preservate ottimizzazioni v127. -->
 <!-- Erbologia tool v101 — importazione multi-esemplare: scelta esplicita dell’esemplare II/III Incontro, Fase Vitale e Salute preservate nella Guida -->
@@ -7977,7 +7978,17 @@ function upsertIdentity(root,identity){if(!root||!identity)return;var old=root.q
 function enhanceContexts(){var guide=el('modoErbologia'),identity=guideIdentity();if(guide){var main=Array.prototype.find.call(guide.children,function(x){return x.classList&&x.classList.contains('scheda');});if(main)upsertIdentity(main,identity);}for(var n=1;n<=3;n++){var ri=researchIdentity(n),box=el('ebxSpecieBox'+n);if(ri&&box&&box.style.display!=='none')upsertIdentity(box,ri);}}
 function codeContext(code){if(code.closest('#modoErbologia'))return guideIdentity();var id=code.id||'',m=id.match(/(?:Trova|Classe|Specie|Fase|Salute|Esemplari|Bolcino)([123])$/i);if(!m){var block=code.closest('[id^="blocco"]');if(block)m=(block.id||'').match(/([123])$/);}return m?researchIdentity(Number(m[1])):null;}
 function contextHeader(identity){return '<b>PIANTA: '+plantBB(identity.name)+' · CLASSIFICAZIONE: '+bbLink(identity.cls,'classipiante')+'</b>\n';}
-function syncCode(code){if(!code||code.id==='erbElfoTransferText')return;var text=code.textContent||'',identity=codeContext(code);text=text.replace(/^\[b\]PIANTA:.*?\[\/b\]\n?/i,'');if(text.trim()&&identity&&identity.name&&identity.name!=='Pianta non selezionata')text=contextHeader(identity)+text;text=window.erbV111LinkBBText(text);if(code.textContent!==text)code.textContent=text;}
+function syncCode(code){if(!code||code.id==='erbElfoTransferText')return;var text=code.textContent||'',identity=codeContext(code);
+  /* v139 — contextHeader usa HTML <b>...</b> nei testi copiabili. Il vecchio
+     cleanup riconosceva soltanto [b]...[/b]: il MutationObserver vedeva quindi
+     ogni aggiornamento come nuovo e premetteva PIANTA/Classificazione all'infinito.
+     Rimuoviamo in un colpo solo sia il formato HTML attuale sia eventuali header
+     BBCode/duplicati legacy già presenti nel DOM. */
+  text=text.replace(/^(?:(?:<b>PIANTA:[\s\S]*?<\/b>|\[b\]PIANTA:[\s\S]*?\[\/b\])\n?)+/i,'');
+  if(text.trim()&&identity&&identity.name&&identity.name!=='Pianta non selezionata')text=contextHeader(identity)+text;
+  text=window.erbV111LinkBBText(text);
+  if(code.textContent!==text)code.textContent=text;
+}
 function syncCodes(){document.querySelectorAll('.dice-code,.research-bbcode').forEach(syncCode);}
 function bonusAnchorFor(text){text=norm(text);var keys=Object.keys(BONUS_ANCHORS).sort(function(a,b){return b.length-a.length;});for(var i=0;i<keys.length;i++)if(text.indexOf(keys[i])>=0)return BONUS_ANCHORS[keys[i]];return '';}
 function enhanceBonusRows(){document.querySelectorAll('#modoErbologia .erb-bonus-row[data-ebx-preset]').forEach(function(row){var key=row.getAttribute('data-ebx-preset')||'',p=window.EBX_PHASE_PRESETS&&window.EBX_PHASE_PRESETS[key],label=p&&(p.source||p.label)||'',anchor=bonusAnchorFor(label),old=row.querySelector('.erb-v111-bonus-rule');if(!anchor){if(old)old.remove();return;}if(old&&old.dataset.anchor===anchor)return;if(old)old.remove();var d=document.createElement('div');d.className='erb-v111-bonus-rule';d.dataset.anchor=anchor;d.innerHTML=htmlLink('Apri la regola di '+label,anchor);row.appendChild(d);});}
