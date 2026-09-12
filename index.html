@@ -13,6 +13,7 @@
 <!-- Erbologia tool v113 — avviso evidente quando si tenta di aprire la Ricerca senza aver inserito il nome del PG. -->
 <!-- Erbologia tool v114 — rimosso il comando manuale Aggiorna dall’elenco Ricerche; il caricamento resta automatico nei flussi già previsti. -->
 <!-- Erbologia tool v140 — archivio multi-Pianta per PG, ripresa rapida dei cicli, tabella post integrata, dadi con Fase/Ciclo e riferimenti leggibili; mantiene i fix v139. -->
+<!-- Erbologia tool v142 — handshake Firebase robusto anche se Auth termina prima del caricamento della Guida; contrasto archivio Piante corretto. -->
 <!-- Erbologia tool v139 — export Elfo: malus permanente Cicli strutturato (+10 altro PG), senza doppio conteggio sul ciclo corrente. -->
 <!-- Erbologia tool v137 — audit persistenza multi-PG: ogni Ricerca salva una fotografia delle immunità del proprio PG; le sessioni storiche non leggono più immunità di un profilo diverso; preservate correzioni v136. -->
 <!DOCTYPE html>
@@ -1874,6 +1875,13 @@ function ebxEl(id){ return document.getElementById(id); }
 .erb-v140-reference-card b{color:#f1f7e8!important}
 .erb-v140-reference-live{margin-top:9px;padding-top:8px;border-top:1px dashed #65884e;color:#d7e8ca}
 .erb-v140-reference-special{grid-column:1/-1}
+/* v141 — contrasto archivio: evita testo verde scuro ereditato dalle .nota-regole generali. */
+.erb-v140-plant-library #erbPlantLibraryHint,
+.erb-v140-plant-library #erbPlantLibraryHint b,
+.erb-v140-plant-library #erbPlantLibraryStatus,
+.erb-v140-plant-library .erb-v140-plant-meta,
+.erb-v140-plant-library .erb-v140-plant-species{color:#e2f0d8!important;}
+.erb-v140-plant-library #erbPlantLibraryHint{opacity:1!important;}
 @media(max-width:680px){
   .erb-v140-plant-item{grid-template-columns:1fr}
   .erb-v140-plant-actions{justify-content:flex-start}
@@ -6485,7 +6493,7 @@ function erbPlantRenderLibrary(){
     var when='';try{when=new Date(Number(p.updatedAt||0)).toLocaleString('it-IT',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}catch(e){}
     return '<article class="erb-v140-plant-item'+(active?' active':'')+'" data-plant-id="'+e44Esc(p.id)+'"><div class="erb-v140-plant-main"><div class="erb-v140-plant-title">'+e44Esc(title)+(active?' <span>aperta</span>':'')+'</div>'+(sub?'<div class="erb-v140-plant-species">'+e44Esc(sub)+'</div>':'')+'<div class="erb-v140-plant-meta">'+e44Esc((p.classification||'—')+' · '+erbPlantCycleText(p))+(when?' · aggiorn. '+e44Esc(when):'')+'</div></div><div class="erb-v140-plant-actions"><button type="button" class="bottone-azione erb-v140-resume" data-plant-open="'+e44Esc(p.id)+'">Riprendi</button><button type="button" class="erb-v140-delete" data-plant-delete="'+e44Esc(p.id)+'" aria-label="Elimina '+e44Esc(title)+'">Elimina</button></div></article>';
   }).join('');
-  if(status)status.textContent=active?'La Pianta aperta viene aggiornata automaticamente mentre lavori.':'Scegli «Riprendi» per aprire una Pianta.';
+  if(status)status.textContent=ERB_ACTIVE_PLANT_ID?'La Pianta aperta viene aggiornata automaticamente mentre lavori.':'Scegli «Riprendi» per aprire una Pianta.';
 }
 function erbPlantLoadPayload(data){
   data=data||{};ERB_PLANT_LIBRARY=erbPlantSanitizeLibrary(data.plantLibrary||[]);
@@ -6555,7 +6563,7 @@ function erbGuideScheduleSave(){
   ERB_GUIDE_SAVE_TIMER=setTimeout(erbGuideSaveNow,350);
 }
 window.erbGuideFirebaseReady=function(user){
-  if(!user||!RP_FB.db||ERB_GUIDE_LOADING)return;
+  if(!user||!RP_FB.db||ERB_GUIDE_LOADING||ERB_GUIDE_READY)return;
   ERB_GUIDE_LOADING=true;
   ERB_GUIDE_READY=false;
   var ref=erbGuideDoc(),localCache=erbGuideLocalRead();
@@ -6606,6 +6614,17 @@ window.erbGuideFirebaseReady=function(user){
     }
   });
 };
+/* v141 — Firebase Auth può completarsi mentre il browser sta ancora eseguendo gli script
+   precedenti. Se il callback Auth è arrivato prima che erbGuideFirebaseReady esistesse,
+   avvia qui la Guida appena la funzione è stata definita. Non aggiunge query: esegue
+   soltanto il caricamento che sarebbe già dovuto partire dal callback Auth. */
+(function erbGuideLateFirebaseHandshake(){
+  if(typeof RP_FB!=='undefined'&&RP_FB&&RP_FB.user&&RP_FB.db&&!ERB_GUIDE_READY&&!ERB_GUIDE_LOADING){
+    setTimeout(function(){
+      if(RP_FB&&RP_FB.user&&RP_FB.db&&!ERB_GUIDE_READY&&!ERB_GUIDE_LOADING)window.erbGuideFirebaseReady(RP_FB.user);
+    },0);
+  }
+})();
 function e44InsideGuideOrProfile(t){var g=document.getElementById('modoErbologia'),p=document.getElementById('modoPersonaggio');return !!(t&&((g&&g.contains(t))||(p&&p.contains(t))));}
 document.addEventListener('input',function(e){if(!e44InsideGuideOrProfile(e.target))return;if(e.target&&e.target.id==='pgNomeSessione'){if(ERB_GUIDE_NAME_SAVE_TIMER)clearTimeout(ERB_GUIDE_NAME_SAVE_TIMER);ERB_GUIDE_NAME_SAVE_TIMER=setTimeout(function(){ERB_GUIDE_NAME_SAVE_TIMER=null;erbGuideScheduleSave();},1100);return;}erbGuideScheduleSave();},true);document.addEventListener('change',function(e){if(e44InsideGuideOrProfile(e.target)){if(e.target&&e.target.id==='pgNomeSessione'&&ERB_GUIDE_NAME_SAVE_TIMER){clearTimeout(ERB_GUIDE_NAME_SAVE_TIMER);ERB_GUIDE_NAME_SAVE_TIMER=null;}erbGuideScheduleSave();}},true);document.addEventListener('click',function(e){if(e44InsideGuideOrProfile(e.target)&&e.target.closest&&e.target.closest('button')&&e.target.id!=='erbResetAllBtn')setTimeout(erbGuideScheduleSave,80);},true);document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden'&&ERB_GUIDE_READY)erbGuideSaveNow();});window.addEventListener('pagehide',function(){if(ERB_GUIDE_READY)erbGuideSaveNow();});
 
