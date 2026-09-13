@@ -1,6 +1,7 @@
+<!-- Erbologia tool v162 — Stato Morente non richiede più il Narratore di per sé: import immediato nella Guida appena l’esemplare è completo, proseguimento Ricerca non bloccato; il Narratore resta necessario solo quando una regola effettiva lo richiede (es. Ostilità). Il click su Importa vale come scelta di gestire subito la Pianta. -->
 <!-- Erbologia tool v161 — tabella ufficiale dei post inserita in un details contestuale nella sezione Post del ciclo; solo riferimento visivo, nessuna modifica ai calcoli o a Firebase. -->
 <!-- Erbologia tool v153 — allineamento alle ultime migliorie di Magizoologia dove pertinenti: ripresa Ricerca senza autosalvataggio o risincronizzazione retroattiva; dadi multipli compatti per Orde; riepilogo live/copiabile degli esemplari; contrasto dei nuovi blocchi. La protezione conflitti di Magizoologia non viene aggiunta perché Erbologia non usa quel controllo. -->
-<!-- Erbologia tool v152 — Pianta morente: importazione nella Guida e Riconoscimento consentiti appena i dati dell’Incontro sono completi; la conferma del Narratore resta obbligatoria per chiudere/proseguire la Ricerca. -->
+<!-- Erbologia tool v152 — storico: prima lo Stato Morente richiedeva conferma Narratore; comportamento superato dalla v162. -->
 <!-- Erbologia tool v151 — audit identità importazioni: ogni Pianta importata è legata anche alla specifica sessione di Ricerca, evitando collisioni tra role diverse che trovano la stessa specie nello stesso Incontro/Esemplare. -->
 <!-- Erbologia tool v150 — audit reimportazione: i metadati persistenti Incontro/Esemplare hanno priorità sui dataset temporanei, evitando che una Pianta riaperta venga scambiata per un altro ritrovamento e perda i progressi. -->
 <!-- Erbologia tool v149 — audit importazione: metadati Ricerca (Incontro/Esemplare/Salute) scritti dopo i reset di contesto della Guida, così restano persistenti; reimportazione dello stesso ritrovamento riusa davvero la stessa Pianta e conserva i progressi. -->
@@ -3022,7 +3023,7 @@ function ebxEl(id){ return document.getElementById(id); }
         <div class="result-line"><div class="dice-code" id="codiceSalute1"></div><button class="copy-btn" type="button" data-copy-source="codiceSalute1" data-copy-control="1">Copia</button></div>
         <div class="result-line"><span>Risultato (1-15):</span><input type="number" id="risultatoSalute1" data-key="risultatoSalute1" min="1" max="15"><span class="out-tag out-neutral" id="tagSalute1">in attesa</span></div>
         <div class="nota-regole" id="noteSalute1"></div>
-        <div class="check-riga erb-narratore-confirm" id="rigaMorenteGestito1" style="display:none"><input type="checkbox" id="morenteGestito1" data-key="morenteGestito1"><label for="morenteGestito1">La situazione della Pianta morente è stata gestita con il Narratore</label><a class="erb-narratore-link" href="https://felixfelicisharrypottergdr.forumfree.it/?f=65091943" target="_blank" rel="noopener">Contatta il Narratore ↗</a></div>
+        
 
         <div class="check-riga rp-decision-row"><input type="checkbox" id="catturato1" data-key="catturato1"><label for="catturato1"><b>Ho catturato questa Pianta.</b> Il tool controllerà anche se posso continuare la Ricerca Attiva con la Valigia Magica.</label></div>
         <div class="check-riga rp-decision-row"><input type="checkbox" id="incontroRisolto1" data-key="incontroRisolto1"><label for="incontroRisolto1"><b>Non ho catturato la Pianta, ma ho concluso l’Incontro.</b> Ho risolto l’Interazione oppure ho rinunciato esplicitamente.</label></div>
@@ -3072,7 +3073,7 @@ function ebxEl(id){ return document.getElementById(id); }
         <div class="ebx-special erb-v86-species-secondary" id="rpSpeciesSecondary2" style="display:none"></div>
           <div id="esemplariLista2"></div>
           <div class="blocco-avviso" id="avvisoMorente2" style="display:none"></div>
-          <div class="check-riga erb-narratore-confirm" id="rigaMorenteGestito2" style="display:none"><input type="checkbox" id="morenteGestito2" data-key="morenteGestito2"><label for="morenteGestito2">La situazione delle Piante morenti è stata gestita con il Narratore</label><a class="erb-narratore-link" href="https://felixfelicisharrypottergdr.forumfree.it/?f=65091943" target="_blank" rel="noopener">Contatta il Narratore ↗</a></div>
+          
           <div class="check-riga rp-decision-row"><input type="checkbox" id="catturato2" data-key="catturato2"><label for="catturato2"><b>Ho catturato una o più Piante.</b> Il tool controllerà anche la Valigia Magica prima di consentire un altro Incontro.</label></div>
           <div class="check-riga rp-decision-row"><input type="checkbox" id="incontroRisolto2" data-key="incontroRisolto2"><label for="incontroRisolto2"><b>Non ho catturato Piante, ma ho concluso l’Incontro.</b> Ho risolto l’Interazione oppure ho rinunciato esplicitamente.</label></div>
           <div class="rp-decision-help"><b>Scegli una sola delle due opzioni.</b> «Catturata» controlla anche la Valigia; «non catturata» registra semplicemente che l’Incontro è terminato. Il Terzo Incontro si sblocca solo dopo questa scelta.</div>
@@ -3122,7 +3123,7 @@ function ebxEl(id){ return document.getElementById(id); }
         <div class="ebx-special erb-v86-species-secondary" id="rpSpeciesSecondary3" style="display:none"></div>
           <div id="esemplariLista3"></div>
           <div class="blocco-avviso" id="avvisoMorente3" style="display:none"></div>
-          <div class="check-riga erb-narratore-confirm" id="rigaMorenteGestito3" style="display:none"><input type="checkbox" id="morenteGestito3" data-key="morenteGestito3"><label for="morenteGestito3">La situazione delle Piante morenti è stata gestita con il Narratore</label><a class="erb-narratore-link" href="https://felixfelicisharrypottergdr.forumfree.it/?f=65091943" target="_blank" rel="noopener">Contatta il Narratore ↗</a></div>
+          
           <div class="check-riga rp-decision-row"><input type="checkbox" id="catturato3" data-key="catturato3"><label for="catturato3"><b>Ho catturato una o più Piante.</b></label></div>
           <div class="check-riga rp-decision-row"><input type="checkbox" id="incontroRisolto3" data-key="incontroRisolto3"><label for="incontroRisolto3"><b>Non ho catturato Piante, ma ho concluso l’Incontro.</b> Ho risolto l’Interazione oppure ho rinunciato esplicitamente.</label></div><div class="rp-decision-help"><b>Scegli una sola delle due opzioni.</b> Serve soltanto a registrare come è terminato il Terzo Incontro.</div>
         </div>
@@ -5332,13 +5333,13 @@ function rpMorenteSignature(n){
   return count+'|'+parts.join(',');
 }
 function rpUpdateMorenteResolution(n,hasMorente){
+  /* v162: lo Stato Morente è un dato clinico/di gestione, non un gate Narratore. */
   var row=rpEl('rigaMorenteGestito'+n),check=rpEl('morenteGestito'+n),sig=rpMorenteSignature(n);
-  if(row)row.style.display=hasMorente?'flex':'none';
-  if(!RP_RESTORING && RP_MORENTE_CTX[n]!==undefined && RP_MORENTE_CTX[n]!==sig && check)check.checked=false;
+  if(row)row.style.display='none';
+  if(check)check.checked=false;
   RP_MORENTE_CTX[n]=sig;
-  if(!hasMorente&&check)check.checked=false;
 }
-function rpMorenteResolved(n){return !rpEncounterHasMorente(n)||!!(rpEl('morenteGestito'+n)&&rpEl('morenteGestito'+n).checked);}
+function rpMorenteResolved(n){return true;}
 function rpEncounterDecisionResolved(n){return !!((rpEl('catturato'+n)&&rpEl('catturato'+n).checked)||(rpEl('incontroRisolto'+n)&&rpEl('incontroRisolto'+n).checked));}
 function rpSpecie(n){var e=rpEl('speciePianta'+n);return e?e.value.trim():'';}
 function rpZona(){var e=rpEl('zonaRicerca');return e?e.value:'';}
@@ -5374,7 +5375,7 @@ function rpRecomputeCascata1(trovato){
   var vcBad=vc===null&&rpEl('risultatoClasse1').value!=='',vfBad=vf===null&&rpEl('risultatoFase1').value!=='',vsBad=vs===null&&rpEl('risultatoSalute1').value!== '';
   if(tc){tc.textContent=vcBad?'Risultato impossibile':(vc===null?'in attesa':'Classificazione '+rpLookup(rpClasseTab1,vc));tc.className='out-tag '+(vcBad?'out-fail':(vc===null?'out-neutral':'out-ok'));}
   if(tf){tf.textContent=vfBad?'Risultato impossibile':(vf===null?'in attesa':rpLookup(rpFaseVitaleTab,vf));tf.className='out-tag '+(vfBad?'out-fail':(vf===null?'out-neutral':'out-ok'));}
-  if(ts){var stato=faseCtx1==='Seme'?'Non previsto':(vs===null?'':rpLookup(rpStatoSaluteTab,vs));ts.textContent=faseCtx1==='Seme'?'non previsto':(vsBad?'Risultato impossibile':(vs===null?'in attesa':stato));ts.className='out-tag '+(vsBad?'out-fail':(vs===null?'out-neutral':(stato==='Morente'?'out-fail':'out-ok')));if(ns){ns.textContent=vsBad?'Inserisci un intero compreso fra 1 e 15.':(stato==='Morente'?'ATTENZIONE: Pianta morente. Il regolamento richiede di contattare il Narratore prima di procedere.':'');ns.className=stato==='Morente'?'blocco-avviso':'nota-regole';}rpUpdateMorenteResolution(1,stato==='Morente');}
+  if(ts){var stato=faseCtx1==='Seme'?'Non previsto':(vs===null?'':rpLookup(rpStatoSaluteTab,vs));ts.textContent=faseCtx1==='Seme'?'non previsto':(vsBad?'Risultato impossibile':(vs===null?'in attesa':stato));ts.className='out-tag '+(vsBad?'out-fail':(vs===null?'out-neutral':(stato==='Morente'?'out-fail':'out-ok')));if(ns){ns.textContent=vsBad?'Inserisci un intero compreso fra 1 e 15.':(stato==='Morente'?'Pianta morente: puoi importarla nella Guida e gestirla normalmente. Contatta il Narratore soltanto se durante l’Interazione si verifica un’Ostilità o se una regola specifica lo richiede.':'');ns.className=stato==='Morente'?'blocco-avviso':'nota-regole';}rpUpdateMorenteResolution(1,stato==='Morente');}
 }
 
 function rpBuildEsemplari(n,count){
@@ -5493,7 +5494,7 @@ function rpUpdateEsemplari(n,count){
     if(tf){tf.textContent=vfBad?'Risultato impossibile':(vf===null?'in attesa':rpLookup(rpFaseVitaleTab,vf));tf.className='out-tag '+(vfBad?'out-fail':(vf===null?'out-neutral':'out-ok'));}
     if(ts){var st=faseNow==='Seme'?'Non previsto':(vs===null?'':rpLookup(rpStatoSaluteTab,vs));if(st==='Morente')morenti++;ts.textContent=faseNow==='Seme'?'non previsto':(vsBad?'Risultato impossibile':(vs===null?'in attesa':st));ts.className='out-tag '+(vsBad?'out-fail':(vs===null?'out-neutral':(st==='Morente'?'out-fail':'out-ok')));}
   }
-  var av=rpEl('avvisoMorente'+n);if(av){av.style.display=morenti>0?'block':'none';av.textContent=morenti>0?'ATTENZIONE: '+morenti+' '+(morenti===1?'esemplare è morente':'esemplari sono morenti')+'. Il regolamento richiede di contattare il Narratore prima di procedere.':'';}
+  var av=rpEl('avvisoMorente'+n);if(av){av.style.display=morenti>0?'block':'none';av.textContent=morenti>0?'ATTENZIONE: '+morenti+' '+(morenti===1?'esemplare è morente':'esemplari sono morenti')+'. Puoi importare gli esemplari completi nella Guida e gestirli normalmente. Il Narratore serve soltanto se durante l’Interazione si verifica un’Ostilità o se una regola specifica lo richiede.':'';}
   rpUpdateMorenteResolution(n,morenti>0);
   rpUpdateBatchHealthCode(n,count);
   rpRenderEsemplariRecap(n,count);
@@ -5524,18 +5525,16 @@ function rpEncounterComplete(n){
   if(!rpSpecie(n))return false;
   if(n===1){
     var f1=rpNumber('risultatoFase1',1,9);if(f1===null)return false;if(rpLookup(rpFaseVitaleTab,f1)!=='Seme'&&rpNumber('risultatoSalute1',1,15)===null)return false;
-    return rpMorenteResolved(1)&&rpEncounterDecisionResolved(1);
+    return rpEncounterDecisionResolved(1);
   }
   var max=n===2?5:10,count=rpNumber('risultatoEsemplari'+n,1,max);if(count===null)return false;
   for(var i=1;i<=count;i++){var ff=rpNumber('risultatoFase'+n+'_'+i,1,9);if(ff===null)return false;if(rpLookup(rpFaseVitaleTab,ff)!=='Seme'&&rpNumber('risultatoSalute'+n+'_'+i,1,15)===null)return false;}
-  return rpMorenteResolved(n)&&rpEncounterDecisionResolved(n);
+  return rpEncounterDecisionResolved(n);
 }
 function rpBlockedAfter(n){return !!(rpEl('catturato'+n)&&rpEl('catturato'+n).checked&&rpValigia()!=='si');}
 function rpEncounterImportReady(n){
-  /* Per entrare nella Guida e fare il Riconoscimento basta che il ritrovamento
-     sia definito. Se la Pianta è morente, l'intervento del Narratore resta
-     obbligatorio per chiudere/proseguire la Ricerca, ma non deve impedire al PG
-     di iniziare il Riconoscimento mentre attende la gestione narrativa. */
+  /* Per entrare nella Guida basta che il ritrovamento dell'esemplare sia definito.
+     Lo Stato Morente non richiede una conferma del Narratore e non blocca l'import. */
   if(rpTrovaEsito(n)!==true)return false;
   if(rpNumber('risultatoClasse'+n,1,15)===null||!rpSpecie(n))return false;
   if(n===1){var f1i=rpNumber('risultatoFase1',1,9);return f1i!==null&&(rpLookup(rpFaseVitaleTab,f1i)==='Seme'||rpNumber('risultatoSalute1',1,15)!==null);}
@@ -5544,8 +5543,7 @@ function rpEncounterImportReady(n){
   return true;
 }
 function rpEncounterCoreReady(n){
-  if(!rpEncounterImportReady(n))return false;
-  return rpMorenteResolved(n);
+  return rpEncounterImportReady(n);
 }
 function rpNextEncounterReason(n){
   if(rpTipo()!=='attiva')return 'La Ricerca Passiva termina dopo il Primo Incontro.';
@@ -5599,7 +5597,7 @@ function rpEncounterOutcomeState(n){
 function rpEncounterSummary(n){
   /* v145: il Registro/Esito serve anche a importare nella Guida.
      Per comparire qui basta che i dati reali dell'Incontro siano completi
-     (e che un eventuale caso Morente sia stato gestito). La scelta
+     senza richiedere una gestione Narratore per il solo Stato Morente. La scelta
      catturata/non catturata resta separata e non può più nascondere
      un ritrovamento già avvenuto, soprattutto il Terzo Incontro. */
   if(!rpEncounterCoreReady(n))return null;
@@ -7309,14 +7307,12 @@ function transfer(n,exemplar){
 }
 function rpQuickImportHtml(n){
   var choice=E('rpInteragisciSubito'+n);
-  if(!choice||choice.value!=='si')return '';
   var ready=(typeof rpEncounterImportReady==='function')?rpEncounterImportReady(n):false;
   if(!ready){
     return '<div class="research-guide-quick-import"><div class="nota-regole"><b>Prima dell’importazione:</b> completa i dati obbligatori dell’Incontro. Non serve ancora indicare se la Pianta è stata catturata: quella scelta si farà dopo l’Interazione.</div></div>';
   }
   var morente=(typeof rpEncounterHasMorente==='function')?rpEncounterHasMorente(n):false;
-  var morenteOk=(typeof rpMorenteResolved==='function')?rpMorenteResolved(n):true;
-  var narratorNote=(morente&&!morenteOk)?'<div class="nota-regole"><b>Pianta morente:</b> puoi già importarla nella Guida e fare il Riconoscimento. La Ricerca resta però sospesa qui finché la situazione non viene gestita con il Narratore e confermata nell’Incontro.</div>':'';
+  var narratorNote=morente?'<div class="nota-regole"><b>Pianta morente:</b> puoi importarla e gestirla normalmente nella Guida. Il Narratore va contattato soltanto se durante l’Interazione si verifica un’Ostilità o se una regola specifica lo richiede.</div>':'';
   var chooser='';
   if(n>1){
     var mx=n===2?5:10,count=(typeof rpNumber==='function')?rpNumber('risultatoEsemplari'+n,1,mx):null;
@@ -7397,6 +7393,7 @@ document.addEventListener('click',function(ev){
   var i=parseInt(btn.getAttribute('data-rp-quick-import-guide'),10);
   if(!(i>=1&&i<=3))return;
   if(typeof rpEncounterImportReady==='function'&&!rpEncounterImportReady(i)){updateBridge(i);return;}
+  var choice=E('rpInteragisciSubito'+i);if(choice&&choice.value!=='si'){choice.value='si';try{choice.dispatchEvent(new Event('change',{bubbles:true}));}catch(e){}}
   var box=E('rpGuideBridge'+i),pick=box?box.querySelector('[data-rp-quick-import-exemplar="'+i+'"]'):null,chosen=pick?parseInt(pick.value,10):1;
   if(typeof window.erbPlantPrepareResearchImport==='function')window.erbPlantPrepareResearchImport(i,chosen,species(i));else if(typeof window.erbPlantStartNew==='function')window.erbPlantStartNew('import');
   if(transfer(i,chosen)){
@@ -7416,6 +7413,7 @@ if(outcomeHost)outcomeHost.addEventListener('click',function(ev){
   if(!btn)return;
   var i=parseInt(btn.getAttribute('data-rp-import-guide'),10);
   if(!(i>=1&&i<=3))return;
+  var choice=E('rpInteragisciSubito'+i);if(choice&&choice.value!=='si'){choice.value='si';try{choice.dispatchEvent(new Event('change',{bubbles:true}));}catch(e){}}
   var pick=outcomeHost.querySelector('[data-rp-import-exemplar="'+i+'"]'),chosen=pick?parseInt(pick.value,10):1;
   if(typeof window.erbPlantPrepareResearchImport==='function')window.erbPlantPrepareResearchImport(i,chosen,species(i));else if(typeof window.erbPlantStartNew==='function')window.erbPlantStartNew('import');
   if(transfer(i,chosen)){
@@ -9134,6 +9132,11 @@ function helperControls(n){
 function triggerImport(n,i){
   var h=helperControls(n);if(!h)return '';
   var s=h.querySelector('select'),b=h.querySelector('button');if(!s||!b)return '';
+  var choice=E('rpInteragisciSubito'+n);
+  if(choice&&choice.value!=='si'){
+    choice.value='si';
+    try{choice.dispatchEvent(new Event('change',{bubbles:true}));}catch(e){}
+  }
   s.innerHTML='<option value="'+i+'">'+i+'</option>';s.value=String(i);
   window.__ERB_V156_FORCE_IMPORT={n:n,i:i};
   try{b.click();}finally{window.__ERB_V156_FORCE_IMPORT=null;}
@@ -9143,7 +9146,7 @@ function renderImportPanel(n){
   var box=E('rpGuideBridge'+n);if(!box)return;
   var old=box.querySelector('.research-guide-quick-import');if(old)old.remove();
   var prev=box.querySelector('.erb-v156-import-panel');if(prev)prev.remove();
-  var choice=E('rpInteragisciSubito'+n);if(!choice||choice.value!=='si')return;
+  var choice=E('rpInteragisciSubito'+n);
   var panel=document.createElement('div');panel.className='erb-v156-import-panel';
   if(!baseReady(n)){
     panel.innerHTML='<div class="nota-regole"><b>Per passare alla Guida:</b> completa prima il ritrovamento, la Classificazione e la specie. Non è necessario concludere tutta la Ricerca.</div>';
@@ -9156,7 +9159,7 @@ function renderImportPanel(n){
       (ok?'<button type="button" class="bottone-azione bottone-secondario" data-erb-v156-import-one="'+n+':'+i+'"><i class="fa-solid fa-arrow-right-to-bracket" aria-hidden="true"></i> '+esc(label)+'</button>':'<span><b>Esemplare '+i+':</b> '+esc(label)+' — completa i dati per importarlo.</span>')+'</div>');
   }
   var controls='';if(c>1&&ready>1)controls='<div class="erb-v156-import-controls"><label><input type="checkbox" data-erb-v156-select-all="'+n+'"> Seleziona tutti gli esemplari pronti</label><button type="button" class="bottone-azione" data-erb-v156-import-selected="'+n+'">Importa selezionati nella Guida</button><span data-erb-v156-count="'+n+'">0 selezionati</span></div>';
-  panel.innerHTML='<div class="nota-regole"><b>Importa nella Guida:</b> puoi aprire qualunque esemplare già completo senza aspettare gli altri. Ogni esemplare importato mantiene la propria identità Ricerca/Incontro/Esemplare e, se lo reimporti, riapre la stessa Pianta senza azzerarne i progressi.</div><div class="erb-v156-import-list">'+rows.join('')+'</div>'+controls;
+  panel.innerHTML='<div class="nota-regole"><b>Importa nella Guida:</b> puoi aprire qualunque esemplare già completo senza aspettare gli altri e senza dover selezionare prima «Sì» qui sopra. Il click su Importa vale come scelta di gestire subito la Pianta. Lo Stato Morente non richiede il Narratore di per sé; il Narratore serve soltanto in caso di effettiva Ostilità o altra regola specifica. Ogni esemplare importato mantiene la propria identità Ricerca/Incontro/Esemplare e, se lo reimporti, riapre la stessa Pianta senza azzerarne i progressi.</div><div class="erb-v156-import-list">'+rows.join('')+'</div>'+controls;
   box.insertBefore(panel,E('rpGuideBridgeStatus'+n)||null);helperControls(n);updateSelection(n);
 }
 function updateSelection(n){var box=E('rpGuideBridge'+n);if(!box)return;var checks=box.querySelectorAll('[data-erb-v156-select]'),num=0;checks.forEach(function(c){if(c.checked)num++;});var out=box.querySelector('[data-erb-v156-count]');if(out)out.textContent=num+' selezionat'+(num===1?'o':'i');var b=box.querySelector('[data-erb-v156-import-selected]');if(b)b.disabled=num===0;var all=box.querySelector('[data-erb-v156-select-all]');if(all&&checks.length){var on=0;checks.forEach(function(c){if(c.checked)on++;});all.checked=on===checks.length;all.indeterminate=on>0&&on<checks.length;}}
@@ -9541,3 +9544,7 @@ function init(){ensureButton();var n=String((E('pgNomeSessione')||{}).value||'')
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,260);});else setTimeout(init,260);
 })();
 </script>
+
+<style id="erbologia-v162-morente-no-narratore-style">
+#rigaMorenteGestito1,#rigaMorenteGestito2,#rigaMorenteGestito3{display:none!important}
+</style>
