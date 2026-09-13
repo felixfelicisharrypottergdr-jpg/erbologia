@@ -9354,3 +9354,73 @@ function init(){var f=E('pgNomeSessione');if(f){f.disabled=false;f.removeAttribu
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
+
+
+<!-- v159 — Cambio PG robusto: intercetta il click a livello window e libera subito il campo -->
+<script id="erbologia-v159-change-pg-capture">
+(function(){
+'use strict';
+function E(id){return document.getElementById(id);}
+function norm(v){v=String(v||'').trim();try{v=v.normalize('NFD').replace(/[\u0300-\u036f]/g,'');}catch(e){}return v.toLocaleLowerCase('it-IT').replace(/\s+/g,' ');}
+var PROFILE_IDS=['pgTipo','pgSegueErbologia','empatia','sapienzaErbologicaGuida','livErborista','livAmico','livCustode','livColtivatore','pgErbologoMestiere','erbImmPelleAutofertilizzante','erbImmFarfalleVomitose','erbImmErboruto','erbImmSpruzzolosi','erbImmStridulite','erbImmVogliaVampirella','erbImmSolleticoMessicano'];
+function readField(id){var e=E(id);if(!e)return undefined;return (e.type==='checkbox'||e.type==='radio')?!!e.checked:e.value;}
+function setField(id,v){var e=E(id);if(!e)return;if(e.type==='checkbox'||e.type==='radio')e.checked=!!v;else e.value=v;}
+function snapshotProfile(name){
+  name=String(name||'').trim();if(!name||typeof ERB_PG_PROFILES==='undefined')return;
+  var o={pgName:name,updatedAt:Date.now(),fields:{}};
+  PROFILE_IDS.forEach(function(id){var v=readField(id);if(v!==undefined)o.fields[id]=v;});
+  ERB_PG_PROFILES[norm(name)]=o;
+}
+function safe(fn){try{return fn();}catch(err){console.error(err);}}
+function detachResearch(){
+  safe(function(){if(typeof RP_SAVE_TIMER!=='undefined'&&RP_SAVE_TIMER){clearTimeout(RP_SAVE_TIMER);RP_SAVE_TIMER=null;}});
+  safe(function(){if(typeof rpSaveNow==='function'&&typeof RP_CURRENT_ID!=='undefined'&&RP_CURRENT_ID)Promise.resolve(rpSaveNow()).catch(function(err){console.error(err);});});
+  safe(function(){if(typeof RP_CURRENT_ID!=='undefined'){RP_CURRENT_ID='';RP_CURRENT_DATA=null;RP_READONLY=false;}});
+  safe(function(){var w=typeof rpWorkspace==='function'?rpWorkspace():null;if(w)w.style.display='none';var h=E('piante-session-home');if(h)h.style.display='block';});
+}
+function performChange(){
+  var field=E('pgNomeSessione');if(!field)return;
+  var old=String((typeof ERB_PROFILE_BOUND_NAME!=='undefined'&&ERB_PROFILE_BOUND_NAME)||field.value||'').trim();
+
+  /* Congela subito la fotografia del vecchio PG e della Pianta aperta PRIMA di svuotare la UI. */
+  if(old)snapshotProfile(old);
+  safe(function(){if(typeof erbPlantSyncActive==='function'&&typeof erbGuideCollectState==='function')erbPlantSyncActive(erbGuideCollectState());});
+  safe(function(){if(typeof erbGuideLocalWrite==='function'&&typeof erbGuideCollectState==='function')erbGuideLocalWrite(erbGuideCollectState());});
+  safe(function(){if(old&&typeof erbGuideSaveNow==='function')Promise.resolve(erbGuideSaveNow()).catch(function(err){console.error(err);});});
+
+  /* Il feedback visibile deve essere immediato e non dipendere da Firebase o da altri listener. */
+  field.disabled=false;field.readOnly=false;field.removeAttribute('disabled');field.removeAttribute('readonly');field.value='';
+  var btn=E('erbV157ChangePgBtn');if(btn){btn.disabled=false;btn.style.pointerEvents='auto';}
+
+  safe(function(){if(typeof ERB_GUIDE_SAVE_TIMER!=='undefined'&&ERB_GUIDE_SAVE_TIMER){clearTimeout(ERB_GUIDE_SAVE_TIMER);ERB_GUIDE_SAVE_TIMER=null;}});
+  safe(function(){if(typeof ERB_GUIDE_NAME_SAVE_TIMER!=='undefined'&&ERB_GUIDE_NAME_SAVE_TIMER){clearTimeout(ERB_GUIDE_NAME_SAVE_TIMER);ERB_GUIDE_NAME_SAVE_TIMER=null;}});
+  safe(detachResearch);
+
+  /* Non usare il vecchio sentinel __nuovo_pg__: può attivare logiche di cambio proprietario.
+     L'archivio resta intatto, si chiude soltanto la Pianta attiva. */
+  safe(function(){if(typeof ERB_ACTIVE_PLANT_ID!=='undefined')ERB_ACTIVE_PLANT_ID='';});
+  safe(function(){if(typeof ERB_PROFILE_BOUND_NAME!=='undefined')ERB_PROFILE_BOUND_NAME='';});
+  safe(function(){if(typeof RP_PROFILE_SESSION_ID!=='undefined'){RP_PROFILE_SESSION_ID='';RP_PROFILE_SESSION_DATA=null;RP_PROFILE_SESSION_NAME='';RP_PROFILE_PENDING_CREATE=false;}});
+
+  /* Azzera la Guida e i soli dati generici del nuovo PG senza toccare archivi/profili. */
+  safe(function(){if(typeof resetGuidaErbologia==='function')resetGuidaErbologia();});
+  setField('pgTipo','studente');setField('pgSegueErbologia','si');setField('empatia','10');setField('sapienzaErbologicaGuida','0');
+  setField('livErborista','0');setField('livAmico','0');setField('livCustode','0');setField('livColtivatore','0');setField('pgErbologoMestiere',false);
+  ['erbImmPelleAutofertilizzante','erbImmFarfalleVomitose','erbImmErboruto','erbImmSpruzzolosi','erbImmStridulite','erbImmVogliaVampirella','erbImmSolleticoMessicano'].forEach(function(id){setField(id,false);});
+  safe(function(){if(typeof aggiornaCampiTipoPG==='function')aggiornaCampiTipoPG();});
+  safe(function(){if(typeof ricalcolaErbologia==='function')ricalcolaErbologia();});
+  safe(function(){if(typeof erbPlantRenderLibrary==='function')erbPlantRenderLibrary();});
+  safe(function(){if(typeof rpProfileStatus==='function')rpProfileStatus('Pronto per un altro PG: scrivi il nome.','ok');});
+  try{field.focus();}catch(e){}
+}
+window.erbV159ChangePg=performChange;
+/* Capture su window: funziona anche se il pulsante è stato ricreato e ha perso il listener diretto. */
+window.addEventListener('click',function(ev){
+  var t=ev.target,btn=t&&t.closest?t.closest('#erbV157ChangePgBtn'):null;if(!btn)return;
+  ev.preventDefault();ev.stopPropagation();
+  performChange();
+},true);
+function init(){var f=E('pgNomeSessione');if(f){f.disabled=false;f.readOnly=false;f.removeAttribute('disabled');f.removeAttribute('readonly');}var b=E('erbV157ChangePgBtn');if(b){b.disabled=false;b.style.pointerEvents='auto';}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
