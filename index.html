@@ -1,3 +1,4 @@
+<!-- Erbologia tool v152 — Pianta morente: importazione nella Guida e Riconoscimento consentiti appena i dati dell’Incontro sono completi; la conferma del Narratore resta obbligatoria per chiudere/proseguire la Ricerca. -->
 <!-- Erbologia tool v151 — audit identità importazioni: ogni Pianta importata è legata anche alla specifica sessione di Ricerca, evitando collisioni tra role diverse che trovano la stessa specie nello stesso Incontro/Esemplare. -->
 <!-- Erbologia tool v150 — audit reimportazione: i metadati persistenti Incontro/Esemplare hanno priorità sui dataset temporanei, evitando che una Pianta riaperta venga scambiata per un altro ritrovamento e perda i progressi. -->
 <!-- Erbologia tool v149 — audit importazione: metadati Ricerca (Incontro/Esemplare/Salute) scritti dopo i reset di contesto della Guida, così restano persistenti; reimportazione dello stesso ritrovamento riusa davvero la stessa Pianta e conserva i progressi. -->
@@ -5392,12 +5393,20 @@ function rpEncounterComplete(n){
   return rpMorenteResolved(n)&&rpEncounterDecisionResolved(n);
 }
 function rpBlockedAfter(n){return !!(rpEl('catturato'+n)&&rpEl('catturato'+n).checked&&rpValigia()!=='si');}
-function rpEncounterCoreReady(n){
+function rpEncounterImportReady(n){
+  /* Per entrare nella Guida e fare il Riconoscimento basta che il ritrovamento
+     sia definito. Se la Pianta è morente, l'intervento del Narratore resta
+     obbligatorio per chiudere/proseguire la Ricerca, ma non deve impedire al PG
+     di iniziare il Riconoscimento mentre attende la gestione narrativa. */
   if(rpTrovaEsito(n)!==true)return false;
   if(rpNumber('risultatoClasse'+n,1,15)===null||!rpSpecie(n))return false;
-  if(n===1){var f1c=rpNumber('risultatoFase1',1,9);return f1c!==null&&(rpLookup(rpFaseVitaleTab,f1c)==='Seme'||rpNumber('risultatoSalute1',1,15)!==null)&&rpMorenteResolved(1);}
+  if(n===1){var f1i=rpNumber('risultatoFase1',1,9);return f1i!==null&&(rpLookup(rpFaseVitaleTab,f1i)==='Seme'||rpNumber('risultatoSalute1',1,15)!==null);}
   var max=n===2?5:10,count=rpNumber('risultatoEsemplari'+n,1,max);if(count===null)return false;
-  for(var i=1;i<=count;i++){var fc=rpNumber('risultatoFase'+n+'_'+i,1,9);if(fc===null||(rpLookup(rpFaseVitaleTab,fc)!=='Seme'&&rpNumber('risultatoSalute'+n+'_'+i,1,15)===null))return false;}
+  for(var i=1;i<=count;i++){var fi=rpNumber('risultatoFase'+n+'_'+i,1,9);if(fi===null||(rpLookup(rpFaseVitaleTab,fi)!=='Seme'&&rpNumber('risultatoSalute'+n+'_'+i,1,15)===null))return false;}
+  return true;
+}
+function rpEncounterCoreReady(n){
+  if(!rpEncounterImportReady(n))return false;
   return rpMorenteResolved(n);
 }
 function rpNextEncounterReason(n){
@@ -7163,12 +7172,13 @@ function transfer(n,exemplar){
 function rpQuickImportHtml(n){
   var choice=E('rpInteragisciSubito'+n);
   if(!choice||choice.value!=='si')return '';
-  var ready=(typeof rpEncounterCoreReady==='function')?rpEncounterCoreReady(n):false;
+  var ready=(typeof rpEncounterImportReady==='function')?rpEncounterImportReady(n):false;
   if(!ready){
-    var morente=(typeof rpEncounterHasMorente==='function')?rpEncounterHasMorente(n):false;
-    var morenteOk=(typeof rpMorenteResolved==='function')?rpMorenteResolved(n):true;
-    return '<div class="research-guide-quick-import"><div class="nota-regole"><b>Prima dell’importazione:</b> completa i dati obbligatori dell’Incontro'+(morente&&!morenteOk?' e conferma che la situazione delle Piante morenti è stata gestita con il Narratore':'')+'. Non serve ancora indicare se la Pianta è stata catturata: quella scelta si farà dopo l’Interazione.</div></div>';
+    return '<div class="research-guide-quick-import"><div class="nota-regole"><b>Prima dell’importazione:</b> completa i dati obbligatori dell’Incontro. Non serve ancora indicare se la Pianta è stata catturata: quella scelta si farà dopo l’Interazione.</div></div>';
   }
+  var morente=(typeof rpEncounterHasMorente==='function')?rpEncounterHasMorente(n):false;
+  var morenteOk=(typeof rpMorenteResolved==='function')?rpMorenteResolved(n):true;
+  var narratorNote=(morente&&!morenteOk)?'<div class="nota-regole"><b>Pianta morente:</b> puoi già importarla nella Guida e fare il Riconoscimento. La Ricerca resta però sospesa qui finché la situazione non viene gestita con il Narratore e confermata nell’Incontro.</div>':'';
   var chooser='';
   if(n>1){
     var mx=n===2?5:10,count=(typeof rpNumber==='function')?rpNumber('risultatoEsemplari'+n,1,mx):null;
@@ -7184,7 +7194,7 @@ function rpQuickImportHtml(n){
       chooser='<label class="outcome-import-choice">Quale esemplare vuoi portare nella Guida? <select data-rp-quick-import-exemplar="'+n+'">'+opts.join('')+'</select></label>';
     }
   }
-  return '<div class="research-guide-quick-import">'+chooser+'<button type="button" class="bottone-azione outcome-import-btn" data-rp-quick-import-guide="'+n+'"><i class="fa-solid fa-arrow-right-to-bracket" aria-hidden="true"></i> Importa questa Pianta nella Guida</button><div class="nota-regole">L’importazione trasferisce specie, Classificazione, Fase Vitale e Salute. La Guida si apre dal <b>Riconoscimento</b>: il relativo dado resta da fare, salvo che la Pianta sia già riconosciuta ONGame o ricada in un caso autoconclusivo.</div></div>';
+  return '<div class="research-guide-quick-import">'+chooser+'<button type="button" class="bottone-azione outcome-import-btn" data-rp-quick-import-guide="'+n+'"><i class="fa-solid fa-arrow-right-to-bracket" aria-hidden="true"></i> Importa questa Pianta nella Guida</button><div class="nota-regole">L’importazione trasferisce specie, Classificazione, Fase Vitale e Salute. La Guida si apre dal <b>Riconoscimento</b>: il relativo dado resta da fare, salvo che la Pianta sia già riconosciuta ONGame o ricada in un caso autoconclusivo.</div>'+narratorNote+'</div>';
 }
 function updateBridge(n){
   var box=E('rpGuideBridge'+n),sp=species(n),choice=E('rpInteragisciSubito'+n),vote=E('rpVotoRicerca'+n),wrap=E('rpResearchVoteWrap'+n),status=E('rpGuideBridgeStatus'+n),label=E('rpGuideSpeciesLabel'+n),vlabel=E('rpResearchVoteLabel'+n);
@@ -7248,7 +7258,7 @@ document.addEventListener('click',function(ev){
   ev.preventDefault();
   var i=parseInt(btn.getAttribute('data-rp-quick-import-guide'),10);
   if(!(i>=1&&i<=3))return;
-  if(typeof rpEncounterCoreReady==='function'&&!rpEncounterCoreReady(i)){updateBridge(i);return;}
+  if(typeof rpEncounterImportReady==='function'&&!rpEncounterImportReady(i)){updateBridge(i);return;}
   var box=E('rpGuideBridge'+i),pick=box?box.querySelector('[data-rp-quick-import-exemplar="'+i+'"]'):null,chosen=pick?parseInt(pick.value,10):1;
   if(typeof window.erbPlantPrepareResearchImport==='function')window.erbPlantPrepareResearchImport(i,chosen,species(i));else if(typeof window.erbPlantStartNew==='function')window.erbPlantStartNew('import');
   if(transfer(i,chosen)){
