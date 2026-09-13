@@ -1,3 +1,4 @@
+<!-- Erbologia tool v143 — fix intestazione PIANTA/CLASSIFICAZIONE: impedita la duplicazione ricorsiva nei codici copiabili durante i rerender. -->
 <!-- Erbologia tool v134 — audit finale regolamento 09/09/2026: neutralizzato override legacy FOREIGN;  Coccolacea, Cavolo Carnivoro Cinese, Pianta Vampiro, Pianta Mangiauomini, Puffagiolo e Siepi dell'Ombra riallineati alle nuove schede; rimossi conflitti obsoleti. -->
 <!-- Erbologia tool v120 — secondo audit regolamento 09/09/2026: Sapienza Erbologica 25 calcola davvero +20% Ingredienti/Semi con arrotondamento per difetto; bonus Coltivatore non più limitato alle Piante nate da Seme, arrotondato per difetto e mostrato prima/dopo i modificatori della Fase Vitale. -->
 <!-- Erbologia tool v119 — riallineamento regolamento 09/09/2026: Sempre ostili gestite per soglie Sapienza 0 / 1-15 / 16+, Mai ostile non più autoconclusiva, Trattamento richiede Interazione riuscita e non Riconoscimento riuscito, Ostilità separata dalla Legalità. -->
@@ -8333,7 +8334,7 @@ function cultivationCycleLine(){
 function syncCode(code){
   if(!code||code.id==='erbElfoTransferText')return;
   var text=code.textContent||'',identity=codeContext(code);
-  text=text.replace(/^\[b\]PIANTA:.*?\[\/b\]\s*/i,'');
+  text=text.replace(/^(?:<b>PIANTA:[\s\S]*?<\/b>|\[b\]PIANTA:[\s\S]*?\[\/b\])\s*/i,'');
   text=text.replace(/^(?:Seme|Germinazione|Vegetazione|Riproduzione|Senescenza)\s*-\s*\d+\/\d+\s+[^\n]+\s*/i,'');
   text=window.erbV111LinkBBText(text.trim());
   if(text&&identity&&identity.name&&identity.name!=='Pianta non selezionata'){
