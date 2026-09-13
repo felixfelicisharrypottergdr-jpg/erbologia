@@ -1,3 +1,10 @@
+<!-- Erbologia tool v151 — audit identità importazioni: ogni Pianta importata è legata anche alla specifica sessione di Ricerca, evitando collisioni tra role diverse che trovano la stessa specie nello stesso Incontro/Esemplare. -->
+<!-- Erbologia tool v150 — audit reimportazione: i metadati persistenti Incontro/Esemplare hanno priorità sui dataset temporanei, evitando che una Pianta riaperta venga scambiata per un altro ritrovamento e perda i progressi. -->
+<!-- Erbologia tool v149 — audit importazione: metadati Ricerca (Incontro/Esemplare/Salute) scritti dopo i reset di contesto della Guida, così restano persistenti; reimportazione dello stesso ritrovamento riusa davvero la stessa Pianta e conserva i progressi. -->
+<!-- Erbologia tool v148 — secondo audit preventivo: reimportazione dello stesso Incontro/Esemplare non azzera i progressi già fatti, commit in memoria immediato anti-doppio-click; preservati tutti i fix v147. -->
+<!-- Erbologia tool v147 — audit preventivo completo: stabilizzato il contesto specie prima delle caselle di chiusura, corretto Apri le Ricerche, riuso importazioni senza duplicati, isolamento archivio Piante tra PG e Semi importati con Salute non prevista. -->
+<!-- Erbologia tool v146 — audit preventivo Ricerca/Esito: Registro coerente con il dado Specie, Esito accessibile appena il ritrovamento è completo, Semi senza falso requisito Salute, testo UI ripulito. -->
+<!-- Erbologia tool v145 — registro Esito disaccoppiato dalla decisione cattura/non cattura: ogni Incontro con dati completi compare e resta importabile; la decisione finale viene mostrata come stato separato. -->
 <!-- Erbologia tool v144 — importazione Ricerca→Guida resa accessibile prima della chiusura dell'Incontro: il sì all'Interazione mostra il comando di importazione appena i dati obbligatori sono completi; il pulsante archivio apre le Ricerche senza azzerare la Guida. -->
 <!-- Erbologia tool v143 — fix intestazione PIANTA/CLASSIFICAZIONE: impedita la duplicazione ricorsiva nei codici copiabili durante i rerender. -->
 <!-- Erbologia tool v134 — audit finale regolamento 09/09/2026: neutralizzato override legacy FOREIGN;  Coccolacea, Cavolo Carnivoro Cinese, Pianta Vampiro, Pianta Mangiauomini, Puffagiolo e Siepi dell'Ombra riallineati alle nuove schede; rimossi conflitti obsoleti. -->
@@ -2333,6 +2340,7 @@ function ebxEl(id){ return document.getElementById(id); }
 <input type="hidden" id="statoSaluteImportato" data-key="statoSaluteImportato" value="">
 <input type="hidden" id="incontroImportato" data-key="incontroImportato" value="">
 <input type="hidden" id="esemplareImportato" data-key="esemplareImportato" value="">
+<input type="hidden" id="ricercaImportataId" data-key="ricercaImportataId" value="">
 <div class="erb-rule-compact" id="erbImportedResearchMeta" style="display:none"><b>Dati importati dalla Ricerca</b><span id="erbImportedResearchMetaText"></span></div>
 <div class="nota-regole erb-short-note"><b>Fase Vitale automatica:</b> Studente con voto E; Adulto con Sapienza Erbologica 1+. Con Sapienza 20-25 riconosce anche l’età esatta.</div>
 <input type="checkbox" id="interazioneMaiOstile" data-key="interazioneMaiOstile" hidden>
@@ -3090,6 +3098,7 @@ function ebxEl(id){ return document.getElementById(id); }
   <section class="research-flow-page" data-rp-page-panel="outcome">
     <div class="scheda">
       <h2>Esito della Ricerca</h2>
+      <div class="nota-regole" style="margin-bottom:10px"><b>Registro dei ritrovamenti:</b> ogni Incontro, compreso il Terzo, compare qui appena tutti i suoi dadi/dati obbligatori sono completi. La scelta «catturata / concluso senza cattura» aggiorna lo stato finale ma non è necessaria per far comparire il ritrovamento né per importarlo nella Guida.</div>
       <div id="rp-outcome-content"></div>
       
     </div>
@@ -3375,7 +3384,7 @@ function resetStoricoSeCambiaPianta(){
   ultimoContestoPiantaGuida=ctx;
   var zeroIds=['tentativiRiconoscimentoFalliti','tentativiInterazioneFallitiPrecedenti','fallimentiEsportazionePrecedenti','fallimentiCollocazionePrecedenti'];
   for(var i=0;i<zeroIds.length;i++){var z=document.getElementById(zeroIds[i]);if(z)z.value='0';}
-  var clearIds=['risultatoRiconoscimento','risultatoInterazione','risultatoConseguenzaInterazione','risultatoOrdaInterazione','risultatoEsportazione','risultatoCollocazione','risultatoConseguenzaCollocazione','risultatoAltrePianteCollocazione','risultatoColtivazione','baseAdultoRisultato','postBaseColtivazione','risultatoPax','risultatoPax2','risultatoPax3','risultatoPax4','risultatoPax5','risultatoPax6','risultatoPax7','risultatoPax8','risultatoPax9','risultatoIllegaleCollocazione','risultatoIllegaleColtivazione','risultatoToccoVerdeBonus','risultatoOxygeniQty','risultatoOxygeniIndigestione','risultatoSectisQty','risultatoSectisHostility','risultatoSectisIngredient1','risultatoSectisIngredient2','risultatoSectisIngredient3','risultatoSectisIngredient4','risultatoSectisIngredient5','risultatoSectisIngredient6','risultatoSectisIngredient7','statoSaluteImportato','incontroImportato','esemplareImportato'];
+  var clearIds=['risultatoRiconoscimento','risultatoInterazione','risultatoConseguenzaInterazione','risultatoOrdaInterazione','risultatoEsportazione','risultatoCollocazione','risultatoConseguenzaCollocazione','risultatoAltrePianteCollocazione','risultatoColtivazione','baseAdultoRisultato','postBaseColtivazione','risultatoPax','risultatoPax2','risultatoPax3','risultatoPax4','risultatoPax5','risultatoPax6','risultatoPax7','risultatoPax8','risultatoPax9','risultatoIllegaleCollocazione','risultatoIllegaleColtivazione','risultatoToccoVerdeBonus','risultatoOxygeniQty','risultatoOxygeniIndigestione','risultatoSectisQty','risultatoSectisHostility','risultatoSectisIngredient1','risultatoSectisIngredient2','risultatoSectisIngredient3','risultatoSectisIngredient4','risultatoSectisIngredient5','risultatoSectisIngredient6','risultatoSectisIngredient7','statoSaluteImportato','incontroImportato','esemplareImportato','ricercaImportataId'];
   for(var j=0;j<clearIds.length;j++){var c=document.getElementById(clearIds[j]);if(c)c.value='';}
   /* Gli esiti di Pax e Tocco Verde appartengono alla Pianta/azione corrente:
      non devono sopravvivere a un cambio di specie, classificazione o provenienza. */
@@ -5403,7 +5412,7 @@ function rpPageUnlocked(page){
   if(page==='config')return true;if(page==='summary')return false;if(page==='enc1')return rpConfigReady();
   if(page==='enc2')return rpTipo()==='attiva'&&rpEncounterComplete(1)&&!rpBlockedAfter(1);
   if(page==='enc3')return rpTipo()==='attiva'&&rpEncounterComplete(2)&&!rpBlockedAfter(2);
-  if(page==='outcome')return rpEncounterComplete(1);return false;
+  if(page==='outcome')return rpEncounterCoreReady(1);return false;
 }
 function rpGating(){
   var g2=rpPageUnlocked('enc2'),g3=rpPageUnlocked('enc3'),b2=rpEl('badge2'),b3=rpEl('badge3'),a2=rpEl('avviso2'),a3=rpEl('avviso3');
@@ -5433,29 +5442,89 @@ function rpRenderSummary(){
     '<div class="nota-regole"><b>Role di gruppo:</b> tutti i dadi della Ricerca devono essere lanciati dallo stesso PG lanciatore; ciò che trova è disponibile a tutti i PG presenti, ma la Fiducia non è automaticamente condivisa; non è inoltre possibile dividere la stessa role fra ricerche di obiettivi diversi. PG con bassa Empatia o senza Sapienza Erbologica possono quindi affidare tutti i lanci a un compagno Animus/Erbologo.<br><br><b>Piante Esotiche:</b> possono essere incontrate soltanto fuori dal Regno Unito, nelle Coste/Foreste del Mondo Magico. La percentuale indica la probabilità di trovare una Pianta con il tiro 1d30. Un totale di 30 o più rende il ritrovamento autoconclusivo.</div>';
   bb.textContent='<b>Riepilogo Ricerca Piante Magiche — '+(name||'PG')+'</b>\n[quote]PG lanciatore: '+(name||'PG')+'\nTipo: '+(rpTipo()==='attiva'?'Ricerca Attiva':'Ricerca Passiva')+'\nEmpatia: '+rpEmpatia()+'\nSapienza Erbologica: '+rpSapienza()+' (bonus +'+rpBonusSapienza()+')\nPrimo Incontro: '+first+'/30 ('+rpPercent(first)+'%)\n'+(rpTipo()==='attiva'?'Incontri successivi: '+later+'/30 ('+rpPercent(later)+'%)\n':'')+'Valigia Magica: '+(rpValigia()==='si'?'Sì':'No')+'\nZona di Ricerca: '+(rpZona()==='storica'?'':rpZona())+'\nNota role di gruppo: tutti i dadi della Ricerca devono essere lanciati dallo stesso PG lanciatore; il ritrovamento è disponibile a tutti i PG presenti, ma la Fiducia non è automaticamente condivisa; la stessa role non può essere divisa fra ricerche di obiettivi diversi. PG con bassa Empatia o senza Sapienza Erbologica possono affidare tutti i lanci a un compagno Animus/Erbologo.\nPiante Esotiche: possono essere incontrate soltanto fuori dal Regno Unito, nelle Coste/Foreste del Mondo Magico.[/quote]';
 }
+function rpEncounterOutcomeState(n){
+  var caught=!!(rpEl('catturato'+n)&&rpEl('catturato'+n).checked);
+  var resolved=!!(rpEl('incontroRisolto'+n)&&rpEl('incontroRisolto'+n).checked);
+  if(caught)return {html:'<span class="out-tag out-ok">Cattura registrata</span>',bb:n===1?'catturata':'almeno una Pianta catturata',pending:false};
+  if(resolved)return {html:'<span class="out-tag out-ok">Concluso senza cattura</span>',bb:'Incontro concluso senza cattura',pending:false};
+  return {html:'<span class="out-tag out-neutral">Esito finale ancora da indicare</span>',bb:'esito cattura/conclusione ancora da indicare',pending:true};
+}
 function rpEncounterSummary(n){
-  if(!rpEncounterComplete(n))return null;var tab=n===1?rpClasseTab1:(n===2?rpClasseTab2:rpClasseTab3),cls=rpLookup(tab,rpNumber('risultatoClasse'+n,1,15));
-  if(n===1)return {html:'<b>'+rpEsc(rpSpecie(1))+'</b> · Classificazione '+cls+' · '+rpLookup(rpFaseVitaleTab,rpNumber('risultatoFase1',1,9))+' · '+rpLookup(rpStatoSaluteTab,rpNumber('risultatoSalute1',1,15)),bb:'Pianta '+rpSpecie(1)+'; Classificazione '+cls+'; Fase Vitale '+rpLookup(rpFaseVitaleTab,rpNumber('risultatoFase1',1,9))+'; Salute '+rpLookup(rpStatoSaluteTab,rpNumber('risultatoSalute1',1,15))+(rpEl('catturato1').checked?'; catturata':'')};
-  var max=n===2?5:10,count=rpNumber('risultatoEsemplari'+n,1,max),parts=[];for(var i=1;i<=count;i++)parts.push('Esemplare '+i+': '+rpLookup(rpFaseVitaleTab,rpNumber('risultatoFase'+n+'_'+i,1,9))+' · '+rpLookup(rpStatoSaluteTab,rpNumber('risultatoSalute'+n+'_'+i,1,15)));
-  return {html:'<b>'+rpEsc(rpSpecie(n))+'</b> · Classificazione '+cls+' · '+count+' esemplari'+(count>1?' · Orda':'')+'<br>'+parts.map(rpEsc).join('<br>'),bb:'Pianta '+rpSpecie(n)+'; Classificazione '+cls+'; '+count+' esemplari'+(count>1?' (Orda)':'')+'; '+parts.join('; ')+(rpEl('catturato'+n).checked?'; almeno una Pianta catturata':'')};
+  /* v145: il Registro/Esito serve anche a importare nella Guida.
+     Per comparire qui basta che i dati reali dell'Incontro siano completi
+     (e che un eventuale caso Morente sia stato gestito). La scelta
+     catturata/non catturata resta separata e non può più nascondere
+     un ritrovamento già avvenuto, soprattutto il Terzo Incontro. */
+  if(!rpEncounterCoreReady(n))return null;
+  var tab=n===1?rpClasseTab1:(n===2?rpClasseTab2:rpClasseTab3),
+      cls=rpLookup(tab,rpNumber('risultatoClasse'+n,1,15)),
+      outcome=rpEncounterOutcomeState(n);
+  if(n===1){
+    var phase1=rpLookup(rpFaseVitaleTab,rpNumber('risultatoFase1',1,9)),
+        healthNum1=rpNumber('risultatoSalute1',1,15),
+        health1=phase1==='Seme'?'Non previsto':rpLookup(rpStatoSaluteTab,healthNum1);
+    return {
+      html:'<b>'+rpEsc(rpSpecie(1))+'</b> · Classificazione '+cls+' · '+rpEsc(phase1)+' · '+rpEsc(health1)+'<br>'+outcome.html,
+      bb:'Pianta '+rpSpecie(1)+'; Classificazione '+cls+'; Fase Vitale '+phase1+'; Salute '+health1+'; '+outcome.bb,
+      decisionPending:outcome.pending
+    };
+  }
+  var max=n===2?5:10,count=rpNumber('risultatoEsemplari'+n,1,max),parts=[];
+  for(var i=1;i<=count;i++){
+    var phase=rpLookup(rpFaseVitaleTab,rpNumber('risultatoFase'+n+'_'+i,1,9)),
+        healthNum=rpNumber('risultatoSalute'+n+'_'+i,1,15),
+        health=phase==='Seme'?'Non previsto':rpLookup(rpStatoSaluteTab,healthNum);
+    parts.push('Esemplare '+i+': '+phase+' · '+health);
+  }
+  return {
+    html:'<b>'+rpEsc(rpSpecie(n))+'</b> · Classificazione '+cls+' · '+count+' esemplari'+(count>1?' · Orda':'')+'<br>'+parts.map(rpEsc).join('<br>')+'<br>'+outcome.html,
+    bb:'Pianta '+rpSpecie(n)+'; Classificazione '+cls+'; '+count+' esemplari'+(count>1?' (Orda)':'')+'; '+parts.join('; ')+'; '+outcome.bb,
+    decisionPending:outcome.pending
+  };
 }
 function rpRenderOutcome(){
   var host=rpEl('rp-outcome-content');if(!host)return;
-  var name=rpEl('nomePgRicerca')?rpEl('nomePgRicerca').value.trim():'PG',items=[];
+  var name=rpEl('nomePgRicerca')?rpEl('nomePgRicerca').value.trim():'PG',items=[],pendingDecisions=[];
   var maxIncontri=rpTipo()==='passiva'?1:3;
   for(var n=1;n<=maxIncontri;n++){
     var s=rpEncounterSummary(n);
-    if(s){var chooser='';if(n>1){var mx=n===2?5:10,cnt=rpNumber('risultatoEsemplari'+n,1,mx);if(cnt&&cnt>1){var opts=[];for(var ei=1;ei<=cnt;ei++){var ep=rpLookup(rpFaseVitaleTab,rpNumber('risultatoFase'+n+'_'+ei,1,9)),eh=rpLookup(rpStatoSaluteTab,rpNumber('risultatoSalute'+n+'_'+ei,1,15));opts.push('<option value="'+ei+'">Esemplare '+ei+' — '+rpEsc(ep)+' · '+rpEsc(eh)+'</option>');}chooser='<label class="outcome-import-choice">Quale esemplare vuoi importare? <select data-rp-import-exemplar="'+n+'">'+opts.join('')+'</select></label>';}}items.push('<li><b>Incontro '+(['','I','II','III'][n])+':</b> '+s.html+'<div class="outcome-import-row">'+chooser+'<button type="button" class="bottone-azione bottone-secondario outcome-import-btn" data-rp-import-guide="'+n+'">Importa nella Guida</button></div></li>');}
+    if(s){
+      if(s.decisionPending)pendingDecisions.push(['','I','II','III'][n]);
+      var chooser='';
+      if(n>1){
+        var mx=n===2?5:10,cnt=rpNumber('risultatoEsemplari'+n,1,mx);
+        if(cnt&&cnt>1){
+          var opts=[];
+          for(var ei=1;ei<=cnt;ei++){
+            var ep=rpLookup(rpFaseVitaleTab,rpNumber('risultatoFase'+n+'_'+ei,1,9)),
+                ehNum=rpNumber('risultatoSalute'+n+'_'+ei,1,15),
+                eh=ep==='Seme'?'Non previsto':rpLookup(rpStatoSaluteTab,ehNum);
+            opts.push('<option value="'+ei+'">Esemplare '+ei+' — '+rpEsc(ep)+' · '+rpEsc(eh)+'</option>');
+          }
+          chooser='<label class="outcome-import-choice">Quale esemplare vuoi importare? <select data-rp-import-exemplar="'+n+'">'+opts.join('')+'</select></label>';
+        }
+      }
+      items.push('<li><b>Incontro '+(['','I','II','III'][n])+':</b> '+s.html+'<div class="outcome-import-row">'+chooser+'<button type="button" class="bottone-azione bottone-secondario outcome-import-btn" data-rp-import-guide="'+n+'">Importa nella Guida</button></div></li>');
+    }
   }
   if(!items.length){
-    host.innerHTML='<div class="nota-regole">Completa almeno il Primo Incontro per ottenere il riepilogo finale.</div>';
+    host.innerHTML='<div class="nota-regole">Completa i dati del Primo Incontro per farlo comparire nel registro dei ritrovamenti.</div>';
     return;
   }
   var stop='';
-  if(rpTipo()==='passiva')stop='Ricerca Passiva conclusa dopo il Primo Incontro.';
-  else if(rpBlockedAfter(1)&&!rpEncounterComplete(2))stop='Ricerca interrotta dopo il Primo Incontro: Valigia Magica necessaria per proseguire dopo la cattura.';
-  else if(rpBlockedAfter(2)&&!rpEncounterComplete(3))stop='Ricerca interrotta dopo il Secondo Incontro: Valigia Magica necessaria per proseguire dopo la cattura.';
-  else stop='Ricerca conclusa dopo '+items.length+' Incontro'+(items.length===1?'':'i')+'.';
+  if(pendingDecisions.length){
+    stop='Ritrovamenti registrati: '+items.length+'. Gli Incontri '+pendingDecisions.join(', ')+' sono già visibili e importabili nella Guida; resta soltanto da indicare se si sono conclusi con una cattura oppure senza cattura.';
+  }else if(rpTipo()==='passiva'){
+    stop='Ricerca Passiva registrata dopo il Primo Incontro.';
+  }else if(items.length>=3){
+    stop='Tutti e tre gli Incontri sono registrati.';
+  }else if(rpBlockedAfter(1)&&items.length<2){
+    stop='Ricerca interrotta dopo il Primo Incontro: Valigia Magica necessaria per proseguire dopo la cattura.';
+  }else if(rpBlockedAfter(2)&&items.length<3){
+    stop='Ricerca interrotta dopo il Secondo Incontro: Valigia Magica necessaria per proseguire dopo la cattura.';
+  }else{
+    stop='Ritrovamenti registrati: '+items.length+'.';
+  }
   host.innerHTML='<ul class="outcome-list">'+items.join('')+'</ul><div class="nota-regole" style="margin-top:12px"><b>PG lanciatore:</b> '+rpEsc(name)+'<br><b>Zona:</b> '+rpEsc(rpZona()==='storica'?'':rpZona())+'<br><b>Role di gruppo:</b> tutti i dadi della Ricerca devono essere lanciati dallo stesso PG; il ritrovamento è condiviso con i PG presenti, ma la Fiducia non è automaticamente condivisa; la stessa role non può essere divisa fra ricerche diverse. PG con bassa Empatia o senza Sapienza Erbologica possono affidare tutti i lanci a un compagno Animus/Erbologo.<br><br>'+rpEsc(stop)+'</div>';
 }
 
@@ -5537,12 +5606,17 @@ function rpStateEncounterCoreComplete(state,n){
   if(!state || state['risultatoClasse'+n]===undefined || String(state['risultatoClasse'+n])==='') return false;
   if(state['speciePianta'+n]===undefined || String(state['speciePianta'+n]).trim()==='') return false;
   if(n===1){
-    return state.risultatoFase1!==undefined && String(state.risultatoFase1)!=='' && state.risultatoSalute1!==undefined && String(state.risultatoSalute1)!=='';
+    if(state.risultatoFase1===undefined || String(state.risultatoFase1)==='') return false;
+    var sf1=Number(state.risultatoFase1),phase1=Number.isInteger(sf1)?rpLookup(rpFaseVitaleTab,sf1):'';
+    return phase1==='Seme' || (state.risultatoSalute1!==undefined && String(state.risultatoSalute1)!=='');
   }
   var max=n===2?5:10, count=Number(state['risultatoEsemplari'+n]);
   if(!Number.isInteger(count) || count<1 || count>max) return false;
   for(var i=1;i<=count;i++){
-    if(state['risultatoFase'+n+'_'+i]===undefined || String(state['risultatoFase'+n+'_'+i])==='' || state['risultatoSalute'+n+'_'+i]===undefined || String(state['risultatoSalute'+n+'_'+i])==='') return false;
+    var fk='risultatoFase'+n+'_'+i,hk='risultatoSalute'+n+'_'+i;
+    if(state[fk]===undefined || String(state[fk])==='') return false;
+    var sf=Number(state[fk]),phase=Number.isInteger(sf)?rpLookup(rpFaseVitaleTab,sf):'';
+    if(phase!=='Seme' && (state[hk]===undefined || String(state[hk])==='')) return false;
   }
   return true;
 }
@@ -5608,7 +5682,7 @@ function rpFindOwnSessionForProfile(name){if(!RP_FB.db||!RP_FB.user)return Promi
 function rpCreateProfileSessionRecord(name){if(RP_CREATING)return RP_PROFILE_SESSION_PROMISE||Promise.reject(new Error('Creazione già in corso.'));RP_CREATING=true;var data;try{data=rpNewSessionData(name);}catch(err){RP_CREATING=false;return Promise.reject(err);}return RP_FB.db.collection(RP_COLLECTION).add(data).then(function(ref){/* Il documento è appena stato scritto: una ref.get() qui sarebbe una lettura Firestore inutile. */var dd=Object.assign({},data,{createdAt:new Date(),updatedAt:new Date()});rpRememberProfileSession(ref.id,dd,name);RP_CREATING=false;if(RP_SESSION_LIST_CACHE)rpUpsertSessionCache(ref.id,dd);else rpInvalidateSessionList();return {id:ref.id,data:dd,created:true};}).catch(function(err){RP_CREATING=false;throw err;});}
 function rpEnsureProfileSession(createIfMissing){var name=rpProfileName();if(!name){rpProfileStatus('Inserisci il nome del PG per collegare la sessione Firebase.','bad');return Promise.reject(new Error('Nome del PG mancante.'));}if(!RP_FB.user||!RP_FB.db){rpProfileStatus('Collegamento a Firebase in corso…','');return Promise.reject(new Error('Firebase non è ancora pronto.'));}if(RP_CURRENT_ID&&rpSessionCanEdit(RP_CURRENT_DATA)&&rpNormName(rpCurrentName())===rpNormName(name)){rpRememberProfileSession(RP_CURRENT_ID,RP_CURRENT_DATA,name);rpProfileStatus('Sessione Firebase pronta ✓','ok');return Promise.resolve({id:RP_CURRENT_ID,data:RP_CURRENT_DATA});}if(RP_PROFILE_SESSION_ID&&rpNormName(RP_PROFILE_SESSION_NAME)===rpNormName(name)){rpProfileStatus('Sessione Firebase pronta ✓','ok');return Promise.resolve({id:RP_PROFILE_SESSION_ID,data:RP_PROFILE_SESSION_DATA});}if(RP_PROFILE_SESSION_PROMISE)return RP_PROFILE_SESSION_PROMISE;rpProfileStatus('Collegamento del PG a Firebase…','');RP_PROFILE_SESSION_PROMISE=rpFindOwnSessionForProfile(name).then(function(found){if(found){RP_PROFILE_PENDING_CREATE=false;rpRememberProfileSession(found.id,found.data,name);rpProfileStatus('Sessione Firebase pronta ✓','ok');return found;}if(!createIfMissing){rpProfileStatus('PG salvato su Firebase · nessuna Ricerca in corso.','ok');return null;}rpProfileStatus('Creo la sessione Firebase del PG…','');return rpCreateProfileSessionRecord(name).then(function(created){RP_PROFILE_PENDING_CREATE=false;rpProfileStatus('Sessione Firebase creata ✓','ok');return created;});}).catch(function(err){console.error(err);rpProfileStatus('Errore Firebase: '+(err.message||err),'bad');throw err;}).finally(function(){RP_PROFILE_SESSION_PROMISE=null;});return RP_PROFILE_SESSION_PROMISE;}
 function rpReleaseCurrentForProfile(name){if(!RP_CURRENT_ID)return Promise.resolve();if(rpNormName(rpCurrentName())===rpNormName(name))return Promise.resolve();var p=(!RP_READONLY&&rpSessionCanEdit(RP_CURRENT_DATA))?rpSaveNow():Promise.resolve(true);return p.then(function(){RP_CURRENT_ID='';RP_CURRENT_DATA=null;RP_READONLY=false;rpWorkspace().style.display='none';rpEl('piante-session-home').style.display='block';if(/^#session=/.test(String(window.location.hash||''))){try{history.replaceState(null,'',window.location.pathname+window.location.search);}catch(e){}}});}
-function rpProfileNameCommitted(createIfMissing){var name=rpProfileName();RP_PROFILE_SESSION_ID='';RP_PROFILE_SESSION_DATA=null;RP_PROFILE_SESSION_NAME='';RP_PROFILE_PENDING_CREATE=!!(createIfMissing!==false);if(!name){RP_PROFILE_PENDING_CREATE=false;rpProfileStatus('Inserisci il nome del PG.','');return Promise.resolve(null);}return rpReleaseCurrentForProfile(name).then(function(){return rpEnsureProfileSession(createIfMissing!==false);}).then(function(found){RP_PROFILE_PENDING_CREATE=false;return found;});}
+function rpProfileNameCommitted(createIfMissing){var name=rpProfileName();if(typeof window.erbPlantOnProfileCommit==='function')window.erbPlantOnProfileCommit(name);RP_PROFILE_SESSION_ID='';RP_PROFILE_SESSION_DATA=null;RP_PROFILE_SESSION_NAME='';RP_PROFILE_PENDING_CREATE=!!(createIfMissing!==false);if(!name){RP_PROFILE_PENDING_CREATE=false;rpProfileStatus('Inserisci il nome del PG.','');return Promise.resolve(null);}return rpReleaseCurrentForProfile(name).then(function(){return rpEnsureProfileSession(createIfMissing!==false);}).then(function(found){RP_PROFILE_PENDING_CREATE=false;return found;});}
 function rpEnterResearchFromProfile(){var name=rpProfileName();var f=rpEl('pgNomeSessione');if(!name){mostraModo('Personaggio');rpProfileStatus('⚠ Inserisci prima il nome del PG per accedere alla Ricerca.','bad research-warning');if(f){f.classList.add('research-required');f.focus();try{f.scrollIntoView({behavior:'smooth',block:'center'});}catch(e){}}return;}if(f)f.classList.remove('research-required');/* La scheda Ricerca deve essere cliccabile subito: Firebase può terminare il collegamento dopo. */mostraModo('Ricerca');rpEl('piante-session-home').style.display='block';rpWorkspace().style.display='none';rpStatus('rp-session-home-msg','Apro la Ricerca di '+name+'…','');if(typeof window.erbGuideBeforeResearch==='function')window.erbGuideBeforeResearch();if(!RP_FB.user||!RP_FB.db){RP_PROFILE_OPEN_PENDING=true;rpProfileStatus('Collegamento del PG a Firebase in corso…','');rpStatus('rp-session-home-msg','Collegamento a Firebase in corso… la Ricerca si aprirà automaticamente.','');return;}RP_PROFILE_OPEN_PENDING=false;rpProfileStatus('Apro la Ricerca del PG…','');rpReleaseCurrentForProfile(name).then(function(){return rpEnsureProfileSession(true);}).then(function(found){if(!found||!found.id)return;try{history.replaceState(null,'',window.location.pathname+window.location.search+'#session='+encodeURIComponent(found.id));}catch(e){}if(RP_CURRENT_ID===found.id&&RP_CURRENT_DATA){rpEl('piante-session-home').style.display='none';rpWorkspace().style.display='block';rpStatus('rp-session-home-msg','','');rpApplyFlow();rpUpdateToolbar();return;}if(found.data){rpOpenSession(found.id,found.data);rpStatus('rp-session-home-msg','','');return;}return rpLoadSession(found.id);}).catch(function(err){rpStatus('rp-session-home-msg','Non riesco ad aprire la Ricerca: '+(err.message||err),'bad');rpProfileStatus('Non riesco ad aprire la Ricerca: '+(err.message||err),'bad');});}
 function rpUpdateToolbar(){if(!RP_CURRENT_DATA)return;var mine=RP_FB.user&&RP_CURRENT_DATA.ownerUid===RP_FB.user.uid,narr=RP_FB.user&&RP_FB.user.uid===RP_NARRATOR_UID,parts=[];rpEl('rp-current-session-title').textContent=rpCurrentName()+' — '+(rpTipo()==='attiva'?'Ricerca Attiva':'Ricerca Passiva');parts.push(mine?'Sessione creata da questo browser':(narr?'Gestione Narratore':'Sessione di un altro giocatore'));var t=rpFormatTs(RP_CURRENT_DATA.updatedAt);if(t)parts.push('ultimo salvataggio '+t);rpEl('rp-current-session-meta').textContent=parts.join(' · ');rpEl('rp-readonly-banner').style.display=RP_READONLY?'block':'none';rpEl('rp-btn-delete-session').style.display=rpSessionCanEdit(RP_CURRENT_DATA)?'inline-block':'none';}
 function rpSetReadonly(ro){RP_READONLY=!!ro;var w=rpWorkspace();if(!w)return;var fields=w.querySelectorAll('input,select,textarea');for(var i=0;i<fields.length;i++)fields[i].disabled=RP_READONLY;var buttons=w.querySelectorAll('button');for(var j=0;j<buttons.length;j++){var b=buttons[j];if(!RP_READONLY)continue;if(b.getAttribute('data-session-control')==='1'||b.classList.contains('copy-btn')||b.classList.contains('flow-page-btn')||b.classList.contains('flow-action-btn'))b.disabled=false;else b.disabled=true;}rpApplyFlow();rpUpdateToolbar();}
@@ -6045,7 +6119,43 @@ function ebxRecomputeSpecies(n){
   if(!Number.isInteger(rv)||rv<1||rv>f){tag.textContent='Risultato impossibile';tag.className='out-tag out-fail';return;}
   tag.textContent=name.value.trim()?'Specie registrata':'Indica il nome trovato';tag.className='out-tag '+(name.value.trim()?'out-ok':'out-neutral');
 }
-var ebxBaseEncounterComplete=rpEncounterComplete;rpEncounterComplete=function(n){if(!ebxBaseEncounterComplete(n))return false;var z=ebxZoneNormalized(),cls=ebxClass(n),list=EBX_ZONE_PLANTS[z]&&EBX_ZONE_PLANTS[z][cls];if(Array.isArray(list)){if(list.length===0)return false;var v=rpNumber('risultatoSpecie'+n,1,list.length);return v!==null&&rpSpecie(n)!=='';}var f=rpNumber('dadoSpecie'+n,1,999);if(f===null)return false;return rpNumber('risultatoSpecie'+n,1,f)!==null&&rpSpecie(n)!=='';};
+function ebxEncounterSpeciesResolved(n){
+  var z=ebxZoneNormalized(),cls=ebxClass(n),list=EBX_ZONE_PLANTS[z]&&EBX_ZONE_PLANTS[z][cls];
+  if(Array.isArray(list)){
+    if(list.length===0)return false;
+    return rpNumber('risultatoSpecie'+n,1,list.length)!==null&&rpSpecie(n)!=='';
+  }
+  var f=rpNumber('dadoSpecie'+n,1,999);
+  if(f===null)return false;
+  return rpNumber('risultatoSpecie'+n,1,f)!==null&&rpSpecie(n)!=='';
+}
+function ebxSyncEncounterCoreContext(n){
+  /* v147: ebxRecomputeSpecies() può compilare automaticamente la specie DOPO
+     il primo passaggio della cascata. Se RP_CORE_CTX resta con specie vuota,
+     il click successivo su «catturata / concluso» viene scambiato per un cambio
+     di Pianta e la casella viene immediatamente azzerata. Sincronizziamo qui la
+     firma con i dati appena renderizzati, senza alterare alcuna decisione. */
+  var cls=ebxClass(n)||'',sp=rpSpecie(n)||'';
+  if(n===1){
+    var f=rpNumber('risultatoFase1',1,9),phase=f===null?'':rpLookup(rpFaseVitaleTab,f),
+        s=rpNumber('risultatoSalute1',1,15),health=phase==='Seme'?'Non previsto':(s===null?'':rpLookup(rpStatoSaluteTab,s));
+    RP_CORE_CTX[1]=cls+'|'+sp+'|'+phase+'|'+health;
+    return;
+  }
+  var max=n===2?5:10,count=rpNumber('risultatoEsemplari'+n,1,max),parts=[cls,sp,count===null?'':String(count)];
+  if(count!==null){
+    for(var i=1;i<=count;i++){
+      var ff=rpNumber('risultatoFase'+n+'_'+i,1,9),phaseN=ff===null?'':rpLookup(rpFaseVitaleTab,ff),
+          ss=rpNumber('risultatoSalute'+n+'_'+i,1,15),healthN=ss===null?'':rpLookup(rpStatoSaluteTab,ss);
+      parts.push(phaseN+'/'+healthN);
+    }
+  }
+  RP_CORE_CTX[n]=parts.join('|');
+}
+var ebxBaseEncounterCoreReady=rpEncounterCoreReady;
+rpEncounterCoreReady=function(n){return !!(ebxBaseEncounterCoreReady(n)&&ebxEncounterSpeciesResolved(n));};
+var ebxBaseEncounterComplete=rpEncounterComplete;
+rpEncounterComplete=function(n){return !!(ebxBaseEncounterComplete(n)&&ebxEncounterSpeciesResolved(n));};
 
 rpRenderSummary=function(){var host=rpEl('rp-summary-content'),bb=rpEl('rp-summary-bbcode');if(!host||!bb)return;var name=rpEl('nomePgRicerca')?rpEl('nomePgRicerca').value.trim():'',t1=rpTrovaThreshold(1),t2=rpTrovaThreshold(2),t3=rpTrovaThreshold(3),bonus=ebxSearchSummaryParts(),zone=ebxZoneNormalized()==='storica'?'':ebxZoneNormalized();host.innerHTML='<div class="summary-grid"><div class="summary-box"><b>Zona di Ricerca</b><br>'+rpEsc(zone||'—')+'</div><div class="summary-box"><b>PG lanciatore</b><br>'+rpEsc(name||'—')+'</div><div class="summary-box"><b>Tipo</b><br>'+(rpTipo()==='attiva'?'Ricerca Attiva':'Ricerca Passiva')+'</div><div class="summary-box"><b>Empatia base</b><br>'+rpEmpatia()+'</div><div class="summary-box"><b>Sapienza Erbologica</b><br>'+rpSapienza()+' → bonus +'+rpBonusSapienza()+'</div><div class="summary-box"><b>Incontro I</b><br>'+t1+'/30</div><div class="summary-box"><b>Incontro II</b><br>'+(rpTipo()==='attiva'?(t2+'/30'):'non disponibile')+'</div><div class="summary-box"><b>Incontro III</b><br>'+(rpTipo()==='attiva'?(t3+'/30'):'non disponibile')+'</div><div class="summary-box"><b>Valigia Magica</b><br>'+(rpValigia()==='si'?'Sì':'No')+'</div></div>'+(bonus.length?'<div class="nota-regole"><b>Bonus selezionati:</b> '+bonus.map(rpEsc).join(' · ')+'</div>':'')+'<div class="nota-regole"><b>Role di gruppo:</b> tutti i dadi devono essere lanciati dallo stesso PG. Il ritrovamento è condiviso; la Fiducia resta personale. <b>Amico delle Piante Magiche</b> può estendere ai compagni soltanto la non-ostilità, non l’Interazione personale necessaria per portare la Pianta nella propria Serra.<br><br><b>Piante Esotiche:</b> possono essere incontrate soltanto fuori dal Regno Unito.</div>';bb.textContent='<b>Riepilogo Ricerca Piante Magiche — '+(name||'PG')+'</b>\n[quote]Zona di Ricerca: '+(zone||'—')+'\nPG lanciatore: '+(name||'PG')+'\nTipo: '+(rpTipo()==='attiva'?'Ricerca Attiva':'Ricerca Passiva')+'\nEmpatia base: '+rpEmpatia()+'\nSapienza Erbologica: '+rpSapienza()+' (bonus +'+rpBonusSapienza()+')\nIncontro I: '+t1+'/30\n'+(rpTipo()==='attiva'?('Incontro II: '+t2+'/30\nIncontro III: '+t3+'/30\n'):'')+'Valigia Magica: '+(rpValigia()==='si'?'Sì':'No')+(bonus.length?'\nBonus: '+bonus.join('; '):'')+'\nNelle role di gruppo tutti i dadi sono lanciati dallo stesso PG; il ritrovamento è condiviso, mentre la Fiducia resta personale. Amico delle Piante Magiche può estendere soltanto la non-ostilità.[/quote]';};
 
@@ -6056,7 +6166,7 @@ var ebxBaseApply=rpApplyState;rpApplyState=function(state){ebxBaseApply(state);R
 /* ---------- Wrapper ricalcoli ---------- */
 var ebxBaseRecomputeInterazione=recomputeInterazione;recomputeInterazione=function(){ebxRecomputePax();ebxBaseRecomputeInterazione();};
 var ebxBaseRicalcolaErbologia=ricalcolaErbologia;ricalcolaErbologia=function(){var prof=ebxEl('rigaErbologoMestiere'),stud=ebxEl('pgTipo')&&ebxEl('pgTipo').value==='studente';if(prof)prof.style.display=stud?'none':'flex';if(stud&&ebxEl('pgErbologoMestiere'))ebxEl('pgErbologoMestiere').checked=false;ebxRecomputePax();ebxRecomputeOxygeni();ebxRecomputeSectis();ebxBaseRicalcolaErbologia();ebxUpdateIllegalUI();ebxUpdateMooncalf();};
-var EBX_RP_ZONE=null,EBX_RP_NAME=null,ebxBaseRicalcolaRicerca=ricalcolaRicerca;ricalcolaRicerca=function(){var z=rpZona(),nm=ebxEl('nomePgRicerca')?ebxEl('nomePgRicerca').value.trim():'';if(!RP_RESTORING&&EBX_RP_ZONE!==null&&EBX_RP_ZONE!==z){for(var i=1;i<=3;i++){var b=ebxEl('risultatoBolcino'+i);if(b)b.value='';}}if(!RP_RESTORING&&EBX_RP_NAME!==null&&EBX_RP_NAME!==nm){for(var j=1;j<=3;j++){var bb=ebxEl('risultatoBolcino'+j);if(bb)bb.value='';}}EBX_RP_ZONE=z;EBX_RP_NAME=nm;ebxBaseRicalcolaRicerca();for(var n=1;n<=3;n++){ebxRecomputeBolcino(n);ebxRecomputeSpecies(n);}ebxRecomputeLago();ebxUpdateSearchSummary();rpGating();rpEnsureValidFlowPage();rpRenderSummary();rpRenderOutcome();rpApplyFlow();};
+var EBX_RP_ZONE=null,EBX_RP_NAME=null,ebxBaseRicalcolaRicerca=ricalcolaRicerca;ricalcolaRicerca=function(){var z=rpZona(),nm=ebxEl('nomePgRicerca')?ebxEl('nomePgRicerca').value.trim():'';if(!RP_RESTORING&&EBX_RP_ZONE!==null&&EBX_RP_ZONE!==z){for(var i=1;i<=3;i++){var b=ebxEl('risultatoBolcino'+i);if(b)b.value='';}}if(!RP_RESTORING&&EBX_RP_NAME!==null&&EBX_RP_NAME!==nm){for(var j=1;j<=3;j++){var bb=ebxEl('risultatoBolcino'+j);if(bb)bb.value='';}}EBX_RP_ZONE=z;EBX_RP_NAME=nm;ebxBaseRicalcolaRicerca();for(var n=1;n<=3;n++){ebxRecomputeBolcino(n);ebxRecomputeSpecies(n);ebxSyncEncounterCoreContext(n);}ebxRecomputeLago();ebxUpdateSearchSummary();rpGating();rpEnsureValidFlowPage();rpRenderSummary();rpRenderOutcome();rpApplyFlow();};
 var ebxBaseResetGuida=resetGuidaErbologia;resetGuidaErbologia=function(){ebxBaseResetGuida();EBX_PAX_SUCCESS=false;EBX_PAX_DATA=null;EBX_PAX_AUTOCHECK=false;EBX_ILLEGAL_SIG={};for(var px=1;px<=9;px++){var pe=ebxPaxResultEl(px);if(pe)pe.value='';}var pc=ebxEl('ebxPaxContext');if(pc)pc.value='da_trattare';var pn=ebxEl('ebxPaxTargetCount');if(pn)pn.value='1';var pu=ebxEl('ebxPaxProductionConsumed');if(pu)pu.checked=false;ricalcolaErbologia();};
 
 /* ---------- Init + eventi ---------- */
@@ -6479,8 +6589,11 @@ function erbPlantSyncActive(state){
     ERB_ACTIVE_PLANT_ID=erbPlantId();
     ERB_PLANT_LIBRARY.unshift({id:ERB_ACTIVE_PLANT_ID,pgName:m.pgName,name:m.name,species:m.species,classification:m.classification,stage:m.stage,type:m.type,cycleCurrent:m.cycleCurrent,cycleMax:m.cycleMax,cycleKind:m.cycleKind,createdAt:Date.now(),updatedAt:Date.now(),state:snap});
   }else{
-    var old=ERB_PLANT_LIBRARY[idx],created=old.createdAt||Date.now();
-    ERB_PLANT_LIBRARY[idx]={id:old.id,pgName:m.pgName,name:m.name,species:m.species,classification:m.classification,stage:m.stage,type:m.type,cycleCurrent:m.cycleCurrent,cycleMax:m.cycleMax,cycleKind:m.cycleKind,createdAt:created,updatedAt:Date.now(),state:snap};
+    var old=ERB_PLANT_LIBRARY[idx],created=old.createdAt||Date.now(),owner=String(old.pgName||m.pgName||'').trim();
+    /* v147: il nome del PG corrente può cambiare mentre una Pianta di un altro
+       PG è ancora aperta. L'entry esistente conserva sempre il suo proprietario:
+       non deve mai "traslocare" nell'archivio del nuovo PG per effetto dell'autosave. */
+    ERB_PLANT_LIBRARY[idx]={id:old.id,pgName:owner,name:m.name,species:m.species,classification:m.classification,stage:m.stage,type:m.type,cycleCurrent:m.cycleCurrent,cycleMax:m.cycleMax,cycleKind:m.cycleKind,createdAt:created,updatedAt:Date.now(),state:snap};
   }
   ERB_PLANT_LIBRARY.sort(function(a,b){return Number(b.updatedAt||0)-Number(a.updatedAt||0);});
 }
@@ -6535,6 +6648,69 @@ function erbPlantStartNew(source){
   if(status)status.innerHTML=source==='import'?'<b>Importazione pronta:</b> scegli una Ricerca e usa «Importa nella Guida».':'<b>Nuova Pianta pronta:</b> compila specie e dati; verrà aggiunta automaticamente all’archivio appena la specie è impostata.';
   setTimeout(erbGuideScheduleSave,40);
 }
+function erbPlantNorm(v){return String(v||'').trim().replace(/\s+/g,' ').toLocaleLowerCase('it-IT');}
+function erbPlantPrepareResearchImport(n,exemplar,species){
+  n=String(n||'');exemplar=String(exemplar||'1');species=String(species||'').trim();
+  var pg=String((document.getElementById('pgNomeSessione')||{}).value||'').trim(),
+      researchId=String((typeof RP_CURRENT_ID!=='undefined'&&RP_CURRENT_ID)||'').trim();
+  if(ERB_ACTIVE_PLANT_ID)erbPlantSyncActive(erbGuideCollectState());
+  var found=null;
+  for(var i=0;i<ERB_PLANT_LIBRARY.length;i++){
+    var p=ERB_PLANT_LIBRARY[i]||{},f=(p.state&&p.state.fields)||{},
+        savedResearchId=String(f.ricercaImportataId||'').trim();
+    if(erbPlantNorm(p.pgName)!==erbPlantNorm(pg))continue;
+    if(erbPlantNorm(p.species)!==erbPlantNorm(species))continue;
+    if(String(f.incontroImportato||'')!==n)continue;
+    if(String(f.esemplareImportato||'1')!==exemplar)continue;
+    /* v151: Incontro III / Esemplare 1 non è un'identità globale.
+       Due role diverse possono trovare la stessa specie nella stessa posizione.
+       Se l'entry ha già un ID Ricerca, deve coincidere. Per vecchie Piante senza
+       ID accettiamo il riuso soltanto quando quella Pianta è già aperta: così
+       può essere migrata senza fondere accidentalmente due ritrovamenti storici. */
+    if(savedResearchId){
+      if(!researchId||savedResearchId!==researchId)continue;
+    }else if(p.id!==ERB_ACTIVE_PLANT_ID){
+      continue;
+    }
+    found=p;break;
+  }
+  if(found){
+    /* Reimportare lo stesso ritrovamento aggiorna la stessa Pianta: niente cloni
+       accidentali nell'archivio quando il player riclicca il pulsante. */
+    ERB_ACTIVE_PLANT_ID=found.id;
+    erbGuideApplyState(e44Clone(found.state),false);
+    erbPlantRenderLibrary();
+    var s=document.getElementById('erbPlantLibraryStatus');
+    if(s)s.innerHTML='<b>Pianta già importata:</b> aggiorno la stessa scheda senza crearne una copia.';
+    return 'reuse';
+  }
+  erbPlantStartNew('import');
+  return 'new';
+}
+function erbPlantOnProfileCommit(newName){
+  newName=String(newName||'').trim();
+  if(!ERB_ACTIVE_PLANT_ID)return;
+  var idx=erbPlantIndex(ERB_ACTIVE_PLANT_ID);if(idx<0)return;
+  var p=ERB_PLANT_LIBRARY[idx]||{},owner=String(p.pgName||'').trim();
+  if(!owner||!newName||erbPlantNorm(owner)===erbPlantNorm(newName))return;
+  /* Salva l'ultima fotografia sotto il vecchio proprietario (erbPlantSyncActive
+     preserva owner), poi svuota la Guida: il nuovo PG non deve vedere né
+     sovrascrivere la Pianta del precedente. */
+  erbPlantSyncActive(erbGuideCollectState());
+  ERB_ACTIVE_PLANT_ID='';
+  if(typeof resetGuidaErbologia==='function')resetGuidaErbologia();
+  erbPlantRenderLibrary();
+  var s=document.getElementById('erbPlantLibraryStatus');
+  if(s)s.innerHTML='<b>PG cambiato:</b> la Pianta precedente è rimasta nel suo archivio. Scegli una Pianta di '+e44Esc(newName)+' oppure iniziane una nuova.';
+  setTimeout(erbGuideScheduleSave,40);
+}
+window.erbPlantPrepareResearchImport=erbPlantPrepareResearchImport;
+window.erbPlantOnProfileCommit=erbPlantOnProfileCommit;
+window.erbPlantCommitActiveNow=function(){
+  if(ERB_GUIDE_RESTORING)return;
+  erbPlantSyncActive(erbGuideCollectState());
+  erbPlantRenderLibrary();
+};
 function erbPlantDelete(id){
   var idx=erbPlantIndex(id);if(idx<0)return;var p=ERB_PLANT_LIBRARY[idx],title=p.name||p.species||'questa Pianta';
   if(!window.confirm('Eliminare definitivamente «'+title+'» dall’archivio della Guida?'))return;
@@ -6644,7 +6820,7 @@ document.addEventListener('click',function(e){
   var del=e.target&&e.target.closest?e.target.closest('[data-plant-delete]'):null;
   if(del){e.preventDefault();erbPlantDelete(del.getAttribute('data-plant-delete'));return;}
   if(e.target&&e.target.closest&&e.target.closest('#erbPlantNewBtn')){e.preventDefault();erbPlantStartNew('new');if(typeof mostraModo==='function')mostraModo('Erbologia');return;}
-  if(e.target&&e.target.closest&&e.target.closest('#erbPlantResearchBtn')){e.preventDefault();if(typeof mostraModo==='function')mostraModo('Ricerca');return;}
+  if(e.target&&e.target.closest&&e.target.closest('#erbPlantResearchBtn')){e.preventDefault();if(typeof rpEnterResearchFromProfile==='function')rpEnterResearchFromProfile();else if(typeof mostraModo==='function')mostraModo('Ricerca');return;}
 },true);
 document.addEventListener('input',function(e){if(e.target&&e.target.id==='pgNomeSessione')setTimeout(erbPlantRenderLibrary,0);},true);
 document.addEventListener('change',function(e){
@@ -6914,7 +7090,7 @@ function renderImportedResearchMeta(){
   var h=health?health.value:'',n=enc?enc.value:'',i=ex?ex.value:'';if(!h||!n){box.style.display='none';txt.textContent='';return;}
   box.style.display='flex';txt.textContent='Incontro '+n+(i?' · Esemplare '+i:'')+' · '+h+'. La Fase Vitale selezionata sopra è quella dello stesso esemplare.';
 }
-function clearImportedResearchMeta(){['statoSaluteImportato','incontroImportato','esemplareImportato'].forEach(function(id){var x=E(id);if(x)x.value='';});renderImportedResearchMeta();}
+function clearImportedResearchMeta(){['statoSaluteImportato','incontroImportato','esemplareImportato','ricercaImportataId'].forEach(function(id){var x=E(id);if(x)x.value='';});renderImportedResearchMeta();}
 function renderVoteGate(){
   var hint=E('erbSpecificVoteHint'),vote=E('pgVoto'),sp=E('speciePiantaGuida');
   if(!hint)return;
@@ -6940,9 +7116,18 @@ window.ricalcolaErbologia=function(){
 function transfer(n,exemplar){
   var sp=species(n),c=cls(n);if(!sp)return false;
   var chosen=1,maxCount=n===2?5:10;if(n>1){var count=typeof rpNumber==='function'?rpNumber('risultatoEsemplari'+n,1,maxCount):null;chosen=parseInt(exemplar,10);if(count===null||!Number.isInteger(chosen)||chosen<1||chosen>count)return false;}
-  var vote=E('rpVotoRicerca'+n),current=E('speciePiantaGuida');
-  var previousEncounter=current?(current.dataset.researchEncounter||''):'';
-  if(current&&(current.value.trim()!==sp||previousEncounter!==String(n))&&typeof resetGuidaErbologia==='function')resetGuidaErbologia();
+  var vote=E('rpVotoRicerca'+n),current=E('speciePiantaGuida'),encHidden=E('incontroImportato'),exHidden=E('esemplareImportato'),researchHidden=E('ricercaImportataId'),
+      currentResearchId=String((typeof RP_CURRENT_ID!=='undefined'&&RP_CURRENT_ID)||'').trim();
+  /* v150-v151: i dataset appartengono al nodo DOM e possono conservare i valori
+     della Pianta aperta in precedenza. I campi hidden, invece, fanno parte del
+     salvataggio della singola Pianta e hanno priorità. Anche la sessione Ricerca
+     entra nell'identità: stessa specie/Incontro/Esemplare in due role diverse
+     deve produrre due Piante distinte. */
+  var previousEncounter=current?(((encHidden&&encHidden.value)||current.dataset.researchEncounter||'')):'',
+      previousExemplar=current?(((exHidden&&exHidden.value)||current.dataset.researchExemplar||'1')):'1',
+      previousResearchId=current?String((researchHidden&&researchHidden.value)||'').trim():'';
+  var sameLegacyActive=!previousResearchId&&ERB_ACTIVE_PLANT_ID&&current&&current.value.trim()===sp&&previousEncounter===String(n)&&previousExemplar===String(chosen);
+  if(current&&(current.value.trim()!==sp||previousEncounter!==String(n)||previousExemplar!==String(chosen)||(previousResearchId&&currentResearchId&&previousResearchId!==currentResearchId)||(!previousResearchId&&currentResearchId&&!sameLegacyActive))&&typeof resetGuidaErbologia==='function')resetGuidaErbologia();
   var spec=E('speciePiantaGuida'),nome=E('nomePiantaGuida'),cl=E('classificazione'),prov=E('provenienzaPianta'),gv=E('pgVoto');
   if(spec){spec.value=sp;spec.dataset.researchEncounter=String(n);spec.dataset.researchClass=c||'';}
   if(nome&&!nome.value){nome.value=sp;nome.dataset.autoSpeciesName='1';}
@@ -6950,15 +7135,28 @@ function transfer(n,exemplar){
   if(prov)prov.value='normale';
   var sempreOstile=E('interazioneSempreOstile'),maiOstile=E('interazioneMaiOstile');
   if(sempreOstile&&typeof window.rpIsAlwaysHostileSpecies==='function'){sempreOstile.checked=window.rpIsAlwaysHostileSpecies(sp);if(sempreOstile.checked&&maiOstile)maiOstile.checked=false;}
+  var importedHealth='',importedPhase='';
   if(typeof rpNumber==='function'&&typeof rpLookup==='function'&&typeof rpFaseVitaleTab!=='undefined'){
     var phaseId=n===1?'risultatoFase1':'risultatoFase'+n+'_'+chosen,healthId=n===1?'risultatoSalute1':'risultatoSalute'+n+'_'+chosen;
-    var fv=rpNumber(phaseId,1,9),sv=rpNumber(healthId,1,15),phase=fv===null?'':rpLookup(rpFaseVitaleTab,fv),health=(sv===null||typeof rpStatoSaluteTab==='undefined')?'':rpLookup(rpStatoSaluteTab,sv),map={'Germinazione':'germinazione','Vegetazione':'vegetazione','Riproduzione':'riproduzione','Senescenza':'senescenza','Seme':'seme'},fe=E('faseInterazione');if(fe&&map[phase])fe.value=map[phase];
-    var hi=E('statoSaluteImportato'),ei=E('incontroImportato'),xi=E('esemplareImportato');if(hi)hi.value=health;if(ei)ei.value=String(n);if(xi)xi.value=String(chosen);
+    var fv=rpNumber(phaseId,1,9),sv=rpNumber(healthId,1,15),phase=fv===null?'':rpLookup(rpFaseVitaleTab,fv),health=phase==='Seme'?'Non previsto':((sv===null||typeof rpStatoSaluteTab==='undefined')?'':rpLookup(rpStatoSaluteTab,sv)),map={'Germinazione':'germinazione','Vegetazione':'vegetazione','Riproduzione':'riproduzione','Senescenza':'senescenza','Seme':'seme'},fe=E('faseInterazione');
+    importedPhase=phase;importedHealth=health;
+    if(fe&&map[phase])fe.value=map[phase];
     if(spec){spec.dataset.researchExemplar=String(chosen);}
   }
+  /* v149: specie/classificazione/provenienza possono attivare il reset storico
+     della Guida. Quel reset deve avvenire PRIMA di scrivere i metadati di
+     provenienza dalla Ricerca, altrimenti li cancella subito e la Pianta perde
+     l'identità Incontro/Esemplare appena importata. */
   lastSpec=sp;[spec,nome,cl,prov,sempreOstile].forEach(function(x){if(x)fire(x,'change');});
   if(student()&&gv&&vote){gv.value=vote.value;fire(gv,'change');}
   window.ricalcolaErbologia();
+  var hi=E('statoSaluteImportato'),ei=E('incontroImportato'),xi=E('esemplareImportato'),ri=E('ricercaImportataId');
+  if(hi)hi.value=importedHealth;
+  if(ei)ei.value=String(n);
+  if(xi)xi.value=String(chosen);
+  if(ri)ri.value=currentResearchId;
+  if(typeof renderImportedResearchMeta==='function')renderImportedResearchMeta();
+  if(typeof window.erbPlantCommitActiveNow==='function')window.erbPlantCommitActiveNow();
   var syncBox=E('rpGuideBridge'+n);if(syncBox)syncBox.setAttribute('data-v58-synced',sp+'|'+(student()&&vote&&vote.value?vote.value:'senza-voto'));
   return true;
 }
@@ -6980,7 +7178,7 @@ function rpQuickImportHtml(n){
         var fv=(typeof rpNumber==='function')?rpNumber('risultatoFase'+n+'_'+i,1,9):null;
         var sv=(typeof rpNumber==='function')?rpNumber('risultatoSalute'+n+'_'+i,1,15):null;
         var phase=(fv!==null&&typeof rpLookup==='function'&&typeof rpFaseVitaleTab!=='undefined')?rpLookup(rpFaseVitaleTab,fv):'—';
-        var health=(sv!==null&&typeof rpLookup==='function'&&typeof rpStatoSaluteTab!=='undefined')?rpLookup(rpStatoSaluteTab,sv):'—';
+        var health=phase==='Seme'?'Non previsto':((sv!==null&&typeof rpLookup==='function'&&typeof rpStatoSaluteTab!=='undefined')?rpLookup(rpStatoSaluteTab,sv):'—');
         opts.push('<option value="'+i+'">Esemplare '+i+' — '+rpEsc(phase)+' · '+rpEsc(health)+'</option>');
       }
       chooser='<label class="outcome-import-choice">Quale esemplare vuoi portare nella Guida? <select data-rp-quick-import-exemplar="'+n+'">'+opts.join('')+'</select></label>';
@@ -7052,7 +7250,7 @@ document.addEventListener('click',function(ev){
   if(!(i>=1&&i<=3))return;
   if(typeof rpEncounterCoreReady==='function'&&!rpEncounterCoreReady(i)){updateBridge(i);return;}
   var box=E('rpGuideBridge'+i),pick=box?box.querySelector('[data-rp-quick-import-exemplar="'+i+'"]'):null,chosen=pick?parseInt(pick.value,10):1;
-  if(typeof window.erbPlantStartNew==='function')window.erbPlantStartNew('import');
+  if(typeof window.erbPlantPrepareResearchImport==='function')window.erbPlantPrepareResearchImport(i,chosen,species(i));else if(typeof window.erbPlantStartNew==='function')window.erbPlantStartNew('import');
   if(transfer(i,chosen)){
     updateBridge(i);
     if(typeof mostraModo==='function')mostraModo('Erbologia');
@@ -7071,7 +7269,7 @@ if(outcomeHost)outcomeHost.addEventListener('click',function(ev){
   var i=parseInt(btn.getAttribute('data-rp-import-guide'),10);
   if(!(i>=1&&i<=3))return;
   var pick=outcomeHost.querySelector('[data-rp-import-exemplar="'+i+'"]'),chosen=pick?parseInt(pick.value,10):1;
-  if(typeof window.erbPlantStartNew==='function')window.erbPlantStartNew('import');
+  if(typeof window.erbPlantPrepareResearchImport==='function')window.erbPlantPrepareResearchImport(i,chosen,species(i));else if(typeof window.erbPlantStartNew==='function')window.erbPlantStartNew('import');
   if(transfer(i,chosen)){
     updateBridge(i);
     if(typeof mostraModo==='function')mostraModo('Erbologia');
