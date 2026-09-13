@@ -1,3 +1,4 @@
+<!-- Erbologia tool v161 — tabella ufficiale dei post inserita in un details contestuale nella sezione Post del ciclo; solo riferimento visivo, nessuna modifica ai calcoli o a Firebase. -->
 <!-- Erbologia tool v153 — allineamento alle ultime migliorie di Magizoologia dove pertinenti: ripresa Ricerca senza autosalvataggio o risincronizzazione retroattiva; dadi multipli compatti per Orde; riepilogo live/copiabile degli esemplari; contrasto dei nuovi blocchi. La protezione conflitti di Magizoologia non viene aggiunta perché Erbologia non usa quel controllo. -->
 <!-- Erbologia tool v152 — Pianta morente: importazione nella Guida e Riconoscimento consentiti appena i dati dell’Incontro sono completi; la conferma del Narratore resta obbligatoria per chiudere/proseguire la Ricerca. -->
 <!-- Erbologia tool v151 — audit identità importazioni: ogni Pianta importata è legata anche alla specifica sessione di Ricerca, evitando collisioni tra role diverse che trovano la stessa specie nello stesso Incontro/Esemplare. -->
@@ -1931,6 +1932,17 @@ function ebxEl(id){ return document.getElementById(id); }
 .rp-esemplari-recap-copy-source{display:none!important}
 @media(max-width:700px){.rp-esemplari-recap-list{grid-template-columns:1fr}.rp-compact-result>b{min-width:100%}.rp-batch-dice .result-line{align-items:stretch!important}}
 </style>
+
+<style id="erbologia-v161-post-reference-style">
+#modoErbologia .erb-post-reference-table{margin:12px 0 14px;border:1px solid #6f9850;border-radius:7px;background:#203619;overflow:hidden}
+#modoErbologia .erb-post-reference-table>summary{cursor:pointer;list-style:none;padding:10px 12px;color:#eef8e7;font-weight:800;background:linear-gradient(180deg,#36542a,#29431f);user-select:none}
+#modoErbologia .erb-post-reference-table>summary::-webkit-details-marker{display:none}
+#modoErbologia .erb-post-reference-table>summary:after{content:" +";float:right;color:#cfe8b8;font-weight:900}
+#modoErbologia .erb-post-reference-table[open]>summary:after{content:" −"}
+#modoErbologia .erb-post-reference-table-body{padding:12px;background:#f5f1e8;color:#2b2b25}
+#modoErbologia .erb-post-reference-table-body img{display:block;width:100%;height:auto;max-width:980px;margin:0 auto;border-radius:4px}
+#modoErbologia .erb-post-reference-table-body .nota-regole{margin:10px 0 0!important;background:#edf4e7!important;color:#29451f!important;border-color:#91ad78!important}
+</style>
 </head>
 <body>
 <div class="contenitore">
@@ -2680,6 +2692,13 @@ function ebxEl(id){ return document.getElementById(id); }
 <div class="scheda erb-post-cycle-card erb-v140-auto-post-card" style="margin-top:14px">
   <h3 style="margin-top:0">Post del ciclo</h3>
   <div class="nota-regole"><b>Calcolo automatico:</b> il tool legge direttamente la tabella ufficiale in base a Tipo PG, presenza di Coltivatore di Piante, Classificazione e percentuale ottenuta. Non devi più cercare o inserire manualmente i post base.</div>
+  <details class="erb-post-reference-table">
+    <summary><i class="fa-solid fa-table" aria-hidden="true"></i> Visualizza la tabella ufficiale dei post</summary>
+    <div class="erb-post-reference-table-body">
+      <img src="https://i.postimg.cc/905Q4CRP/image.png" loading="lazy" decoding="async" alt="Tabella ufficiale dei post di Erbologia">
+      <div class="nota-regole">Tabella di riferimento del regolamento. <b>Il calcolo sopra resta automatico</b>: non devi riportare manualmente questi valori nel tool.</div>
+    </div>
+  </details>
   <input type="hidden" id="postBaseColtivazione" data-key="postBaseColtivazione" value="">
   <input type="hidden" id="erbV103PostContext" data-key="erbV103PostContext" value="">
   <div class="info-bonus erb-post-final" id="riepilogoPostColtivazione"></div>
