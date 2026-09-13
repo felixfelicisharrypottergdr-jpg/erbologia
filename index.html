@@ -6861,7 +6861,7 @@ function erbGuideSaveNow(){
   erbGuideLocalWrite(state);
   var payload={recordType:'guide',ownerUid:'__erb_guide__',guideUid:RP_FB.user.uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),toolVersion:'erbologia-guide-v154',state:state,plantLibrary:ERB_PLANT_LIBRARY,activePlantId:ERB_ACTIVE_PLANT_ID,pgProfiles:(typeof ERB_PG_PROFILES!=='undefined'?ERB_PG_PROFILES:{})};
   erbGuideStatus('Guida: salvataggio automatico su Firebase…','saving');
-  var task=ERB_GUIDE_SAVE_CHAIN.catch(function(){}).then(function(){return ref.set(payload,{merge:true});}).then(function(){erbPlantRenderLibrary();erbGuideStatus('Guida e archivio Piante salvati automaticamente su Firebase ✓','ok');}).catch(function(err){console.error(err);erbGuideStatus('Guida: errore di salvataggio Firebase — '+(err.message||err),'bad');});
+  var task=ERB_GUIDE_SAVE_CHAIN.catch(function(){}).then(function(){return ref.set(payload,{merge:true});}).then(function(){erbPlantRenderLibrary();erbGuideStatus('Guida e archivio Piante salvati automaticamente su Firebase ✓','ok');return true;}).catch(function(err){console.error(err);erbGuideStatus('Guida: errore di salvataggio Firebase — '+(err.message||err),'bad');return false;});
   ERB_GUIDE_SAVE_CHAIN=task;return task;
 }
 function erbGuideScheduleSave(){
@@ -9422,5 +9422,103 @@ window.addEventListener('click',function(ev){
 },true);
 function init(){var f=E('pgNomeSessione');if(f){f.disabled=false;f.readOnly=false;f.removeAttribute('disabled');f.removeAttribute('readonly');}var b=E('erbV157ChangePgBtn');if(b){b.disabled=false;b.style.pointerEvents='auto';}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+
+<!-- v160 — Salvataggio esplicito profilo PG + cache locale di sicurezza -->
+<style id="erbologia-v160-profile-save-style">
+#modoPersonaggio .erb-v160-profile-save{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0 4px;padding-top:13px;border-top:1px solid rgba(53,84,43,.28)}
+#modoPersonaggio .erb-v160-save-btn{border:1px solid #5d7f47;background:#29451f;color:#f3faed;border-radius:6px;padding:9px 14px;cursor:pointer;font-weight:800}
+#modoPersonaggio .erb-v160-save-btn:hover{filter:brightness(1.08)}
+#modoPersonaggio .erb-v160-save-btn:disabled{opacity:.62;cursor:wait}
+#modoPersonaggio .erb-v160-save-status{font-size:.88em;line-height:1.4;color:#35542b}
+</style>
+<script id="erbologia-v160-profile-save">
+(function(){
+'use strict';
+function E(id){return document.getElementById(id);}
+function norm(v){v=String(v||'').trim();try{v=v.normalize('NFD').replace(/[\u0300-\u036f]/g,'');}catch(e){}return v.toLocaleLowerCase('it-IT').replace(/\s+/g,' ');}
+var PROFILE_IDS=['pgTipo','pgSegueErbologia','empatia','sapienzaErbologicaGuida','livErborista','livAmico','livCustode','livColtivatore','pgErbologoMestiere','erbImmPelleAutofertilizzante','erbImmFarfalleVomitose','erbImmErboruto','erbImmSpruzzolosi','erbImmStridulite','erbImmVogliaVampirella','erbImmSolleticoMessicano'];
+function readField(id){var e=E(id);if(!e)return undefined;return (e.type==='checkbox'||e.type==='radio')?!!e.checked:e.value;}
+function writeField(id,v){var e=E(id);if(!e||v===undefined)return;if(e.type==='checkbox'||e.type==='radio')e.checked=!!v;else e.value=v;}
+function cacheKey(name){var uid='anon';try{if(typeof RP_FB!=='undefined'&&RP_FB.user&&RP_FB.user.uid)uid=RP_FB.user.uid;}catch(e){}return 'ffgdr_erb_pg_v160_'+uid+'_'+encodeURIComponent(norm(name));}
+function cacheWrite(profile){try{if(profile&&profile.pgName)localStorage.setItem(cacheKey(profile.pgName),JSON.stringify(profile));}catch(e){}}
+function cacheRead(name){try{var raw=localStorage.getItem(cacheKey(name));if(!raw)return null;var p=JSON.parse(raw);return p&&p.fields?p:null;}catch(e){return null;}}
+function snapshot(name){
+  name=String(name||'').trim();if(!name)return null;
+  var p={pgName:name,updatedAt:Date.now(),fields:{}};
+  PROFILE_IDS.forEach(function(id){var v=readField(id);if(v!==undefined)p.fields[id]=v;});
+  if(typeof ERB_PG_PROFILES!=='undefined')ERB_PG_PROFILES[norm(name)]=p;
+  cacheWrite(p);return p;
+}
+function profileFor(name){
+  name=String(name||'').trim();if(!name)return null;
+  var p=null;try{if(typeof ERB_PG_PROFILES!=='undefined')p=ERB_PG_PROFILES[norm(name)]||null;}catch(e){}
+  return (p&&p.fields)?p:cacheRead(name);
+}
+function applyProfile(name){
+  var p=profileFor(name);if(!p||!p.fields)return false;
+  if(typeof ERB_GUIDE_RESTORING!=='undefined')ERB_GUIDE_RESTORING=true;window.__ERB_GUIDE_RESTORING=true;
+  try{
+    PROFILE_IDS.forEach(function(id){writeField(id,p.fields[id]);});
+    var n=E('pgNomeSessione');if(n)n.value=String(p.pgName||name);
+    if(typeof ERB_PG_PROFILES!=='undefined')ERB_PG_PROFILES[norm(name)]=p;
+    if(typeof ERB_PROFILE_BOUND_NAME!=='undefined')ERB_PROFILE_BOUND_NAME=String(p.pgName||name);
+    if(typeof aggiornaCampiTipoPG==='function')aggiornaCampiTipoPG();
+    if(typeof ricalcolaErbologia==='function')ricalcolaErbologia();
+    if(typeof erbPlantRenderLibrary==='function')erbPlantRenderLibrary();
+  }finally{if(typeof ERB_GUIDE_RESTORING!=='undefined')ERB_GUIDE_RESTORING=false;window.__ERB_GUIDE_RESTORING=false;}
+  return true;
+}
+function setStatus(txt,bad){var s=E('erbV160ProfileSaveStatus');if(s){s.textContent=txt||'';s.style.color=bad?'#7a2727':'#35542b';}}
+function saveCurrent(showFeedback){
+  var name=String((E('pgNomeSessione')||{}).value||'').trim();
+  if(!name){setStatus('Inserisci prima il nome del PG.',true);return Promise.resolve(false);}
+  snapshot(name);
+  try{if(typeof erbPlantSyncActive==='function'&&typeof erbGuideCollectState==='function')erbPlantSyncActive(erbGuideCollectState());}catch(e){console.error(e);}
+  try{if(typeof erbGuideLocalWrite==='function'&&typeof erbGuideCollectState==='function')erbGuideLocalWrite(erbGuideCollectState());}catch(e){console.error(e);}
+  var btn=E('erbV160SaveProfileBtn');if(btn)btn.disabled=true;
+  if(showFeedback!==false)setStatus('Salvataggio di '+name+'…',false);
+  var p;
+  try{p=(typeof erbGuideSaveNow==='function')?Promise.resolve(erbGuideSaveNow()):Promise.resolve(true);}catch(err){p=Promise.reject(err);}
+  return p.then(function(ok){if(showFeedback!==false)setStatus(ok===false?'Salvataggio non riuscito: controlla lo stato Firebase sopra.':'Dati di '+name+' salvati ✓',ok===false);return ok!==false;}).catch(function(err){console.error(err);setStatus('Salvataggio non riuscito: '+(err&&err.message?err.message:err),true);return false;}).finally(function(){if(btn)btn.disabled=false;});
+}
+window.erbV160SaveProfileNow=saveCurrent;
+
+/* Il commit del nome usa anche la cache locale: ritornando allo stesso PG nella stessa sessione
+   i dati ricompaiono subito, senza una lettura Firebase aggiuntiva. */
+var previousCommit=window.rpProfileNameCommitted;
+window.rpProfileNameCommitted=function(){
+  var args=arguments,name=String((E('pgNomeSessione')||{}).value||'').trim();
+  var run;
+  try{run=previousCommit?Promise.resolve(previousCommit.apply(this,args)):Promise.resolve(null);}catch(err){run=Promise.resolve(null);}
+  return run.catch(function(){return null;}).then(function(out){
+    if(name&&applyProfile(name)){
+      if(typeof rpProfileStatus==='function')rpProfileStatus('Profilo di '+name+' ripristinato ✓','ok');
+    }
+    return out;
+  });
+};
+
+/* Prima del click su Cambia PG congela SEMPRE i valori nel profilo locale. Il click v159
+   può poi svuotare subito l'interfaccia senza perdere la fotografia del PG. */
+window.addEventListener('pointerdown',function(ev){
+  var t=ev.target,b=t&&t.closest?t.closest('#erbV157ChangePgBtn'):null;if(!b)return;
+  var name=String((E('pgNomeSessione')||{}).value||'').trim();if(name)snapshot(name);
+},true);
+
+function ensureButton(){
+  if(E('erbV160SaveProfileBtn'))return;
+  var name=E('pgNomeSessione');if(!name)return;
+  var card=name.closest?name.closest('.scheda'):null;if(!card)return;
+  var wrap=document.createElement('div');wrap.className='erb-v160-profile-save';
+  wrap.innerHTML='<button type="button" class="erb-v160-save-btn" id="erbV160SaveProfileBtn"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Salva dati PG</button><span class="erb-v160-save-status" id="erbV160ProfileSaveStatus">L’autosalvataggio resta attivo; questo tasto crea un salvataggio esplicito prima di cambiare PG.</span>';
+  var before=card.querySelector('.erb-reset-profile-wrap');
+  if(before)card.insertBefore(wrap,before);else card.appendChild(wrap);
+}
+window.addEventListener('click',function(ev){var t=ev.target,b=t&&t.closest?t.closest('#erbV160SaveProfileBtn'):null;if(!b)return;ev.preventDefault();ev.stopPropagation();saveCurrent(true);},true);
+function init(){ensureButton();var n=String((E('pgNomeSessione')||{}).value||'').trim();if(n){var p=profileFor(n);if(p)cacheWrite(p);}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,260);});else setTimeout(init,260);
 })();
 </script>
