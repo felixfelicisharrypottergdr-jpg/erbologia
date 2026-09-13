@@ -1,3 +1,4 @@
+<!-- Erbologia tool v144 — importazione Ricerca→Guida resa accessibile prima della chiusura dell'Incontro: il sì all'Interazione mostra il comando di importazione appena i dati obbligatori sono completi; il pulsante archivio apre le Ricerche senza azzerare la Guida. -->
 <!-- Erbologia tool v143 — fix intestazione PIANTA/CLASSIFICAZIONE: impedita la duplicazione ricorsiva nei codici copiabili durante i rerender. -->
 <!-- Erbologia tool v134 — audit finale regolamento 09/09/2026: neutralizzato override legacy FOREIGN;  Coccolacea, Cavolo Carnivoro Cinese, Pianta Vampiro, Pianta Mangiauomini, Puffagiolo e Siepi dell'Ombra riallineati alle nuove schede; rimossi conflitti obsoleti. -->
 <!-- Erbologia tool v120 — secondo audit regolamento 09/09/2026: Sapienza Erbologica 25 calcola davvero +20% Ingredienti/Semi con arrotondamento per difetto; bonus Coltivatore non più limitato alle Piante nate da Seme, arrotondato per difetto e mostrato prima/dopo i modificatori della Fase Vitale. -->
@@ -1056,6 +1057,13 @@ table.fasce td{
 #modoRicerca .rp-spec-extra-tag{display:inline-block;padding:2px 7px;border:1px solid #9c7658;border-radius:10px;font-size:.68em;font-weight:700;color:#725039;background:#fff8ec;}
 #modoRicerca .flow-lock-reason{margin-top:7px;max-width:430px;padding:7px 9px;border-left:3px solid #9b6a2d;background:#fff6df;color:#6b4a20;border-radius:4px;font-size:.8em;line-height:1.35;text-align:left;}
 #modoRicerca .flow-lock-reason:empty{display:none;}
+
+/* v144 — importazione immediata Ricerca → Guida */
+.research-guide-quick-import{margin:10px 0 8px;padding:11px 12px;border:1px solid #5f8147;border-left:5px solid #8fb866;border-radius:7px;background:#203719;color:#eef7e8}
+.research-guide-quick-import .outcome-import-choice{display:block;margin:0 0 8px;font-weight:700;color:#d9edc6}
+.research-guide-quick-import select{margin-top:5px}
+.research-guide-quick-import .bottone-azione{margin-top:4px}
+.research-guide-quick-import .nota-regole{color:#dcebd0!important}
 </style>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
@@ -2030,7 +2038,7 @@ function ebxEl(id){ return document.getElementById(id); }
     </div>
     <div class="erb-v140-library-actions">
       <button type="button" class="bottone-azione" id="erbPlantNewBtn"><i class="fa-solid fa-plus" aria-hidden="true"></i> Nuova Pianta</button>
-      <button type="button" class="bottone-azione bottone-secondario" id="erbPlantResearchBtn"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> Importa da Ricerca</button>
+      <button type="button" class="bottone-azione bottone-secondario" id="erbPlantResearchBtn"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> Apri le Ricerche</button>
     </div>
   </div>
   <div id="erbPlantLibraryList" class="erb-v140-plant-list"></div>
@@ -6636,7 +6644,7 @@ document.addEventListener('click',function(e){
   var del=e.target&&e.target.closest?e.target.closest('[data-plant-delete]'):null;
   if(del){e.preventDefault();erbPlantDelete(del.getAttribute('data-plant-delete'));return;}
   if(e.target&&e.target.closest&&e.target.closest('#erbPlantNewBtn')){e.preventDefault();erbPlantStartNew('new');if(typeof mostraModo==='function')mostraModo('Erbologia');return;}
-  if(e.target&&e.target.closest&&e.target.closest('#erbPlantResearchBtn')){e.preventDefault();erbPlantStartNew('import');if(typeof mostraModo==='function')mostraModo('Ricerca');return;}
+  if(e.target&&e.target.closest&&e.target.closest('#erbPlantResearchBtn')){e.preventDefault();if(typeof mostraModo==='function')mostraModo('Ricerca');return;}
 },true);
 document.addEventListener('input',function(e){if(e.target&&e.target.id==='pgNomeSessione')setTimeout(erbPlantRenderLibrary,0);},true);
 document.addEventListener('change',function(e){
@@ -6954,6 +6962,32 @@ function transfer(n,exemplar){
   var syncBox=E('rpGuideBridge'+n);if(syncBox)syncBox.setAttribute('data-v58-synced',sp+'|'+(student()&&vote&&vote.value?vote.value:'senza-voto'));
   return true;
 }
+function rpQuickImportHtml(n){
+  var choice=E('rpInteragisciSubito'+n);
+  if(!choice||choice.value!=='si')return '';
+  var ready=(typeof rpEncounterCoreReady==='function')?rpEncounterCoreReady(n):false;
+  if(!ready){
+    var morente=(typeof rpEncounterHasMorente==='function')?rpEncounterHasMorente(n):false;
+    var morenteOk=(typeof rpMorenteResolved==='function')?rpMorenteResolved(n):true;
+    return '<div class="research-guide-quick-import"><div class="nota-regole"><b>Prima dell’importazione:</b> completa i dati obbligatori dell’Incontro'+(morente&&!morenteOk?' e conferma che la situazione delle Piante morenti è stata gestita con il Narratore':'')+'. Non serve ancora indicare se la Pianta è stata catturata: quella scelta si farà dopo l’Interazione.</div></div>';
+  }
+  var chooser='';
+  if(n>1){
+    var mx=n===2?5:10,count=(typeof rpNumber==='function')?rpNumber('risultatoEsemplari'+n,1,mx):null;
+    if(count&&count>1){
+      var opts=[];
+      for(var i=1;i<=count;i++){
+        var fv=(typeof rpNumber==='function')?rpNumber('risultatoFase'+n+'_'+i,1,9):null;
+        var sv=(typeof rpNumber==='function')?rpNumber('risultatoSalute'+n+'_'+i,1,15):null;
+        var phase=(fv!==null&&typeof rpLookup==='function'&&typeof rpFaseVitaleTab!=='undefined')?rpLookup(rpFaseVitaleTab,fv):'—';
+        var health=(sv!==null&&typeof rpLookup==='function'&&typeof rpStatoSaluteTab!=='undefined')?rpLookup(rpStatoSaluteTab,sv):'—';
+        opts.push('<option value="'+i+'">Esemplare '+i+' — '+rpEsc(phase)+' · '+rpEsc(health)+'</option>');
+      }
+      chooser='<label class="outcome-import-choice">Quale esemplare vuoi portare nella Guida? <select data-rp-quick-import-exemplar="'+n+'">'+opts.join('')+'</select></label>';
+    }
+  }
+  return '<div class="research-guide-quick-import">'+chooser+'<button type="button" class="bottone-azione outcome-import-btn" data-rp-quick-import-guide="'+n+'"><i class="fa-solid fa-arrow-right-to-bracket" aria-hidden="true"></i> Importa questa Pianta nella Guida</button><div class="nota-regole">L’importazione trasferisce specie, Classificazione, Fase Vitale e Salute. La Guida si apre dal <b>Riconoscimento</b>: il relativo dado resta da fare, salvo che la Pianta sia già riconosciuta ONGame o ricada in un caso autoconclusivo.</div></div>';
+}
 function updateBridge(n){
   var box=E('rpGuideBridge'+n),sp=species(n),choice=E('rpInteragisciSubito'+n),vote=E('rpVotoRicerca'+n),wrap=E('rpResearchVoteWrap'+n),status=E('rpGuideBridgeStatus'+n),label=E('rpGuideSpeciesLabel'+n),vlabel=E('rpResearchVoteLabel'+n);
   if(!box)return;
@@ -6978,19 +7012,25 @@ function updateBridge(n){
     }
   } else if(wrap) wrap.classList.remove('show');
 
+  var quick=box.querySelector('.research-guide-quick-import');
+  if(quick)quick.remove();
+  if(status)status.insertAdjacentHTML('beforebegin',rpQuickImportHtml(n));
+
   var sig=sp+'|'+(student()&&vote&&vote.value?vote.value:'senza-voto'),
       synced=box.getAttribute('data-v58-synced')===sig;
 
   if(status){
     status.className='research-guide-bridge-status'+(synced?' ok':'');
     if(synced){
-      status.textContent='Questa Pianta è già stata importata nella Guida ✓ Puoi reimportarla dalla pagina Esito.';
+      status.textContent='Questa Pianta è già stata importata nella Guida ✓ Puoi reimportarla qui se devi aggiornare i dati.';
     }else if(choice&&choice.value==='si'&&student()&&(!vote||!vote.value)){
-      status.textContent='Il voto specifico può essere indicato qui oppure direttamente nella Guida dopo l’importazione dalla pagina Esito.';
+      status.textContent='Puoi indicare il voto specifico qui oppure direttamente nella Guida dopo l’importazione.';
     }else if(choice&&choice.value==='no'){
-      status.textContent='Continua pure la Ricerca. Se cambi idea, potrai importare questo ritrovamento dalla pagina Esito.';
+      status.textContent='Continua pure la Ricerca. Se cambi idea, potrai importare questo ritrovamento più avanti.';
+    }else if(choice&&choice.value==='si'){
+      status.textContent='Quando i dati obbligatori dell’Incontro sono completi, usa il pulsante qui sopra per passare alla Guida.';
     }else{
-      status.textContent='Completa l’Incontro: il comando per importare questo ritrovamento sarà disponibile nella pagina Esito.';
+      status.textContent='Scegli se vuoi interagire subito. Se scegli Sì, il comando di importazione comparirà qui appena l’Incontro ha tutti i dati necessari.';
     }
   }
 }
@@ -7001,6 +7041,26 @@ for(var n=1;n<=3;n++)(function(i){
   if(choice)choice.addEventListener('change',function(){updateBridge(i);});
   if(vote)vote.addEventListener('change',function(){updateBridge(i);});
 })(n);
+
+/* v144 — importazione immediata dalla scheda dell'Incontro:
+   non richiede di dichiarare prima cattura/non cattura. */
+document.addEventListener('click',function(ev){
+  var btn=ev.target&&ev.target.closest?ev.target.closest('[data-rp-quick-import-guide]'):null;
+  if(!btn)return;
+  ev.preventDefault();
+  var i=parseInt(btn.getAttribute('data-rp-quick-import-guide'),10);
+  if(!(i>=1&&i<=3))return;
+  if(typeof rpEncounterCoreReady==='function'&&!rpEncounterCoreReady(i)){updateBridge(i);return;}
+  var box=E('rpGuideBridge'+i),pick=box?box.querySelector('[data-rp-quick-import-exemplar="'+i+'"]'):null,chosen=pick?parseInt(pick.value,10):1;
+  if(typeof window.erbPlantStartNew==='function')window.erbPlantStartNew('import');
+  if(transfer(i,chosen)){
+    updateBridge(i);
+    if(typeof mostraModo==='function')mostraModo('Erbologia');
+    if(typeof mostraPannello==='function')mostraPannello('Riconoscimento');
+    var p=E('modoErbologia');
+    if(p&&p.scrollIntoView)p.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+},true);
 
 /* Importazione centralizzata nell'Esito: il pulsante viene generato
    accanto a ogni Incontro effettivamente presente nel riepilogo. */
