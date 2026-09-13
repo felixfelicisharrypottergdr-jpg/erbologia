@@ -9299,3 +9299,58 @@ function init(){killPicker();ensureNameControls();}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,220);});else setTimeout(init,220);
 })();
 </script>
+
+<!-- v158 — Cambio PG non bloccante: salva in background senza disabilitare il nome -->
+<script id="erbologia-v158-change-pg-nonblocking">
+(function(){
+'use strict';
+function E(id){return document.getElementById(id);}
+function norm(v){v=String(v||'').trim();try{v=v.normalize('NFD').replace(/[\u0300-\u036f]/g,'');}catch(e){}return v.toLocaleLowerCase('it-IT').replace(/\s+/g,' ');}
+var IDS=['pgTipo','pgSegueErbologia','empatia','sapienzaErbologicaGuida','livErborista','livAmico','livCustode','livColtivatore','pgErbologoMestiere','erbImmPelleAutofertilizzante','erbImmFarfalleVomitose','erbImmErboruto','erbImmSpruzzolosi','erbImmStridulite','erbImmVogliaVampirella','erbImmSolleticoMessicano'];
+function read(id){var e=E(id);if(!e)return undefined;return (e.type==='checkbox'||e.type==='radio')?!!e.checked:e.value;}
+function snap(name){
+  name=String(name||'').trim();
+  if(!name||typeof ERB_PG_PROFILES==='undefined')return;
+  var o={pgName:name,updatedAt:Date.now(),fields:{}};
+  IDS.forEach(function(id){var v=read(id);if(v!==undefined)o.fields[id]=v;});
+  ERB_PG_PROFILES[norm(name)]=o;
+}
+function resetUi(field){
+  ERB_GUIDE_RESTORING=true;window.__ERB_GUIDE_RESTORING=true;
+  try{
+    if(typeof window.erbPlantOnProfileCommit==='function')window.erbPlantOnProfileCommit('__nuovo_pg__');
+    if(typeof resetGuidaErbologia==='function')resetGuidaErbologia();
+    function set(id,v){var e=E(id);if(!e)return;if(e.type==='checkbox'||e.type==='radio')e.checked=!!v;else e.value=v;}
+    set('pgTipo','studente');set('pgSegueErbologia','si');set('empatia','10');set('sapienzaErbologicaGuida','0');
+    set('livErborista','0');set('livAmico','0');set('livCustode','0');set('livColtivatore','0');set('pgErbologoMestiere',false);
+    ['erbImmPelleAutofertilizzante','erbImmFarfalleVomitose','erbImmErboruto','erbImmSpruzzolosi','erbImmStridulite','erbImmVogliaVampirella','erbImmSolleticoMessicano'].forEach(function(id){set(id,false);});
+    if(typeof aggiornaCampiTipoPG==='function')aggiornaCampiTipoPG();
+    if(typeof ricalcolaErbologia==='function')ricalcolaErbologia();
+    if(typeof ERB_ACTIVE_PLANT_ID!=='undefined')ERB_ACTIVE_PLANT_ID='';
+    if(typeof ERB_PROFILE_BOUND_NAME!=='undefined')ERB_PROFILE_BOUND_NAME='';
+    if(typeof RP_PROFILE_SESSION_ID!=='undefined'){RP_PROFILE_SESSION_ID='';RP_PROFILE_SESSION_DATA=null;RP_PROFILE_SESSION_NAME='';RP_PROFILE_PENDING_CREATE=false;}
+    if(field)field.value='';
+    if(typeof erbPlantRenderLibrary==='function')erbPlantRenderLibrary();
+  }finally{
+    ERB_GUIDE_RESTORING=false;window.__ERB_GUIDE_RESTORING=false;
+  }
+  if(field){field.disabled=false;field.removeAttribute('disabled');try{field.focus();}catch(e){}}
+  var b=E('erbV157ChangePgBtn');if(b)b.disabled=false;
+  if(typeof rpProfileStatus==='function')rpProfileStatus('Pronto per un altro PG: scrivi il nome.','ok');
+}
+window.erbV157ChangePg=function(){
+  var field=E('pgNomeSessione');
+  var old=String((typeof ERB_PROFILE_BOUND_NAME!=='undefined'&&ERB_PROFILE_BOUND_NAME)||(field&&field.value)||'').trim();
+  if(old)snap(old);
+  /* erbGuideSaveNow costruisce subito il payload: possiamo quindi lasciare partire
+     la scrittura in background senza bloccare l'interfaccia. */
+  if(old&&typeof erbGuideSaveNow==='function'){
+    try{Promise.resolve(erbGuideSaveNow()).catch(function(err){console.error(err);});}catch(err){console.error(err);}
+  }
+  resetUi(field);
+  return Promise.resolve(true);
+};
+function init(){var f=E('pgNomeSessione');if(f){f.disabled=false;f.removeAttribute('disabled');}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
