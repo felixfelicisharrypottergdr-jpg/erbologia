@@ -1,3 +1,4 @@
+<!-- Erbologia tool v153 — allineamento alle ultime migliorie di Magizoologia dove pertinenti: ripresa Ricerca senza autosalvataggio o risincronizzazione retroattiva; dadi multipli compatti per Orde; riepilogo live/copiabile degli esemplari; contrasto dei nuovi blocchi. La protezione conflitti di Magizoologia non viene aggiunta perché Erbologia non usa quel controllo. -->
 <!-- Erbologia tool v152 — Pianta morente: importazione nella Guida e Riconoscimento consentiti appena i dati dell’Incontro sono completi; la conferma del Narratore resta obbligatoria per chiudere/proseguire la Ricerca. -->
 <!-- Erbologia tool v151 — audit identità importazioni: ogni Pianta importata è legata anche alla specifica sessione di Ricerca, evitando collisioni tra role diverse che trovano la stessa specie nello stesso Incontro/Esemplare. -->
 <!-- Erbologia tool v150 — audit reimportazione: i metadati persistenti Incontro/Esemplare hanno priorità sui dataset temporanei, evitando che una Pianta riaperta venga scambiata per un altro ritrovamento e perda i progressi. -->
@@ -1908,6 +1909,28 @@ function ebxEl(id){ return document.getElementById(id); }
 }
 </style>
 
+
+<style id="erbologia-v153-research-batch-recap">
+/* v153 — dadi multipli e riepilogo Orde: contrasto autonomo, senza dipendere dai contenitori esterni. */
+.rp-batch-dice{margin:14px 0 16px!important;padding:13px!important;border:1px solid #6f8f52!important;border-left:5px solid #91b565!important;border-radius:8px!important;background:#162311!important;color:#eef7e7!important}
+.rp-batch-dice h3{margin:0 0 8px!important;color:#d9f0b5!important}
+.rp-batch-dice .nota-regole,.rp-batch-dice .nota-regole b{color:#dcebd1!important;background:transparent!important;border:0!important;padding:0 0 8px!important}
+.rp-batch-dice .dice-code{background:#0d160b!important;color:#d8f4ad!important;border-color:#52753c!important}
+.rp-esemplare-compact{padding:10px 12px!important;margin:9px 0!important}
+.rp-esemplare-compact>h3{margin:0 0 8px!important}
+.rp-compact-result{display:flex!important;align-items:center!important;gap:8px!important;flex-wrap:wrap!important;margin:6px 0!important}
+.rp-compact-result>b{min-width:155px;color:#17370f!important}
+.rp-esemplari-recap{margin:14px 0 8px;padding:12px 13px;border:1px solid #668649;border-left:5px solid #8caf63;border-radius:8px;background:#172511;color:#eef6e8}
+.rp-esemplari-recap-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.rp-esemplari-recap-title{font-weight:800;color:#d9efb8;font-size:1.03em}
+.rp-esemplari-recap-meta{font-size:.88em;color:#c8ddb5}
+.rp-esemplari-recap-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 10px;margin-top:8px}
+.rp-esemplari-recap-item{padding:7px 9px;border:1px solid #486338;border-radius:6px;background:#0f1a0c;color:#edf6e7;line-height:1.35}
+.rp-esemplari-recap-item b{color:#d7eeaf!important}.rp-esemplari-recap-item .recap-wait{color:#a7b99a;font-style:italic}
+.rp-esemplari-recap-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}.rp-esemplari-recap-actions .numeric-note{color:#bfd2af!important}
+.rp-esemplari-recap-copy-source{display:none!important}
+@media(max-width:700px){.rp-esemplari-recap-list{grid-template-columns:1fr}.rp-compact-result>b{min-width:100%}.rp-batch-dice .result-line{align-items:stretch!important}}
+</style>
 </head>
 <body>
 <div class="contenitore">
@@ -5148,15 +5171,15 @@ function rpAggiornaDatiCondivisi(){
   if(s)s.textContent=sv===null?'—':String(sv);
 }
 function rpSincronizzaProfiloRicerca(){
-  /* Una Ricerca altrui aperta in sola lettura deve restare una fotografia dei
-     dati salvati dal suo autore: modificare il proprio profilo non la altera. */
-  if(RP_CURRENT_ID&&RP_READONLY){rpAggiornaDatiCondivisi();return;}
+  /* v153 — una Ricerca già iniziata è una fotografia autonoma dei dati usati
+     nei suoi dadi. Aprirla o modificare successivamente il Profilo non deve
+     cambiare retroattivamente Empatia/Sapienza né aggiornare il timestamp. */
+  if(RP_CURRENT_ID&&RP_CURRENT_DATA){rpAggiornaDatiCondivisi();return;}
   var eh=rpEl('empatiaRicerca'),sh=rpEl('sapienza'),ev=rpProfiloEmpatia(),sv=rpProfiloSapienza();
   if(eh)eh.value=ev===null?'':String(ev);
   if(sh)sh.value=sv===null?'':String(sv);
   rpAggiornaDatiCondivisi();
   ricalcolaRicerca();
-  if(RP_CURRENT_ID&&rpSessionCanEdit(RP_CURRENT_DATA)){rpUpdateToolbar();rpScheduleSave();}
 }
 function rpCaricaDatiSessioneNelProfilo(){
   /* v51: il profilo personale e la singola Ricerca sono due stati distinti.
@@ -5336,19 +5359,113 @@ function rpRecomputeCascata1(trovato){
 }
 
 function rpBuildEsemplari(n,count){
-  var host=rpEl('esemplariLista'+n);if(!host)return;if(host.getAttribute('data-conteggio')===String(count))return;host.setAttribute('data-conteggio',String(count));host.innerHTML='';
+  var host=rpEl('esemplariLista'+n);if(!host)return;if(host.getAttribute('data-conteggio')===String(count))return;
+  /* v153 — se cambia il numero di esemplari conserva i risultati già inseriti
+     per gli indici che continuano a esistere. */
+  var precedenti={};
+  host.querySelectorAll('input[data-key]').forEach(function(inp){precedenti[inp.id]=inp.value;});
+  host.setAttribute('data-conteggio',String(count));host.innerHTML='';
+  if(!count){setupNumericInputs();return;}
+
+  var incontro=(n===2?'Secondo':'Terzo');
+
+  /* Con un'Orda basta un unico lancio multiplo per le Fasi Vitali. Lo Stato di
+     Salute viene generato dopo aver inserito le Fasi, perché i Semi non lo tirano. */
+  if(count>1){
+    var batch=document.createElement('div');batch.className='rp-batch-dice';
+    var bh=document.createElement('h3');bh.textContent='Dadi unici per i '+count+' esemplari';batch.appendChild(bh);
+    var note=document.createElement('div');note.className='nota-regole';note.innerHTML='<b>Niente '+(count*2)+' lanci separati.</b> Fai un solo lancio multiplo per le Fasi Vitali; dopo averle inserite il tool prepara automaticamente un unico dado Salute soltanto per gli esemplari che non sono Semi. I risultati si leggono nell’ordine indicato.';batch.appendChild(note);
+
+    var phaseLine=document.createElement('div');phaseLine.className='result-line';
+    var phaseCode=document.createElement('div');phaseCode.className='dice-code';phaseCode.id='codiceFasiMultiple'+n;
+    phaseCode.textContent=rpForumDiceBlock(
+      'Qual è la Fase Vitale dei '+count+' esemplari del '+incontro+' Incontro?',
+      'I '+count+' risultati corrispondono, nell’ordine, agli esemplari 1-'+count+'.\n\n'+rpFaseAnswers,
+      '[dice='+count+'d9]Fase Vitale — esemplari 1-'+count+' — '+incontro+' Incontro[/dice]'
+    );
+    phaseLine.appendChild(phaseCode);
+    var phaseBtn=document.createElement('button');phaseBtn.type='button';phaseBtn.className='copy-btn';phaseBtn.setAttribute('data-copy-source',phaseCode.id);phaseBtn.setAttribute('data-copy-control','1');phaseBtn.textContent='Copia';phaseLine.appendChild(phaseBtn);batch.appendChild(phaseLine);
+
+    var healthLine=document.createElement('div');healthLine.className='result-line';
+    var healthCode=document.createElement('div');healthCode.className='dice-code';healthCode.id='codiceSalutiMultiple'+n;healthCode.textContent='Inserisci prima tutte le Fasi Vitali: il dado Salute verrà preparato automaticamente escludendo i Semi.';healthLine.appendChild(healthCode);
+    var healthBtn=document.createElement('button');healthBtn.type='button';healthBtn.id='copiaSalutiMultiple'+n;healthBtn.className='copy-btn';healthBtn.setAttribute('data-copy-source',healthCode.id);healthBtn.setAttribute('data-copy-control','1');healthBtn.textContent='Copia';healthBtn.disabled=true;healthLine.appendChild(healthBtn);batch.appendChild(healthLine);
+    host.appendChild(batch);
+  }
+
   for(var i=1;i<=count;i++){
-    var box=document.createElement('div');box.className='esemplare-riga';
-    var h1=document.createElement('h3');h1.textContent='Esemplare '+i+' — Fase Vitale (1d9)';box.appendChild(h1);
-    var rl1=document.createElement('div');rl1.className='result-line';var code1=document.createElement('div');code1.className='dice-code';code1.id='codiceFase'+n+'_'+i;code1.textContent=rpForumDiceBlock('Qual è la Fase Vitale dell’esemplare '+i+' del '+(n===2?'Secondo':'Terzo')+' Incontro?',rpFaseAnswers,'[dice=1d9]Fase Vitale esemplare '+i+' — '+(n===2?'Secondo':'Terzo')+' Incontro[/dice]');rl1.appendChild(code1);var b1=document.createElement('button');b1.type='button';b1.className='copy-btn';b1.setAttribute('data-copy-source',code1.id);b1.setAttribute('data-copy-control','1');b1.textContent='Copia';rl1.appendChild(b1);box.appendChild(rl1);
-    var rr1=document.createElement('div');rr1.className='result-line';rr1.appendChild(document.createTextNode('Risultato (1-9): '));var in1=document.createElement('input');in1.type='number';in1.id='risultatoFase'+n+'_'+i;in1.setAttribute('data-key',in1.id);in1.min='1';in1.max='9';rr1.appendChild(in1);var t1=document.createElement('span');t1.id='tagFase'+n+'_'+i;t1.className='out-tag out-neutral';t1.textContent='in attesa';rr1.appendChild(t1);box.appendChild(rr1);
-    var h2=document.createElement('h3');h2.textContent='Esemplare '+i+' — Stato di Salute (1d15)';box.appendChild(h2);
-    var rl2=document.createElement('div');rl2.className='result-line';var code2=document.createElement('div');code2.className='dice-code';code2.id='codiceSalute'+n+'_'+i;code2.textContent=rpForumDiceBlock('Qual è lo Stato di Salute dell’esemplare '+i+' del '+(n===2?'Secondo':'Terzo')+' Incontro?',rpSaluteAnswers,'[dice=1d15]Stato di Salute esemplare '+i+' — '+(n===2?'Secondo':'Terzo')+' Incontro[/dice]');rl2.appendChild(code2);var b2=document.createElement('button');b2.type='button';b2.className='copy-btn';b2.setAttribute('data-copy-source',code2.id);b2.setAttribute('data-copy-control','1');b2.textContent='Copia';rl2.appendChild(b2);box.appendChild(rl2);
-    var rr2=document.createElement('div');rr2.className='result-line';rr2.appendChild(document.createTextNode('Risultato (1-15): '));var in2=document.createElement('input');in2.type='number';in2.id='risultatoSalute'+n+'_'+i;in2.setAttribute('data-key',in2.id);in2.min='1';in2.max='15';rr2.appendChild(in2);var t2=document.createElement('span');t2.id='tagSalute'+n+'_'+i;t2.className='out-tag out-neutral';t2.textContent='in attesa';rr2.appendChild(t2);box.appendChild(rr2);
+    var box=document.createElement('div');box.className='esemplare-riga rp-esemplare-compact';
+    var title=document.createElement('h3');title.textContent='Esemplare '+i;box.appendChild(title);
+
+    /* Con un solo esemplare manteniamo i codici completi tradizionali. */
+    if(count===1){
+      var rl1=document.createElement('div');rl1.className='result-line';var code1=document.createElement('div');code1.className='dice-code';code1.id='codiceFase'+n+'_'+i;code1.textContent=rpForumDiceBlock('Qual è la Fase Vitale dell’esemplare '+i+' del '+incontro+' Incontro?',rpFaseAnswers,'[dice=1d9]Fase Vitale esemplare '+i+' — '+incontro+' Incontro[/dice]');rl1.appendChild(code1);var b1=document.createElement('button');b1.type='button';b1.className='copy-btn';b1.setAttribute('data-copy-source',code1.id);b1.setAttribute('data-copy-control','1');b1.textContent='Copia';rl1.appendChild(b1);box.appendChild(rl1);
+    }
+    var rr1=document.createElement('div');rr1.className='result-line rp-compact-result';var lab1=document.createElement('b');lab1.textContent='Fase Vitale (1d9):';rr1.appendChild(lab1);var in1=document.createElement('input');in1.type='number';in1.id='risultatoFase'+n+'_'+i;in1.setAttribute('data-key',in1.id);in1.min='1';in1.max='9';if(precedenti[in1.id]!==undefined)in1.value=precedenti[in1.id];rr1.appendChild(in1);var t1=document.createElement('span');t1.id='tagFase'+n+'_'+i;t1.className='out-tag out-neutral';t1.textContent='in attesa';rr1.appendChild(t1);box.appendChild(rr1);
+
+    if(count===1){
+      var rl2=document.createElement('div');rl2.className='result-line';var code2=document.createElement('div');code2.className='dice-code';code2.id='codiceSalute'+n+'_'+i;code2.textContent=rpForumDiceBlock('Qual è lo Stato di Salute dell’esemplare '+i+' del '+incontro+' Incontro?',rpSaluteAnswers,'[dice=1d15]Stato di Salute esemplare '+i+' — '+incontro+' Incontro[/dice]');rl2.appendChild(code2);var b2=document.createElement('button');b2.type='button';b2.className='copy-btn';b2.setAttribute('data-copy-source',code2.id);b2.setAttribute('data-copy-control','1');b2.textContent='Copia';rl2.appendChild(b2);box.appendChild(rl2);
+    }
+    var rr2=document.createElement('div');rr2.className='result-line rp-compact-result';var lab2=document.createElement('b');lab2.textContent='Stato di Salute (1d15):';rr2.appendChild(lab2);var in2=document.createElement('input');in2.type='number';in2.id='risultatoSalute'+n+'_'+i;in2.setAttribute('data-key',in2.id);in2.min='1';in2.max='15';if(precedenti[in2.id]!==undefined)in2.value=precedenti[in2.id];rr2.appendChild(in2);var t2=document.createElement('span');t2.id='tagSalute'+n+'_'+i;t2.className='out-tag out-neutral';t2.textContent='in attesa';rr2.appendChild(t2);box.appendChild(rr2);
     host.appendChild(box);
   }
   setupNumericInputs();
 }
+
+function rpUpdateBatchHealthCode(n,count){
+  if(count<=1)return;
+  var code=rpEl('codiceSalutiMultiple'+n),btn=rpEl('copiaSalutiMultiple'+n);if(!code||!btn)return;
+  var incontro=n===2?'Secondo':'Terzo',targets=[],pending=[];
+  for(var i=1;i<=count;i++){
+    var vf=rpNumber('risultatoFase'+n+'_'+i,1,9);
+    if(vf===null){pending.push(i);continue;}
+    if(rpLookup(rpFaseVitaleTab,vf)!=='Seme')targets.push(i);
+  }
+  if(pending.length){
+    code.textContent='Completa prima le Fasi Vitali degli esemplari '+pending.join(', ')+'. Il dado Salute verrà creato appena il tool saprà quali non sono Semi.';
+    btn.disabled=true;return;
+  }
+  if(!targets.length){
+    code.textContent='Tutti gli esemplari risultano Semi: lo Stato di Salute non è previsto e non serve alcun 1d15.';
+    btn.disabled=true;return;
+  }
+  var map=targets.map(function(idx,pos){return (pos+1)+'° risultato → Esemplare '+idx;}).join('\n');
+  code.textContent=rpForumDiceBlock(
+    'Qual è lo Stato di Salute degli esemplari non-Seme del '+incontro+' Incontro?',
+    'Lancia '+targets.length+'d15. Ordine dei risultati:\n'+map+'\n\n'+rpSaluteAnswers,
+    '[dice='+targets.length+'d15]Stato di Salute — esemplari '+targets.join(', ')+' — '+incontro+' Incontro[/dice]'
+  );
+  btn.disabled=false;
+}
+
+function rpRenderEsemplariRecap(n,count){
+  var host=rpEl('esemplariLista'+n);if(!host)return;
+  var old=rpEl('rpEsemplariRecap'+n);if(old)old.remove();
+  if(!count||count<2)return;
+  var incontro=n===2?'Secondo':'Terzo',tab=n===2?rpClasseTab2:rpClasseTab3;
+  var vc=rpNumber('risultatoClasse'+n,1,15),classe=vc===null?'—':rpLookup(tab,vc);
+  var specie=((rpEl('speciePianta'+n)||{}).value||'').trim()||'Pianta';
+  var righe=[],bb=[],complete=0;
+  for(var i=1;i<=count;i++){
+    var vf=rpNumber('risultatoFase'+n+'_'+i,1,9),vs=rpNumber('risultatoSalute'+n+'_'+i,1,15);
+    var fase=vf===null?'':rpLookup(rpFaseVitaleTab,vf),salute='';
+    if(fase==='Seme')salute='Non previsto';
+    else if(vs!==null)salute=rpLookup(rpStatoSaluteTab,vs);
+    if(fase&&(fase==='Seme'||salute))complete++;
+    righe.push({i:i,fase:fase,salute:salute});
+    bb.push(i+'. '+(fase||'in attesa')+' · '+(salute||'Salute in attesa'));
+  }
+  var box=document.createElement('div');box.className='rp-esemplari-recap';box.id='rpEsemplariRecap'+n;
+  var head=document.createElement('div');head.className='rp-esemplari-recap-head';
+  var title=document.createElement('div');title.className='rp-esemplari-recap-title';title.textContent='Riepilogo '+count+' esemplari';head.appendChild(title);
+  var meta=document.createElement('div');meta.className='rp-esemplari-recap-meta';meta.textContent=complete+'/'+count+' completi · '+specie+' · Classificazione '+classe;head.appendChild(meta);box.appendChild(head);
+  var list=document.createElement('div');list.className='rp-esemplari-recap-list';
+  righe.forEach(function(r){var item=document.createElement('div');item.className='rp-esemplari-recap-item';var num=document.createElement('b');num.textContent='Esemplare '+r.i;item.appendChild(num);item.appendChild(document.createElement('br'));var f=document.createElement('span');f.textContent=r.fase||'Fase in attesa';if(!r.fase)f.className='recap-wait';item.appendChild(f);item.appendChild(document.createTextNode(' · '));var h=document.createElement('span');h.textContent=r.salute||'Salute in attesa';if(!r.salute)h.className='recap-wait';item.appendChild(h);list.appendChild(item);});
+  box.appendChild(list);
+  var source=document.createElement('div');source.id='rpEsemplariRecapCopy'+n;source.className='rp-esemplari-recap-copy-source';source.textContent='<b>Riepilogo esemplari — '+incontro+' Incontro</b>\n[quote]Specie: '+specie+'\nClassificazione: '+classe+'\n'+bb.join('\n')+'[/quote]';box.appendChild(source);
+  var actions=document.createElement('div');actions.className='rp-esemplari-recap-actions';var copy=document.createElement('button');copy.type='button';copy.className='copy-btn';copy.setAttribute('data-copy-source',source.id);copy.setAttribute('data-copy-control','1');copy.textContent='Copia riepilogo';actions.appendChild(copy);var hint=document.createElement('span');hint.className='numeric-note';hint.textContent='Si aggiorna automaticamente mentre inserisci i risultati.';actions.appendChild(hint);box.appendChild(actions);
+  host.appendChild(box);
+}
+
 function rpUpdateEsemplari(n,count){
   var morenti=0;
   for(var i=1;i<=count;i++){
@@ -5359,6 +5476,8 @@ function rpUpdateEsemplari(n,count){
   }
   var av=rpEl('avvisoMorente'+n);if(av){av.style.display=morenti>0?'block':'none';av.textContent=morenti>0?'ATTENZIONE: '+morenti+' '+(morenti===1?'esemplare è morente':'esemplari sono morenti')+'. Il regolamento richiede di contattare il Narratore prima di procedere.':'';}
   rpUpdateMorenteResolution(n,morenti>0);
+  rpUpdateBatchHealthCode(n,count);
+  rpRenderEsemplariRecap(n,count);
 }
 
 function rpRecomputeCascataMultipla(n,trovato){
@@ -8770,9 +8889,9 @@ function extendState(st){ensure();st=st||{};copyProfileToResearch(true);var k=E(
 var oldNew=window.rpNewSessionState;
 if(typeof oldNew==='function'&&!oldNew.__v137Imm){var nw=function(name){return extendState(oldNew.apply(this,arguments));};nw.__v137Imm=true;window.rpNewSessionState=nw;}
 var oldSync=window.rpSincronizzaProfiloRicerca;
-if(typeof oldSync==='function'&&!oldSync.__v137Imm){var sy=function(){ensure();if(namesMatch())copyProfileToResearch(true);return oldSync.apply(this,arguments);};sy.__v137Imm=true;window.rpSincronizzaProfiloRicerca=sy;}
+if(typeof oldSync==='function'&&!oldSync.__v137Imm){var sy=function(){ensure();if(!(window.RP_CURRENT_ID&&window.RP_CURRENT_DATA)&&namesMatch())copyProfileToResearch(true);return oldSync.apply(this,arguments);};sy.__v137Imm=true;window.rpSincronizzaProfiloRicerca=sy;}
 var oldOpen=window.rpOpenSession;
-if(typeof oldOpen==='function'&&!oldOpen.__v137Imm){var op=function(id,data){ensure();var r=oldOpen.apply(this,arguments);var known=E('rpImmSnapshotKnown');if(known&&!known.checked&&namesMatch()&&!window.RP_READONLY){copyProfileToResearch(true);if(typeof window.rpScheduleSave==='function')window.rpScheduleSave();}if(typeof window.ricalcolaRicerca==='function')setTimeout(function(){try{window.ricalcolaRicerca();}catch(_){ }},0);return r;};op.__v137Imm=true;window.rpOpenSession=op;}
+if(typeof oldOpen==='function'&&!oldOpen.__v137Imm){var op=function(id,data){ensure();var r=oldOpen.apply(this,arguments);var known=E('rpImmSnapshotKnown');if(known&&!known.checked&&namesMatch()&&!window.RP_READONLY){/* Migrazione locale di una vecchia Ricerca: completa lo snapshot senza scrivere su Firebase solo per l'apertura. Verrà persistito alla prima modifica reale. */copyProfileToResearch(true);}if(typeof window.ricalcolaRicerca==='function')setTimeout(function(){try{window.ricalcolaRicerca();}catch(_){ }},0);return r;};op.__v137Imm=true;window.rpOpenSession=op;}
 function init(){ensure();}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
