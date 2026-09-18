@@ -1,3 +1,4 @@
+<!-- Erbologia tool v164 — Profilo iniziale consolidato, Ricerche multiple per PG, nuova Ricerca vuota ed etichetta corretta. -->
 <!-- Erbologia tool v163 — import Ricerca→Guida robusto e verificato, allineato al controllo Magizoologia v177. -->
 <!-- Erbologia tool v162 — Stato Morente non richiede più il Narratore di per sé: import immediato nella Guida appena l’esemplare è completo, proseguimento Ricerca non bloccato; il Narratore resta necessario solo quando una regola effettiva lo richiede (es. Ostilità). Il click su Importa vale come scelta di gestire subito la Pianta. -->
 <!-- Erbologia tool v161 — tabella ufficiale dei post inserita in un details contestuale nella sezione Post del ciclo; solo riferimento visivo, nessuna modifica ai calcoli o a Firebase. -->
@@ -9704,5 +9705,107 @@ window.addEventListener('click',function(ev){
   if(b.hasAttribute('data-erb-v156-import-one')){var p=String(b.getAttribute('data-erb-v156-import-one')||'').split(':');n=Number(p[0]||0);i=Number(p[1]||1);}else i=chosenForButton(b,n);
   runSingle(b,n,i);
 },true);
+})();
+</script>
+
+
+<!-- Erbologia tool v164 — profilo PG consolidato prima della Ricerca con fotografia dei parametri iniziali; accesso alle Ricerche senza apertura/creazione automatica; più Ricerche indipendenti per lo stesso PG; nuova Ricerca sempre vuota; etichetta Ricerca digitabile e autosalvata. -->
+<style id="erbologia-v164-research-ux-style">
+#piante-session-home .session-lead{line-height:1.5}
+#erbV164ResearchHint{margin:10px 0 14px;padding:10px 12px;border:1px solid #6d7f49;border-left:4px solid #7b963f;border-radius:7px;background:#20301d;color:#eef5e7;line-height:1.45;font-size:.9em}
+#erbV164ResearchHint b{color:#d7e9a8}
+#erbV164NewResearchBtn{font-weight:700}
+#erbV164LabelStatus{font-size:.76em;line-height:1.35;color:#66715b;margin-top:4px}
+</style>
+<script id="erbologia-v164-research-ux">
+(function(){
+'use strict';
+function E(id){return document.getElementById(id);}
+function norm(v){v=String(v||'').trim();try{v=v.normalize('NFD').replace(/[\u0300-\u036f]/g,'');}catch(e){}return v.toLocaleLowerCase('it-IT').replace(/\s+/g,' ');}
+function currentPg(){return String((E('pgNomeSessione')||{}).value||'').trim();}
+function profileFields(){var out={};document.querySelectorAll('#modoPersonaggio [data-key]').forEach(function(x){var k=x.getAttribute('data-key');if(!k)return;out[k]=(x.type==='checkbox'||x.type==='radio')?!!x.checked:x.value;});return out;}
+function persistProfile(){var name=currentPg();if(!name)return Promise.reject(new Error('Inserisci prima il nome del PG.'));try{if(typeof window.erbV160SaveProfileNow==='function')return Promise.resolve(window.erbV160SaveProfileNow(false));if(typeof window.erbGuideSaveNow==='function')return Promise.resolve(window.erbGuideSaveNow());}catch(e){return Promise.reject(e);}return Promise.resolve(true);}
+
+/* La Ricerca conserva anche i parametri iniziali del PG con cui è stata aperta. */
+var baseNew=window.rpNewSessionData;
+if(typeof baseNew==='function')window.rpNewSessionData=function(name){var d=baseNew.apply(this,arguments),snap=profileFields();d.initialProfile=snap;d.researchLabel=d.researchLabel||'';d.toolVersion='erbologia-ricerca-v164';d.state=d.state||{};try{d.state.initialProfileJson=JSON.stringify(snap);}catch(e){}return d;};
+
+/* Digitare/riaprire un PG non deve creare una Ricerca in automatico: si collega
+   soltanto l'eventuale sessione già esistente. La nuova Ricerca nasce solo dal tasto. */
+var previousCommit=window.rpProfileNameCommitted;
+if(typeof previousCommit==='function')window.rpProfileNameCommitted=function(){return previousCommit.call(this,false);};
+
+function clearResearchWorkspace(){
+  if(typeof RP_RESTORING!=='undefined')RP_RESTORING=true;
+  try{
+    document.querySelectorAll('#piante-workspace [data-key]').forEach(function(f){
+      if(f.type==='checkbox'||f.type==='radio'){f.checked=false;return;}
+      if(f.tagName==='SELECT'){
+        var chosen='';for(var i=0;i<f.options.length;i++)if(f.options[i].defaultSelected){chosen=f.options[i].value;break;}
+        if(chosen===''&&f.options.length)chosen=f.options[0].value;f.value=chosen;return;
+      }
+      f.value=f.defaultValue!==undefined?f.defaultValue:'';
+    });
+    var rows=E('ebxResearchBonusRows');if(rows)rows.innerHTML='';var hidden=E('bonusRicercaJson');if(hidden)hidden.value='[]';
+    if(typeof RP_FLOW!=='undefined'){RP_FLOW.page='config';RP_FLOW.summaryVisited=false;RP_FLOW.outcomeVisited=false;}
+  }finally{if(typeof RP_RESTORING!=='undefined')RP_RESTORING=false;}
+  try{if(typeof ricalcolaRicerca==='function')ricalcolaRicerca();}catch(e){}
+}
+var baseCreate=window.rpCreateSession;
+function createFreshResearch(btn){
+  if(RP_CREATING)return Promise.resolve(false);
+  var name=currentPg();if(!name){rpStatus('rp-session-home-msg','Compila prima il Nome del PG nella sezione «Il tuo Personaggio».','bad');return Promise.resolve(false);}
+  if(!RP_FB||!RP_FB.user||!RP_FB.db){rpStatus('rp-session-home-msg','Firebase non è ancora pronto.','bad');return Promise.resolve(false);}
+  if(btn)btn.disabled=true;
+  var saveOld=(RP_CURRENT_ID&&!RP_READONLY&&typeof rpSaveNow==='function')?Promise.resolve(rpSaveNow()).catch(function(){return false;}):Promise.resolve(true);
+  rpStatus('rp-session-home-msg','Salvo il profilo di '+name+' e preparo una nuova Ricerca…','');
+  return saveOld.then(function(){return persistProfile();}).then(function(){clearResearchWorkspace();if(btn)btn.disabled=false;if(typeof baseCreate==='function'){baseCreate();return true;}throw new Error('Comando di creazione non disponibile.');}).catch(function(err){console.error(err);if(btn)btn.disabled=false;rpStatus('rp-session-home-msg','Impossibile creare la nuova Ricerca: '+(err&&err.message?err.message:err),'bad');return false;});
+}
+window.rpCreateSession=function(){return createFreshResearch(E('rp-btn-new-session'));};
+
+function showResearchDashboard(){
+  var name=currentPg(),f=E('pgNomeSessione');
+  if(!name){if(typeof mostraModo==='function')mostraModo('Personaggio');rpProfileStatus('⚠ Inserisci prima il nome del PG per accedere alle Ricerche.','bad research-warning');if(f){f.classList.add('research-required');try{f.focus();f.scrollIntoView({behavior:'smooth',block:'center'});}catch(e){}}return;}
+  if(f)f.classList.remove('research-required');
+  var saveOld=(RP_CURRENT_ID&&!RP_READONLY&&typeof rpSaveNow==='function')?Promise.resolve(rpSaveNow()).catch(function(){return false;}):Promise.resolve(true);
+  saveOld.then(function(){return persistProfile().catch(function(){return false;});}).finally(function(){
+    RP_CURRENT_ID='';RP_CURRENT_DATA=null;RP_READONLY=false;rpRememberProfileSession('','','');
+    if(typeof mostraModo==='function')mostraModo('Ricerca');
+    var home=E('piante-session-home'),work=E('piante-workspace');if(home)home.style.display='block';if(work)work.style.display='none';
+    try{history.replaceState(null,'',window.location.pathname+window.location.search+'#ricerca');}catch(e){}
+    rpStatus('rp-session-home-msg','Scegli una Ricerca esistente oppure avviane una nuova per '+name+'.','ok');
+    if(typeof rpLoadSessions==='function')rpLoadSessions(true);
+  });
+}
+window.rpEnterResearchFromProfile=showResearchDashboard;
+
+function ensureResearchUx(){
+  var home=E('piante-session-home');if(home&&!E('erbV164ResearchHint')){var body=home.querySelector('.session-card-body'),lead=body&&body.querySelector('.session-lead');if(body){var hint=document.createElement('div');hint.id='erbV164ResearchHint';hint.innerHTML='<b>Più Ricerche con lo stesso PG:</b> ogni Ricerca è separata. «Nuova Ricerca» apre sempre una configurazione vuota senza modificare le altre.';if(lead&&lead.nextSibling)body.insertBefore(hint,lead.nextSibling);else body.insertBefore(hint,body.firstChild);}}
+  var nb=E('rp-btn-new-session');if(nb)nb.textContent='+ Nuova Ricerca per questo PG';
+  var actions=document.querySelector('#piante-workspace .session-actions');if(actions&&!E('erbV164NewResearchBtn')){var b=document.createElement('button');b.type='button';b.id='erbV164NewResearchBtn';b.className='session-btn';b.setAttribute('data-session-control','1');b.textContent='+ Nuova Ricerca';actions.insertBefore(b,actions.firstChild);}
+}
+
+/* Correzione etichetta: evita che il rerender del toolbar cancelli il testo mentre
+   lo si sta digitando e salva automaticamente il valore. */
+var labelTimer=null;
+function paintTitle(){var t=E('rp-current-session-title');if(!t||!RP_CURRENT_DATA)return;var base=rpCurrentName()+' — '+(rpTipo()==='attiva'?'Ricerca Attiva':'Ricerca Passiva'),lab=String(RP_CURRENT_DATA.researchLabel||'').trim();t.textContent=lab?(lab+' · '+base):base;}
+function saveLabel(){
+  var inp=E('erbV154ResearchLabelInput');if(!inp||!RP_CURRENT_ID||!RP_CURRENT_DATA||!RP_FB||!RP_FB.db)return Promise.resolve(false);
+  var v=String(inp.value||'').trim();RP_CURRENT_DATA.researchLabel=v;paintTitle();if(Array.isArray(RP_SESSION_LIST_CACHE))for(var i=0;i<RP_SESSION_LIST_CACHE.length;i++)if(RP_SESSION_LIST_CACHE[i].id===RP_CURRENT_ID){RP_SESSION_LIST_CACHE[i].data.researchLabel=v;break;}
+  var s=E('erbV164LabelStatus');if(s)s.textContent='Salvataggio etichetta…';
+  return RP_FB.db.collection(RP_COLLECTION).doc(RP_CURRENT_ID).set({researchLabel:v,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}).then(function(){if(s)s.textContent='Etichetta salvata ✓';return true;}).catch(function(err){console.error(err);if(s)s.textContent='Etichetta non salvata: '+(err.message||err);return false;});
+}
+function ensureLabelStatus(){var row=E('erbV154ResearchLabelRow');if(row&&!E('erbV164LabelStatus')){var s=document.createElement('div');s.id='erbV164LabelStatus';s.textContent='Puoi scrivere direttamente: l’etichetta viene salvata automaticamente.';row.appendChild(s);}}
+window.addEventListener('input',function(ev){var x=ev.target;if(!x||x.id!=='erbV154ResearchLabelInput')return;ev.stopPropagation();if(RP_CURRENT_DATA)RP_CURRENT_DATA.researchLabel=String(x.value||'').trim();paintTitle();if(labelTimer)clearTimeout(labelTimer);labelTimer=setTimeout(function(){labelTimer=null;saveLabel();},650);},true);
+window.addEventListener('change',function(ev){if(ev.target&&ev.target.id==='erbV154ResearchLabelInput'){ev.stopPropagation();if(labelTimer){clearTimeout(labelTimer);labelTimer=null;}saveLabel();}},true);
+window.addEventListener('keydown',function(ev){if(ev.target&&ev.target.id==='erbV154ResearchLabelInput'&&ev.key==='Enter'){ev.preventDefault();if(labelTimer){clearTimeout(labelTimer);labelTimer=null;}saveLabel();try{ev.target.blur();}catch(e){}}},true);
+
+/* I listener originali erano già agganciati: intercettiamo prima il click in capture. */
+window.addEventListener('click',function(ev){var t=ev.target,b=t&&t.closest?t.closest('#rp-btn-new-session,#erbV164NewResearchBtn,#modoRicercaBtn'):null;if(!b)return;if(b.id==='modoRicercaBtn'){ev.preventDefault();ev.stopPropagation();showResearchDashboard();return;}ev.preventDefault();ev.stopPropagation();createFreshResearch(b);},true);
+
+var oldOpen=window.rpOpenSession;if(typeof oldOpen==='function')window.rpOpenSession=function(){var out=oldOpen.apply(this,arguments);setTimeout(function(){ensureResearchUx();ensureLabelStatus();},0);return out;};
+var oldToolbar=window.rpUpdateToolbar;if(typeof oldToolbar==='function')window.rpUpdateToolbar=function(){var out=oldToolbar.apply(this,arguments);ensureLabelStatus();paintTitle();return out;};
+function init(){ensureResearchUx();ensureLabelStatus();var lead=document.querySelector('#piante-session-home .session-lead');if(lead)lead.textContent='Apri una Ricerca già in corso oppure creane una nuova per il PG compilato in «Il tuo Personaggio». Lo stesso PG può avere più Ricerche contemporaneamente: ognuna viene salvata separatamente.';}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
