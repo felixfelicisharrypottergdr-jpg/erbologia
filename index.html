@@ -1,3 +1,4 @@
+<!-- Erbologia tool v171 — allineamento consolidato alla Magizoologia v203: profilo PG esplicito Salva/Carica/Svuota, Malus categorizzati persistenti, Registro malus Ricerca, apertura Ricerca protetta, salvataggi manuali, nuova Ricerca sempre visibile con conferma, archivio Piante in details, Svuota Guida con conferma, import immediato e contrasto finale consolidato. -->
 <!-- Erbologia tool v164 — Profilo iniziale consolidato, Ricerche multiple per PG, nuova Ricerca vuota ed etichetta corretta. -->
 <!-- Erbologia tool v163 — import Ricerca→Guida robusto e verificato, allineato al controllo Magizoologia v177. -->
 <!-- Erbologia tool v162 — Stato Morente non richiede più il Narratore di per sé: import immediato nella Guida appena l’esemplare è completo, proseguimento Ricerca non bloccato; il Narratore resta necessario solo quando una regola effettiva lo richiede (es. Ostilità). Il click su Importa vale come scelta di gestire subito la Pianta. -->
@@ -1968,7 +1969,12 @@ function ebxEl(id){ return document.getElementById(id); }
   <div class="campo" style="flex:1 1 100%">
     <label>Nome del PG</label>
     <input type="text" id="pgNomeSessione" data-key="pgNomeSessione" maxlength="80" placeholder="Nome del Personaggio">
-    <div class="profilo-session-hint">Collega automaticamente il PG a Firebase e alla sua Ricerca.</div>
+    <div class="profilo-session-hint">Scrivi il nome esatto del PG, poi usa <b>Carica PG</b> se esiste già oppure <b>Salva dati PG</b> dopo aver compilato i dati.</div>
+    <div class="erb-v171-profile-actions">
+      <button type="button" class="bottone-azione" id="erbV171LoadPgBtn"><i class="fa-solid fa-folder-open" aria-hidden="true"></i> Carica PG</button>
+      <button type="button" class="bottone-azione" id="erbV171SavePgBtn"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Salva dati PG</button>
+      <button type="button" class="bottone-azione bottone-secondario" id="erbV171ClearPgBtn"><i class="fa-solid fa-broom" aria-hidden="true"></i> Svuota campi del PG</button>
+    </div>
     <div id="rp-profile-session-status" class="session-status"></div>
   </div>
 </div>
@@ -1996,6 +2002,31 @@ function ebxEl(id){ return document.getElementById(id); }
     <label>Sapienza Erbologica (0-25)</label>
     <input type="number" id="sapienzaErbologicaGuida" data-key="sapienzaErbologicaGuida" value="0" min="0" max="25">
   </div>
+</div>
+
+<div id="erbV171ProfileMalus" class="erb-v171-profile-malus">
+  <h3>Malus del Personaggio</h3>
+  <div class="erb-v171-malus-help"><b>0 = nessun malus.</b> Il segno meno è automatico. Puoi usare anche mezzi punti (es. 2,5). Restano salvati con il PG e vengono mantenuti durante Ricerca e Guida.</div>
+  <div class="erb-v171-malus-groups">
+    <section class="erb-v171-malus-group"><h4>Fisici</h4><div class="erb-v171-malus-grid">
+      <div class="erb-v171-malus-field"><label for="malusFisSalute">Salute</label><div class="erb-v171-malus-input"><span>−</span><input id="malusFisSalute" data-key="malusFisSalute" type="number" min="0" step="0.5" data-decimal="1" data-no-numeric-note="1" value="0"></div></div>
+      <div class="erb-v171-malus-field"><label for="malusFisFatica">Fatica</label><div class="erb-v171-malus-input"><span>−</span><input id="malusFisFatica" data-key="malusFisFatica" type="number" min="0" step="0.5" data-decimal="1" data-no-numeric-note="1" value="0"></div></div>
+      <div class="erb-v171-malus-field"><label for="malusFisResistenza">Resistenza</label><div class="erb-v171-malus-input"><span>−</span><input id="malusFisResistenza" data-key="malusFisResistenza" type="number" min="0" step="0.5" data-decimal="1" data-no-numeric-note="1" value="0"></div></div>
+      <div class="erb-v171-malus-field"><label for="malusFisDestrezza">Destrezza</label><div class="erb-v171-malus-input"><span>−</span><input id="malusFisDestrezza" data-key="malusFisDestrezza" type="number" min="0" step="0.5" data-decimal="1" data-no-numeric-note="1" value="0"></div></div>
+    </div></section>
+    <section class="erb-v171-malus-group"><h4>Magici</h4><div class="erb-v171-malus-grid magici">
+      <div class="erb-v171-malus-field"><label for="malusMagAcume">Acume</label><div class="erb-v171-malus-input"><span>−</span><input id="malusMagAcume" data-key="malusMagAcume" type="number" min="0" step="0.5" data-decimal="1" data-no-numeric-note="1" value="0"></div></div>
+      <div class="erb-v171-malus-field"><label for="malusMagTecnica">Tecnica</label><div class="erb-v171-malus-input"><span>−</span><input id="malusMagTecnica" data-key="malusMagTecnica" type="number" min="0" step="0.5" data-decimal="1" data-no-numeric-note="1" value="0"></div></div>
+      <div class="erb-v171-malus-field"><label for="malusMagEmpatia">Empatia</label><div class="erb-v171-malus-input"><span>−</span><input id="malusMagEmpatia" data-key="malusMagEmpatia" type="number" min="0" step="0.5" data-decimal="1" data-no-numeric-note="1" value="0"></div></div>
+      <div class="erb-v171-malus-field"><label for="malusMagPercezione">Percezione</label><div class="erb-v171-malus-input"><span>−</span><input id="malusMagPercezione" data-key="malusMagPercezione" type="number" min="0" step="0.5" data-decimal="1" data-no-numeric-note="1" value="0"></div></div>
+      <div class="erb-v171-malus-field"><label for="malusMagPotenza">Potenza</label><div class="erb-v171-malus-input"><span>−</span><input id="malusMagPotenza" data-key="malusMagPotenza" type="number" min="0" step="0.5" data-decimal="1" data-no-numeric-note="1" value="0"></div></div>
+      <div class="erb-v171-malus-field"><label for="malusMagVolonta">Volontà</label><div class="erb-v171-malus-input"><span>−</span><input id="malusMagVolonta" data-key="malusMagVolonta" type="number" min="0" step="0.5" data-decimal="1" data-no-numeric-note="1" value="0"></div></div>
+    </div></section>
+    <section class="erb-v171-malus-group sociali"><h4>Sociali</h4><div class="erb-v171-malus-grid">
+      <div class="erb-v171-malus-field"><label for="malusSocDialettica">Dialettica</label><div class="erb-v171-malus-input"><span>−</span><input id="malusSocDialettica" data-key="malusSocDialettica" type="number" min="0" step="0.5" data-decimal="1" data-no-numeric-note="1" value="0"></div></div>
+    </div></section>
+  </div>
+  <div class="erb-v171-malus-note"><b>Empatia:</b> il malus viene sottratto automaticamente nei calcoli di Erbologia. Gli altri valori restano disponibili come promemoria persistente per le meccaniche che li richiedono.</div>
 </div>
 <div id="campiAdultoPG">
 <div class="profile-section-label">Conoscenze Avanzate</div>
@@ -2870,7 +2901,6 @@ function ebxEl(id){ return document.getElementById(id); }
     <div class="session-card-head"><h2>Ricerche Piante Magiche in corso</h2></div>
     <div class="session-card-body">
       <p class="session-lead">Apri o riprendi la Ricerca del PG compilato in «Il tuo Personaggio». Il salvataggio è automatico.</p>
-      <div class="session-warning"><b>Sessioni condivise in sola lettura.</b> Gli altri giocatori possono consultarle; solo il creatore e il Narratore possono modificarle o concluderle.</div>
       <div id="rp-firebase-auth-status" class="session-status">Connessione a Firebase…</div>
       <div class="session-new-row">
         <button class="session-btn" id="rp-btn-new-session" type="button" data-session-control="1">+ Nuova Ricerca</button>
@@ -2910,6 +2940,13 @@ function ebxEl(id){ return document.getElementById(id); }
   <section class="research-flow-page" data-rp-page-panel="config">
     <div class="scheda">
       <h2>Configurazione</h2>
+      <div id="erbV171ResearchMalusBox" class="erb-v171-research-malus-box">
+        <h3>Malus della Ricerca</h3>
+        <div class="nota-regole">Registro persistente della singola Ricerca. Qui confluiscono i malus del PG e quelli rilevati durante la Ricerca; puoi modificare, risolvere o aggiungere voci manualmente.</div>
+        <input type="hidden" id="erbResearchMalusJson" data-key="erbResearchMalusJson" value="[]">
+        <div id="erbV171ResearchMalusList"></div>
+        <div class="erb-v171-research-malus-add"><input type="text" id="erbV171ResearchMalusInput" maxlength="180" placeholder="Es. −2 Empatia per 3 utilizzi"><button type="button" class="session-btn" id="erbV171ResearchMalusAdd">+ Aggiungi malus</button></div>
+      </div>
       <div class="riga">
         <div class="campo" style="flex:1 1 100%"><label>Zona di Ricerca</label><select id="zonaRicerca" data-key="zonaRicerca">
           <option value="">— Seleziona la Zona della role —</option>
@@ -5948,7 +5985,7 @@ function rpSetupFirebase(){
   try{if(typeof firebase==='undefined')throw new Error('SDK Firebase non caricato');if(!firebase.apps.length)firebase.initializeApp(RP_FIREBASE_CONFIG);RP_FB.auth=firebase.auth();RP_FB.db=firebase.firestore();RP_FB.auth.onAuthStateChanged(function(user){if(user){
     if(RP_SESSION_CACHE_UID&&RP_SESSION_CACHE_UID!==user.uid){rpInvalidateSessionList();RP_PROFILE_SESSION_ID='';RP_PROFILE_SESSION_DATA=null;RP_PROFILE_SESSION_NAME='';RP_PROFILE_SESSION_PROMISE=null;}
     RP_SESSION_CACHE_UID=user.uid;RP_FB.user=user;
-    st.textContent=user.uid===RP_NARRATOR_UID?'Firebase connesso · modalità Narratore':'Firebase connesso · sessione anonima attiva';st.className='session-status ok';if(typeof erbGuideFirebaseReady==='function')erbGuideFirebaseReady(user);
+    st.textContent=user.uid===RP_NARRATOR_UID?'Firebase connesso · modalità Narratore':'Firebase connesso';st.className='session-status ok';if(typeof erbGuideFirebaseReady==='function')erbGuideFirebaseReady(user);
     var sid=rpSessionIdFromHash();
     if(sid){mostraModo('Ricerca');rpLoadSession(sid);return;}
     setTimeout(function(){if(RP_PROFILE_OPEN_PENDING&&rpProfileName()){rpEnterResearchFromProfile();return;}if(rpProfileName())rpEnsureProfileSession(RP_PROFILE_PENDING_CREATE).catch(function(){});},450);
@@ -5962,7 +5999,7 @@ function setupNumericInputs(){
     if(el.getAttribute('data-numeric-ready')==='1')return;
     el.setAttribute('data-numeric-ready','1');
     var parent=el.parentElement;
-    if(parent && !parent.querySelector(':scope > .numeric-note')){
+    if(parent && el.getAttribute('data-no-numeric-note')!=='1' && !parent.querySelector(':scope > .numeric-note')){
       var n=document.createElement('span');n.className='numeric-note';n.textContent='Inserire solo numeri';parent.appendChild(n);
     }
     function numericRules(){
@@ -8978,10 +9015,6 @@ window.addEventListener('load',function(){setTimeout(refresh,0);});
 if(document.readyState!=='loading')setTimeout(refresh,0);
 })();
 </script>
-
-</body>
-</html>
-
 <style id="erbologia-v154-profiles-labels-style">
 .erb-v154-profile-picker{margin:0 0 14px;padding:12px;border:1px solid #789b5d;border-radius:8px;background:#eff6e8;color:#1f3c17}
 .erb-v154-profile-picker .riga{margin-bottom:0!important}.erb-v154-profile-picker label{color:#274b1d!important}
@@ -9212,345 +9245,6 @@ if(typeof window.ricalcolaRicerca==='function'){
 }
 })();
 </script>
-
-<!-- v157 — profilo PG senza elenco globale: ripristino per nome, zero query-lista aggiuntive -->
-<style id="erbologia-v157-profile-by-name-style">
-/* La selezione globale dei PG non serve: il nome digitato è la chiave del profilo. */
-#erbV154ProfilePickerWrap{display:none!important}
-#modoPersonaggio .erb-v157-name-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
-#modoPersonaggio .erb-v157-change-pg{border:1px solid #6e8e56;background:#f7fbf3;color:#29451f;border-radius:5px;padding:7px 10px;cursor:pointer;font-weight:800}
-#modoPersonaggio .erb-v157-profile-hint{font-size:.82em;line-height:1.4;color:#35542b;margin-top:6px}
-</style>
-<script id="erbologia-v157-profile-by-name">
-(function(){
-'use strict';
-function E(id){return document.getElementById(id);}
-function norm(v){v=String(v||'').trim();try{v=v.normalize('NFD').replace(/[\u0300-\u036f]/g,'');}catch(e){}return v.toLocaleLowerCase('it-IT').replace(/\s+/g,' ');}
-var PROFILE_IDS=['pgTipo','pgSegueErbologia','empatia','sapienzaErbologicaGuida','livErborista','livAmico','livCustode','livColtivatore','pgErbologoMestiere','erbImmPelleAutofertilizzante','erbImmFarfalleVomitose','erbImmErboruto','erbImmSpruzzolosi','erbImmStridulite','erbImmVogliaVampirella','erbImmSolleticoMessicano'];
-function readField(id){var e=E(id);if(!e)return undefined;return (e.type==='checkbox'||e.type==='radio')?!!e.checked:e.value;}
-function writeField(id,v){var e=E(id);if(!e||v===undefined)return;if(e.type==='checkbox'||e.type==='radio')e.checked=!!v;else e.value=v;}
-function snapshot(name){
-  name=String(name||'').trim();if(!name||typeof ERB_PG_PROFILES==='undefined')return;
-  var o={pgName:name,updatedAt:Date.now(),fields:{}};
-  PROFILE_IDS.forEach(function(id){var v=readField(id);if(v!==undefined)o.fields[id]=v;});
-  ERB_PG_PROFILES[norm(name)]=o;
-}
-function defaultsForNewPg(name){
-  var defs={pgTipo:'studente',pgSegueErbologia:'si',empatia:'10',sapienzaErbologicaGuida:'0',livErborista:'0',livAmico:'0',livCustode:'0',livColtivatore:'0',pgErbologoMestiere:false,erbImmPelleAutofertilizzante:false,erbImmFarfalleVomitose:false,erbImmErboruto:false,erbImmSpruzzolosi:false,erbImmStridulite:false,erbImmVogliaVampirella:false,erbImmSolleticoMessicano:false};
-  ERB_GUIDE_RESTORING=true;window.__ERB_GUIDE_RESTORING=true;
-  try{
-    Object.keys(defs).forEach(function(id){writeField(id,defs[id]);});
-    if(typeof resetGuidaErbologia==='function')resetGuidaErbologia();
-    if(typeof aggiornaCampiTipoPG==='function')aggiornaCampiTipoPG();
-    if(typeof ricalcolaErbologia==='function')ricalcolaErbologia();
-  }finally{ERB_GUIDE_RESTORING=false;window.__ERB_GUIDE_RESTORING=false;}
-  if(E('pgNomeSessione'))E('pgNomeSessione').value=name||'';
-}
-function restoreProfile(name){
-  name=String(name||'').trim();if(!name)return false;
-  var p=(typeof ERB_PG_PROFILES!=='undefined'&&ERB_PG_PROFILES)?ERB_PG_PROFILES[norm(name)]:null;
-  if(!p||!p.fields)return false;
-  ERB_GUIDE_RESTORING=true;window.__ERB_GUIDE_RESTORING=true;
-  try{
-    PROFILE_IDS.forEach(function(id){writeField(id,p.fields[id]);});
-    if(typeof aggiornaCampiTipoPG==='function')aggiornaCampiTipoPG();
-    if(typeof ricalcolaErbologia==='function')ricalcolaErbologia();
-  }finally{ERB_GUIDE_RESTORING=false;window.__ERB_GUIDE_RESTORING=false;}
-  if(E('pgNomeSessione'))E('pgNomeSessione').value=name;
-  return true;
-}
-function killPicker(){
-  var w=E('erbV154ProfilePickerWrap');
-  if(w){w.innerHTML='';w.style.display='none';return;}
-  /* Marker invisibile: impedisce alla vecchia estensione di ricreare la tendina. */
-  var card=E('modoPersonaggio');if(!card)return;
-  var marker=document.createElement('span');marker.id='erbV154ProfilePickerWrap';marker.style.display='none';card.appendChild(marker);
-}
-function ensureNameControls(){
-  var name=E('pgNomeSessione');if(!name||E('erbV157ChangePgBtn'))return;
-  var field=name.closest?name.closest('.campo'):name.parentNode;if(!field)return;
-  var oldHint=field.querySelector('.profilo-session-hint');
-  if(oldHint)oldHint.textContent='Scrivi il nome esatto del PG. Se è già stato usato, il tool ripristina i suoi ultimi dati salvati senza caricare alcun elenco di PG.';
-  var box=document.createElement('div');box.className='erb-v157-name-actions';
-  box.innerHTML='<button type="button" class="erb-v157-change-pg" id="erbV157ChangePgBtn"><i class="fa-solid fa-user-pen" aria-hidden="true"></i> Cambia PG</button><span class="erb-v157-profile-hint">Nessuna lista globale: il profilo viene riconosciuto dal nome digitato.</span>';
-  field.appendChild(box);
-  E('erbV157ChangePgBtn').addEventListener('click',function(){window.erbV157ChangePg();});
-}
-
-/* Il nome digitato ripristina il profilo già presente nel documento Guida.
-   Non cerca né crea una Ricerca: quella viene aperta solo quando l'utente entra in «Ricerca». */
-window.rpProfileNameCommitted=function(){
-  var name=String((E('pgNomeSessione')||{}).value||'').trim();
-  var old=String((typeof ERB_PROFILE_BOUND_NAME!=='undefined'&&ERB_PROFILE_BOUND_NAME)||'').trim();
-  if(old&&norm(old)!==norm(name))snapshot(old);
-  if(typeof window.erbPlantOnProfileCommit==='function')window.erbPlantOnProfileCommit(name);
-  if(typeof RP_PROFILE_SESSION_ID!=='undefined'){RP_PROFILE_SESSION_ID='';RP_PROFILE_SESSION_DATA=null;RP_PROFILE_SESSION_NAME='';RP_PROFILE_PENDING_CREATE=false;}
-  if(!name){if(typeof rpProfileStatus==='function')rpProfileStatus('Inserisci il nome del PG.','');return Promise.resolve(null);}
-  var found=restoreProfile(name);
-  if(!found&&old&&norm(old)!==norm(name))defaultsForNewPg(name);
-  ERB_PROFILE_BOUND_NAME=name;
-  if(typeof erbPlantRenderLibrary==='function')erbPlantRenderLibrary();
-  if(typeof rpProfileStatus==='function')rpProfileStatus(found?'Profilo di '+name+' ripristinato ✓':'Nuovo PG: compila i dati; verranno salvati automaticamente.','ok');
-  if(typeof erbGuideScheduleSave==='function')erbGuideScheduleSave();
-  return Promise.resolve(null);
-};
-
-/* Cambio PG affidabile: salva il profilo corrente, poi svuota solo la scheda aperta.
-   Archivi Piante, profili già salvati e Ricerche restano intatti. */
-window.erbV157ChangePg=function(){
-  var field=E('pgNomeSessione'),old=String((typeof ERB_PROFILE_BOUND_NAME!=='undefined'&&ERB_PROFILE_BOUND_NAME)||(field&&field.value)||'').trim();
-  if(old)snapshot(old);
-  var finish=function(){
-    ERB_GUIDE_RESTORING=true;window.__ERB_GUIDE_RESTORING=true;
-    try{
-      if(typeof erbPlantOnProfileCommit==='function')erbPlantOnProfileCommit('__nuovo_pg__');
-      if(typeof resetGuidaErbologia==='function')resetGuidaErbologia();
-      defaultsForNewPg('');
-      ERB_ACTIVE_PLANT_ID='';ERB_PROFILE_BOUND_NAME='';
-      if(typeof RP_PROFILE_SESSION_ID!=='undefined'){RP_PROFILE_SESSION_ID='';RP_PROFILE_SESSION_DATA=null;RP_PROFILE_SESSION_NAME='';RP_PROFILE_PENDING_CREATE=false;}
-      if(field)field.value='';
-      if(typeof erbPlantRenderLibrary==='function')erbPlantRenderLibrary();
-    }finally{ERB_GUIDE_RESTORING=false;window.__ERB_GUIDE_RESTORING=false;}
-    if(typeof rpProfileStatus==='function')rpProfileStatus('Pronto per un altro PG: scrivi il nome.','ok');
-    if(field){field.disabled=false;try{field.focus();}catch(e){}}
-  };
-  if(field)field.disabled=true;
-  if(old&&typeof erbGuideSaveNow==='function')return Promise.resolve(erbGuideSaveNow()).catch(function(){return false;}).then(finish);
-  finish();return Promise.resolve(true);
-};
-
-function init(){killPicker();ensureNameControls();}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,220);});else setTimeout(init,220);
-})();
-</script>
-
-<!-- v158 — Cambio PG non bloccante: salva in background senza disabilitare il nome -->
-<script id="erbologia-v158-change-pg-nonblocking">
-(function(){
-'use strict';
-function E(id){return document.getElementById(id);}
-function norm(v){v=String(v||'').trim();try{v=v.normalize('NFD').replace(/[\u0300-\u036f]/g,'');}catch(e){}return v.toLocaleLowerCase('it-IT').replace(/\s+/g,' ');}
-var IDS=['pgTipo','pgSegueErbologia','empatia','sapienzaErbologicaGuida','livErborista','livAmico','livCustode','livColtivatore','pgErbologoMestiere','erbImmPelleAutofertilizzante','erbImmFarfalleVomitose','erbImmErboruto','erbImmSpruzzolosi','erbImmStridulite','erbImmVogliaVampirella','erbImmSolleticoMessicano'];
-function read(id){var e=E(id);if(!e)return undefined;return (e.type==='checkbox'||e.type==='radio')?!!e.checked:e.value;}
-function snap(name){
-  name=String(name||'').trim();
-  if(!name||typeof ERB_PG_PROFILES==='undefined')return;
-  var o={pgName:name,updatedAt:Date.now(),fields:{}};
-  IDS.forEach(function(id){var v=read(id);if(v!==undefined)o.fields[id]=v;});
-  ERB_PG_PROFILES[norm(name)]=o;
-}
-function resetUi(field){
-  ERB_GUIDE_RESTORING=true;window.__ERB_GUIDE_RESTORING=true;
-  try{
-    if(typeof window.erbPlantOnProfileCommit==='function')window.erbPlantOnProfileCommit('__nuovo_pg__');
-    if(typeof resetGuidaErbologia==='function')resetGuidaErbologia();
-    function set(id,v){var e=E(id);if(!e)return;if(e.type==='checkbox'||e.type==='radio')e.checked=!!v;else e.value=v;}
-    set('pgTipo','studente');set('pgSegueErbologia','si');set('empatia','10');set('sapienzaErbologicaGuida','0');
-    set('livErborista','0');set('livAmico','0');set('livCustode','0');set('livColtivatore','0');set('pgErbologoMestiere',false);
-    ['erbImmPelleAutofertilizzante','erbImmFarfalleVomitose','erbImmErboruto','erbImmSpruzzolosi','erbImmStridulite','erbImmVogliaVampirella','erbImmSolleticoMessicano'].forEach(function(id){set(id,false);});
-    if(typeof aggiornaCampiTipoPG==='function')aggiornaCampiTipoPG();
-    if(typeof ricalcolaErbologia==='function')ricalcolaErbologia();
-    if(typeof ERB_ACTIVE_PLANT_ID!=='undefined')ERB_ACTIVE_PLANT_ID='';
-    if(typeof ERB_PROFILE_BOUND_NAME!=='undefined')ERB_PROFILE_BOUND_NAME='';
-    if(typeof RP_PROFILE_SESSION_ID!=='undefined'){RP_PROFILE_SESSION_ID='';RP_PROFILE_SESSION_DATA=null;RP_PROFILE_SESSION_NAME='';RP_PROFILE_PENDING_CREATE=false;}
-    if(field)field.value='';
-    if(typeof erbPlantRenderLibrary==='function')erbPlantRenderLibrary();
-  }finally{
-    ERB_GUIDE_RESTORING=false;window.__ERB_GUIDE_RESTORING=false;
-  }
-  if(field){field.disabled=false;field.removeAttribute('disabled');try{field.focus();}catch(e){}}
-  var b=E('erbV157ChangePgBtn');if(b)b.disabled=false;
-  if(typeof rpProfileStatus==='function')rpProfileStatus('Pronto per un altro PG: scrivi il nome.','ok');
-}
-window.erbV157ChangePg=function(){
-  var field=E('pgNomeSessione');
-  var old=String((typeof ERB_PROFILE_BOUND_NAME!=='undefined'&&ERB_PROFILE_BOUND_NAME)||(field&&field.value)||'').trim();
-  if(old)snap(old);
-  /* erbGuideSaveNow costruisce subito il payload: possiamo quindi lasciare partire
-     la scrittura in background senza bloccare l'interfaccia. */
-  if(old&&typeof erbGuideSaveNow==='function'){
-    try{Promise.resolve(erbGuideSaveNow()).catch(function(err){console.error(err);});}catch(err){console.error(err);}
-  }
-  resetUi(field);
-  return Promise.resolve(true);
-};
-function init(){var f=E('pgNomeSessione');if(f){f.disabled=false;f.removeAttribute('disabled');}}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
-})();
-</script>
-
-
-<!-- v159 — Cambio PG robusto: intercetta il click a livello window e libera subito il campo -->
-<script id="erbologia-v159-change-pg-capture">
-(function(){
-'use strict';
-function E(id){return document.getElementById(id);}
-function norm(v){v=String(v||'').trim();try{v=v.normalize('NFD').replace(/[\u0300-\u036f]/g,'');}catch(e){}return v.toLocaleLowerCase('it-IT').replace(/\s+/g,' ');}
-var PROFILE_IDS=['pgTipo','pgSegueErbologia','empatia','sapienzaErbologicaGuida','livErborista','livAmico','livCustode','livColtivatore','pgErbologoMestiere','erbImmPelleAutofertilizzante','erbImmFarfalleVomitose','erbImmErboruto','erbImmSpruzzolosi','erbImmStridulite','erbImmVogliaVampirella','erbImmSolleticoMessicano'];
-function readField(id){var e=E(id);if(!e)return undefined;return (e.type==='checkbox'||e.type==='radio')?!!e.checked:e.value;}
-function setField(id,v){var e=E(id);if(!e)return;if(e.type==='checkbox'||e.type==='radio')e.checked=!!v;else e.value=v;}
-function snapshotProfile(name){
-  name=String(name||'').trim();if(!name||typeof ERB_PG_PROFILES==='undefined')return;
-  var o={pgName:name,updatedAt:Date.now(),fields:{}};
-  PROFILE_IDS.forEach(function(id){var v=readField(id);if(v!==undefined)o.fields[id]=v;});
-  ERB_PG_PROFILES[norm(name)]=o;
-}
-function safe(fn){try{return fn();}catch(err){console.error(err);}}
-function detachResearch(){
-  safe(function(){if(typeof RP_SAVE_TIMER!=='undefined'&&RP_SAVE_TIMER){clearTimeout(RP_SAVE_TIMER);RP_SAVE_TIMER=null;}});
-  safe(function(){if(typeof rpSaveNow==='function'&&typeof RP_CURRENT_ID!=='undefined'&&RP_CURRENT_ID)Promise.resolve(rpSaveNow()).catch(function(err){console.error(err);});});
-  safe(function(){if(typeof RP_CURRENT_ID!=='undefined'){RP_CURRENT_ID='';RP_CURRENT_DATA=null;RP_READONLY=false;}});
-  safe(function(){var w=typeof rpWorkspace==='function'?rpWorkspace():null;if(w)w.style.display='none';var h=E('piante-session-home');if(h)h.style.display='block';});
-}
-function performChange(){
-  var field=E('pgNomeSessione');if(!field)return;
-  var old=String((typeof ERB_PROFILE_BOUND_NAME!=='undefined'&&ERB_PROFILE_BOUND_NAME)||field.value||'').trim();
-
-  /* Congela subito la fotografia del vecchio PG e della Pianta aperta PRIMA di svuotare la UI. */
-  if(old)snapshotProfile(old);
-  safe(function(){if(typeof erbPlantSyncActive==='function'&&typeof erbGuideCollectState==='function')erbPlantSyncActive(erbGuideCollectState());});
-  safe(function(){if(typeof erbGuideLocalWrite==='function'&&typeof erbGuideCollectState==='function')erbGuideLocalWrite(erbGuideCollectState());});
-  safe(function(){if(old&&typeof erbGuideSaveNow==='function')Promise.resolve(erbGuideSaveNow()).catch(function(err){console.error(err);});});
-
-  /* Il feedback visibile deve essere immediato e non dipendere da Firebase o da altri listener. */
-  field.disabled=false;field.readOnly=false;field.removeAttribute('disabled');field.removeAttribute('readonly');field.value='';
-  var btn=E('erbV157ChangePgBtn');if(btn){btn.disabled=false;btn.style.pointerEvents='auto';}
-
-  safe(function(){if(typeof ERB_GUIDE_SAVE_TIMER!=='undefined'&&ERB_GUIDE_SAVE_TIMER){clearTimeout(ERB_GUIDE_SAVE_TIMER);ERB_GUIDE_SAVE_TIMER=null;}});
-  safe(function(){if(typeof ERB_GUIDE_NAME_SAVE_TIMER!=='undefined'&&ERB_GUIDE_NAME_SAVE_TIMER){clearTimeout(ERB_GUIDE_NAME_SAVE_TIMER);ERB_GUIDE_NAME_SAVE_TIMER=null;}});
-  safe(detachResearch);
-
-  /* Non usare il vecchio sentinel __nuovo_pg__: può attivare logiche di cambio proprietario.
-     L'archivio resta intatto, si chiude soltanto la Pianta attiva. */
-  safe(function(){if(typeof ERB_ACTIVE_PLANT_ID!=='undefined')ERB_ACTIVE_PLANT_ID='';});
-  safe(function(){if(typeof ERB_PROFILE_BOUND_NAME!=='undefined')ERB_PROFILE_BOUND_NAME='';});
-  safe(function(){if(typeof RP_PROFILE_SESSION_ID!=='undefined'){RP_PROFILE_SESSION_ID='';RP_PROFILE_SESSION_DATA=null;RP_PROFILE_SESSION_NAME='';RP_PROFILE_PENDING_CREATE=false;}});
-
-  /* Azzera la Guida e i soli dati generici del nuovo PG senza toccare archivi/profili. */
-  safe(function(){if(typeof resetGuidaErbologia==='function')resetGuidaErbologia();});
-  setField('pgTipo','studente');setField('pgSegueErbologia','si');setField('empatia','10');setField('sapienzaErbologicaGuida','0');
-  setField('livErborista','0');setField('livAmico','0');setField('livCustode','0');setField('livColtivatore','0');setField('pgErbologoMestiere',false);
-  ['erbImmPelleAutofertilizzante','erbImmFarfalleVomitose','erbImmErboruto','erbImmSpruzzolosi','erbImmStridulite','erbImmVogliaVampirella','erbImmSolleticoMessicano'].forEach(function(id){setField(id,false);});
-  safe(function(){if(typeof aggiornaCampiTipoPG==='function')aggiornaCampiTipoPG();});
-  safe(function(){if(typeof ricalcolaErbologia==='function')ricalcolaErbologia();});
-  safe(function(){if(typeof erbPlantRenderLibrary==='function')erbPlantRenderLibrary();});
-  safe(function(){if(typeof rpProfileStatus==='function')rpProfileStatus('Pronto per un altro PG: scrivi il nome.','ok');});
-  try{field.focus();}catch(e){}
-}
-window.erbV159ChangePg=performChange;
-/* Capture su window: funziona anche se il pulsante è stato ricreato e ha perso il listener diretto. */
-window.addEventListener('click',function(ev){
-  var t=ev.target,btn=t&&t.closest?t.closest('#erbV157ChangePgBtn'):null;if(!btn)return;
-  ev.preventDefault();ev.stopPropagation();
-  performChange();
-},true);
-function init(){var f=E('pgNomeSessione');if(f){f.disabled=false;f.readOnly=false;f.removeAttribute('disabled');f.removeAttribute('readonly');}var b=E('erbV157ChangePgBtn');if(b){b.disabled=false;b.style.pointerEvents='auto';}}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
-})();
-</script>
-
-
-<!-- v160 — Salvataggio esplicito profilo PG + cache locale di sicurezza -->
-<style id="erbologia-v160-profile-save-style">
-#modoPersonaggio .erb-v160-profile-save{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0 4px;padding-top:13px;border-top:1px solid rgba(53,84,43,.28)}
-#modoPersonaggio .erb-v160-save-btn{border:1px solid #5d7f47;background:#29451f;color:#f3faed;border-radius:6px;padding:9px 14px;cursor:pointer;font-weight:800}
-#modoPersonaggio .erb-v160-save-btn:hover{filter:brightness(1.08)}
-#modoPersonaggio .erb-v160-save-btn:disabled{opacity:.62;cursor:wait}
-#modoPersonaggio .erb-v160-save-status{font-size:.88em;line-height:1.4;color:#35542b}
-</style>
-<script id="erbologia-v160-profile-save">
-(function(){
-'use strict';
-function E(id){return document.getElementById(id);}
-function norm(v){v=String(v||'').trim();try{v=v.normalize('NFD').replace(/[\u0300-\u036f]/g,'');}catch(e){}return v.toLocaleLowerCase('it-IT').replace(/\s+/g,' ');}
-var PROFILE_IDS=['pgTipo','pgSegueErbologia','empatia','sapienzaErbologicaGuida','livErborista','livAmico','livCustode','livColtivatore','pgErbologoMestiere','erbImmPelleAutofertilizzante','erbImmFarfalleVomitose','erbImmErboruto','erbImmSpruzzolosi','erbImmStridulite','erbImmVogliaVampirella','erbImmSolleticoMessicano'];
-function readField(id){var e=E(id);if(!e)return undefined;return (e.type==='checkbox'||e.type==='radio')?!!e.checked:e.value;}
-function writeField(id,v){var e=E(id);if(!e||v===undefined)return;if(e.type==='checkbox'||e.type==='radio')e.checked=!!v;else e.value=v;}
-function cacheKey(name){var uid='anon';try{if(typeof RP_FB!=='undefined'&&RP_FB.user&&RP_FB.user.uid)uid=RP_FB.user.uid;}catch(e){}return 'ffgdr_erb_pg_v160_'+uid+'_'+encodeURIComponent(norm(name));}
-function cacheWrite(profile){try{if(profile&&profile.pgName)localStorage.setItem(cacheKey(profile.pgName),JSON.stringify(profile));}catch(e){}}
-function cacheRead(name){try{var raw=localStorage.getItem(cacheKey(name));if(!raw)return null;var p=JSON.parse(raw);return p&&p.fields?p:null;}catch(e){return null;}}
-function snapshot(name){
-  name=String(name||'').trim();if(!name)return null;
-  var p={pgName:name,updatedAt:Date.now(),fields:{}};
-  PROFILE_IDS.forEach(function(id){var v=readField(id);if(v!==undefined)p.fields[id]=v;});
-  if(typeof ERB_PG_PROFILES!=='undefined')ERB_PG_PROFILES[norm(name)]=p;
-  cacheWrite(p);return p;
-}
-function profileFor(name){
-  name=String(name||'').trim();if(!name)return null;
-  var p=null;try{if(typeof ERB_PG_PROFILES!=='undefined')p=ERB_PG_PROFILES[norm(name)]||null;}catch(e){}
-  return (p&&p.fields)?p:cacheRead(name);
-}
-function applyProfile(name){
-  var p=profileFor(name);if(!p||!p.fields)return false;
-  if(typeof ERB_GUIDE_RESTORING!=='undefined')ERB_GUIDE_RESTORING=true;window.__ERB_GUIDE_RESTORING=true;
-  try{
-    PROFILE_IDS.forEach(function(id){writeField(id,p.fields[id]);});
-    var n=E('pgNomeSessione');if(n)n.value=String(p.pgName||name);
-    if(typeof ERB_PG_PROFILES!=='undefined')ERB_PG_PROFILES[norm(name)]=p;
-    if(typeof ERB_PROFILE_BOUND_NAME!=='undefined')ERB_PROFILE_BOUND_NAME=String(p.pgName||name);
-    if(typeof aggiornaCampiTipoPG==='function')aggiornaCampiTipoPG();
-    if(typeof ricalcolaErbologia==='function')ricalcolaErbologia();
-    if(typeof erbPlantRenderLibrary==='function')erbPlantRenderLibrary();
-  }finally{if(typeof ERB_GUIDE_RESTORING!=='undefined')ERB_GUIDE_RESTORING=false;window.__ERB_GUIDE_RESTORING=false;}
-  return true;
-}
-function setStatus(txt,bad){var s=E('erbV160ProfileSaveStatus');if(s){s.textContent=txt||'';s.style.color=bad?'#7a2727':'#35542b';}}
-function saveCurrent(showFeedback){
-  var name=String((E('pgNomeSessione')||{}).value||'').trim();
-  if(!name){setStatus('Inserisci prima il nome del PG.',true);return Promise.resolve(false);}
-  snapshot(name);
-  try{if(typeof erbPlantSyncActive==='function'&&typeof erbGuideCollectState==='function')erbPlantSyncActive(erbGuideCollectState());}catch(e){console.error(e);}
-  try{if(typeof erbGuideLocalWrite==='function'&&typeof erbGuideCollectState==='function')erbGuideLocalWrite(erbGuideCollectState());}catch(e){console.error(e);}
-  var btn=E('erbV160SaveProfileBtn');if(btn)btn.disabled=true;
-  if(showFeedback!==false)setStatus('Salvataggio di '+name+'…',false);
-  var p;
-  try{p=(typeof erbGuideSaveNow==='function')?Promise.resolve(erbGuideSaveNow()):Promise.resolve(true);}catch(err){p=Promise.reject(err);}
-  return p.then(function(ok){if(showFeedback!==false)setStatus(ok===false?'Salvataggio non riuscito: controlla lo stato Firebase sopra.':'Dati di '+name+' salvati ✓',ok===false);return ok!==false;}).catch(function(err){console.error(err);setStatus('Salvataggio non riuscito: '+(err&&err.message?err.message:err),true);return false;}).finally(function(){if(btn)btn.disabled=false;});
-}
-window.erbV160SaveProfileNow=saveCurrent;
-
-/* Il commit del nome usa anche la cache locale: ritornando allo stesso PG nella stessa sessione
-   i dati ricompaiono subito, senza una lettura Firebase aggiuntiva. */
-var previousCommit=window.rpProfileNameCommitted;
-window.rpProfileNameCommitted=function(){
-  var args=arguments,name=String((E('pgNomeSessione')||{}).value||'').trim();
-  var run;
-  try{run=previousCommit?Promise.resolve(previousCommit.apply(this,args)):Promise.resolve(null);}catch(err){run=Promise.resolve(null);}
-  return run.catch(function(){return null;}).then(function(out){
-    if(name&&applyProfile(name)){
-      if(typeof rpProfileStatus==='function')rpProfileStatus('Profilo di '+name+' ripristinato ✓','ok');
-    }
-    return out;
-  });
-};
-
-/* Prima del click su Cambia PG congela SEMPRE i valori nel profilo locale. Il click v159
-   può poi svuotare subito l'interfaccia senza perdere la fotografia del PG. */
-window.addEventListener('pointerdown',function(ev){
-  var t=ev.target,b=t&&t.closest?t.closest('#erbV157ChangePgBtn'):null;if(!b)return;
-  var name=String((E('pgNomeSessione')||{}).value||'').trim();if(name)snapshot(name);
-},true);
-
-function ensureButton(){
-  if(E('erbV160SaveProfileBtn'))return;
-  var name=E('pgNomeSessione');if(!name)return;
-  var card=name.closest?name.closest('.scheda'):null;if(!card)return;
-  var wrap=document.createElement('div');wrap.className='erb-v160-profile-save';
-  wrap.innerHTML='<button type="button" class="erb-v160-save-btn" id="erbV160SaveProfileBtn"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Salva dati PG</button><span class="erb-v160-save-status" id="erbV160ProfileSaveStatus">L’autosalvataggio resta attivo; questo tasto crea un salvataggio esplicito prima di cambiare PG.</span>';
-  var before=card.querySelector('.erb-reset-profile-wrap');
-  if(before)card.insertBefore(wrap,before);else card.appendChild(wrap);
-}
-window.addEventListener('click',function(ev){var t=ev.target,b=t&&t.closest?t.closest('#erbV160SaveProfileBtn'):null;if(!b)return;ev.preventDefault();ev.stopPropagation();saveCurrent(true);},true);
-function init(){ensureButton();var n=String((E('pgNomeSessione')||{}).value||'').trim();if(n){var p=profileFor(n);if(p)cacheWrite(p);}}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,260);});else setTimeout(init,260);
-})();
-</script>
-
-<style id="erbologia-v162-morente-no-narratore-style">
-#rigaMorenteGestito1,#rigaMorenteGestito2,#rigaMorenteGestito3{display:none!important}
-</style>
-
 
 <!-- Erbologia tool v163 — audit robustezza import Ricerca→Guida allineato a Magizoologia v177: attesa del caricamento Guida/profilo, handler unico, import singoli/multipli serializzati, verifica reale di specie + provenienza + archivio, feedback visibile e timeout. Nessuna lista PG e nessuna lettura globale aggiuntiva. 13/09/2026 -->
 <style id="erbologia-v163-import-audit-style">
@@ -9809,3 +9503,182 @@ function init(){ensureResearchUx();ensureLabelStatus();var lead=document.querySe
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
+
+<style id="erbologia-v171-consolidated-style">
+/* ===== v171 — controlli profilo e Malus ===== */
+#erbV154ProfilePickerWrap,.erb-v157-name-actions,.erb-v160-profile-save,.erb-reset-profile-wrap,#bottoneReset{display:none!important}
+.erb-v171-profile-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:9px}
+.erb-v171-profile-actions .bottone-azione{margin:0!important;padding:8px 12px!important}
+.erb-v171-profile-malus{margin:15px 0;padding:14px;border:1px solid #6f9152;border-radius:10px;background:rgba(247,252,239,.42);color:#14240f}
+.erb-v171-profile-malus h3{margin:0 0 5px!important;color:#18370f!important}.erb-v171-malus-help{font-size:.84em;line-height:1.45;color:#2d4625;margin-bottom:12px}
+.erb-v171-malus-groups{display:grid;grid-template-columns:1.05fr 1.55fr .72fr;gap:12px;align-items:start}
+.erb-v171-malus-group{padding:12px;border:1px solid #87a76b;border-radius:10px;background:#f1f7e8;color:#14240f;box-shadow:0 4px 12px rgba(31,64,24,.07)}
+.erb-v171-malus-group h4{margin:0 0 10px;color:#254a1a;font-size:.98em}.erb-v171-malus-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.erb-v171-malus-grid.magici{grid-template-columns:repeat(3,minmax(0,1fr))}
+.erb-v171-malus-field{min-width:0;padding:8px 9px;border:1px solid rgba(73,108,53,.25);border-radius:8px;background:rgba(255,255,255,.35)}.erb-v171-malus-field label{display:block!important;min-height:0!important;margin:0 0 5px!important;color:#24481a!important;font-size:.78em!important;font-weight:800!important}
+.erb-v171-malus-input{display:grid;grid-template-columns:30px minmax(64px,1fr) 32px;align-items:center;min-height:40px;border:1px solid #55763d;border-radius:7px;background:#203719;overflow:hidden}.erb-v171-malus-input>span{height:40px;display:flex;align-items:center;justify-content:center;background:#172b12;color:#dff0c9;font-size:1.08em;font-weight:900}
+#erbV171ProfileMalus input[type=number]{width:100%!important;height:40px!important;min-width:0!important;border:0!important;border-radius:0!important;background:#29451f!important;color:#f6fbed!important;-webkit-text-fill-color:#f6fbed!important;text-align:center!important;font-weight:900!important;font-size:1em!important;padding:5px!important;appearance:textfield;-moz-appearance:textfield}
+#erbV171ProfileMalus input[type=number]::-webkit-inner-spin-button,#erbV171ProfileMalus input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.erb-v171-stepper{height:40px;display:grid;grid-template-rows:1fr 1fr;border-left:1px solid #55763d;background:#172b12}.erb-v171-stepper button{width:32px!important;height:20px!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;color:#dff0c9!important;font-size:10px!important;line-height:18px!important;cursor:pointer!important}.erb-v171-stepper button+button{border-top:1px solid rgba(223,240,201,.15)!important}.erb-v171-stepper button:hover{background:#355329!important;color:#fff!important}
+.erb-v171-malus-note{margin-top:10px;padding:9px 11px;border-left:4px solid #6b8e4e;border-radius:0 7px 7px 0;background:rgba(255,255,255,.28);color:#29451f;font-size:.78em;line-height:1.45}
+.erb-v171-malus-group.sociali{min-width:220px}.erb-v171-malus-group.sociali .erb-v171-malus-grid{grid-template-columns:1fr}.erb-v171-malus-group.sociali .erb-v171-malus-field label{font-size:.88em!important}
+@media(max-width:980px){.erb-v171-malus-groups{grid-template-columns:1fr 1fr}.erb-v171-malus-group.sociali{grid-column:1/-1;min-width:0}.erb-v171-malus-group.sociali .erb-v171-malus-field{max-width:270px}}
+@media(max-width:680px){.erb-v171-malus-groups{grid-template-columns:1fr}.erb-v171-malus-grid,.erb-v171-malus-grid.magici{grid-template-columns:repeat(2,minmax(0,1fr))}.erb-v171-malus-group.sociali{grid-column:auto}.erb-v171-malus-group.sociali .erb-v171-malus-field{max-width:none}}
+@media(max-width:430px){.erb-v171-malus-grid,.erb-v171-malus-grid.magici{grid-template-columns:1fr}}
+
+/* ===== v171 — Registro malus Ricerca ===== */
+.erb-v171-research-malus-box{margin:0 0 14px;padding:12px 14px;border:1px solid #789b5d;border-radius:9px;background:#eef5e5;color:#1a2f14}.erb-v171-research-malus-box h3{margin:0 0 5px!important;color:#244b1b!important}.erb-v171-research-malus-box .nota-regole{color:#36532d!important}
+.erb-v171-research-malus-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;margin-top:8px;padding:8px;border:1px solid #9aae84;border-radius:7px;background:#fbfff7}.erb-v171-research-malus-row.resolved{opacity:.62}.erb-v171-research-malus-row input[type=text]{width:100%;box-sizing:border-box;background:#fff!important;color:#1c3216!important;border:1px solid #8da676!important;border-radius:5px;padding:7px 8px}.erb-v171-research-malus-source{font-size:.72em;color:#56704c;margin-top:3px}.erb-v171-research-malus-row label{display:flex;align-items:center;gap:5px;color:#29451f;font-size:.78em;font-weight:700}.erb-v171-research-malus-remove{border:1px solid #9c5f55;border-radius:5px;background:#fff5f1;color:#792b25;padding:6px 8px;cursor:pointer}
+.erb-v171-research-malus-add{display:flex;gap:8px;align-items:center;margin-top:10px}.erb-v171-research-malus-add input{flex:1;min-width:0;background:#fff!important;color:#1c3216!important;border:1px solid #8da676!important;border-radius:5px;padding:8px 9px}.erb-v171-research-malus-empty{margin-top:8px;color:#526b48;font-style:italic;font-size:.84em}
+@media(max-width:620px){.erb-v171-research-malus-row{grid-template-columns:1fr}.erb-v171-research-malus-add{flex-direction:column;align-items:stretch}}
+
+/* ===== v171 — comandi sempre visibili ===== */
+#erbV171ResearchSticky{position:sticky;top:0;z-index:50;display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 12px;padding:9px 10px;border:1px solid #557a3e;border-radius:8px;background:rgba(24,40,18,.97);box-shadow:0 5px 14px rgba(0,0,0,.22)}
+#erbV171ResearchSticky button{margin:0!important}.erb-v171-mal-summary{flex:1 1 320px;color:#eaf5df;font-size:.82em;line-height:1.35}.erb-v171-mal-summary b{color:#cbe8a7}.erb-v171-mal-summary .muted{color:#9eb293}.erb-v171-mal-summary button{margin-left:7px!important;padding:4px 7px!important;font-size:.8em!important}
+#rp-btn-new-session,#erbV164NewResearchBtn{display:none!important}
+#erbV171GuideSticky{position:sticky;top:0;z-index:50;display:flex;justify-content:flex-end;gap:8px;margin:0 0 12px;padding:8px;border:1px solid #557a3e;border-radius:8px;background:rgba(24,40,18,.97);box-shadow:0 5px 14px rgba(0,0,0,.22)}
+.erb-v171-manual-save{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:16px;padding-top:12px;border-top:1px dashed currentColor}.erb-v171-manual-save button{margin:0!important}.erb-v171-save-feedback{font-size:.78em;opacity:.9}
+
+/* ===== v171 — Archivio compatto ===== */
+#erbV171LibraryDetails{margin:0 0 15px;border:1px solid #6f9850;border-radius:9px;background:#203619;overflow:hidden}#erbV171LibraryDetails>summary{cursor:pointer;list-style:none;padding:11px 13px;background:linear-gradient(180deg,#36542a,#29431f);color:#eef8e7;font-weight:900}#erbV171LibraryDetails>summary::-webkit-details-marker{display:none}#erbV171LibraryDetails>summary:after{content:' +';float:right}#erbV171LibraryDetails[open]>summary:after{content:' −'}#erbV171LibraryDetails #erbPlantLibraryCard{margin:0!important;border:0!important;border-radius:0!important}
+.erb-v171-open-below{opacity:.62!important;cursor:default!important}
+
+/* ===== v171 — modali conferma ===== */
+.erb-v171-modal{display:none;position:fixed;inset:0;z-index:999999;background:rgba(5,12,4,.78);align-items:center;justify-content:center;padding:16px}.erb-v171-modal.open{display:flex}.erb-v171-modal-box{width:min(620px,calc(100vw - 32px));max-height:calc(100vh - 40px);overflow:auto;padding:18px 20px;border:1px solid #7a9d58;border-radius:10px;background:#1b2d15;color:#eef7e8;box-shadow:0 18px 60px rgba(0,0,0,.6)}.erb-v171-modal-box h3{margin:0 0 9px;color:#d7efb5}.erb-v171-modal-box p{line-height:1.48}.erb-v171-modal-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.erb-v171-modal-actions button{margin:0!important}
+.erb-v171-conclude-box{margin:10px 0 0;padding:11px 12px;border:1px solid #789b5d;border-left:5px solid #6f9850;border-radius:7px;background:#eef5e5;color:#1a2f14}.erb-v171-conclude-box h4{margin:0 0 7px;color:#244b1b}.erb-v171-conclude-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.erb-v171-conclude-actions select{max-width:260px;background:#fff!important;color:#1c3216!important}
+
+/* ===== v171 — contrasto finale consolidato ===== */
+#modoRicerca .scheda,#modoRicerca .blocco-incontro,#modoPersonaggio .scheda{color:#10200b!important}
+#modoRicerca .scheda h2,#modoRicerca .scheda h3,#modoRicerca .scheda h4,#modoRicerca .blocco-incontro h2,#modoRicerca .blocco-incontro h3,#modoPersonaggio .scheda h2,#modoPersonaggio .scheda h3,#modoPersonaggio .scheda h4{color:#17340f!important}
+#modoRicerca .scheda label,#modoRicerca .blocco-incontro label,#modoPersonaggio .scheda label{color:#17370f!important}
+#modoRicerca input:not([type=checkbox]):not([type=radio]),#modoRicerca select,#modoRicerca textarea,#modoErbologia input:not([type=checkbox]):not([type=radio]),#modoErbologia select,#modoErbologia textarea{background:#243b1b!important;color:#f6fbf1!important;-webkit-text-fill-color:#f6fbf1!important;border-color:#5b7e43!important}
+#modoRicerca select option,#modoErbologia select option{background:#14210f!important;color:#f6fbf1!important}
+#modoErbologia .pannello,#modoErbologia .erb-bonus-box,#modoErbologia .ebx-special,#modoErbologia .summary-box{color:#f1f8ea!important}
+#modoErbologia .pannello h2,#modoErbologia .pannello h3,#modoErbologia .pannello h4{color:#d7efb5!important}
+#modoErbologia .pannello .scheda,#modoErbologia .pannello .blocco-incontro,#modoErbologia .erb-v140-plant-item,#modoErbologia .erb-post-reference-table-body{color:#14210e!important}
+#modoErbologia .pannello .scheda h2,#modoErbologia .pannello .scheda h3,#modoErbologia .pannello .scheda h4,#modoErbologia .pannello .blocco-incontro h2,#modoErbologia .pannello .blocco-incontro h3{color:#17340f!important}
+#modoErbologia .pannello .scheda label,#modoErbologia .pannello .blocco-incontro label{color:#17370f!important}
+</style>
+
+<script id="erbologia-v171-consolidated-controller">
+(function(){
+'use strict';
+function E(id){return document.getElementById(id);}
+function norm(v){v=String(v||'').trim();try{v=v.normalize('NFD').replace(/[\u0300-\u036f]/g,'');}catch(e){}return v.toLocaleLowerCase('it-IT').replace(/[’‘]/g,"'").replace(/\s+/g,' ').trim();}
+function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function setField(id,v){var e=E(id);if(!e)return;if(e.type==='checkbox'||e.type==='radio')e.checked=!!v;else e.value=(v==null?'':v);}
+function readField(id){var e=E(id);if(!e)return undefined;return (e.type==='checkbox'||e.type==='radio')?!!e.checked:e.value;}
+function currentPg(){return String((E('pgNomeSessione')||{}).value||'').trim();}
+function waitFor(test,ms){ms=ms||10000;var start=Date.now();return new Promise(function(resolve,reject){(function tick(){var ok=false;try{ok=!!test();}catch(e){}if(ok){resolve(true);return;}if(Date.now()-start>=ms){reject(new Error('Tempo di attesa scaduto.'));return;}setTimeout(tick,80);})();});}
+function timeout(p,ms,msg){return Promise.race([Promise.resolve(p),new Promise(function(_,rej){setTimeout(function(){rej(new Error(msg||'Operazione troppo lenta.'));},ms||10000);})]);}
+
+var PROFILE_IDS=['pgTipo','pgSegueErbologia','empatia','sapienzaErbologicaGuida','livErborista','livAmico','livCustode','livColtivatore','pgErbologoMestiere','erbImmPelleAutofertilizzante','erbImmFarfalleVomitose','erbImmErboruto','erbImmSpruzzolosi','erbImmStridulite','erbImmVogliaVampirella','erbImmSolleticoMessicano','malusFisSalute','malusFisFatica','malusFisResistenza','malusFisDestrezza','malusMagAcume','malusMagTecnica','malusMagEmpatia','malusMagPercezione','malusMagPotenza','malusMagVolonta','malusSocDialettica'];
+var MALUS=[['malusFisSalute','Fisico','Salute'],['malusFisFatica','Fisico','Fatica'],['malusFisResistenza','Fisico','Resistenza'],['malusFisDestrezza','Fisico','Destrezza'],['malusMagAcume','Magico','Acume'],['malusMagTecnica','Magico','Tecnica'],['malusMagEmpatia','Magico','Empatia'],['malusMagPercezione','Magico','Percezione'],['malusMagPotenza','Magico','Potenza'],['malusMagVolonta','Magico','Volontà'],['malusSocDialettica','Sociale','Dialettica']];
+var profileReadyName='';
+function cacheKey(name){var uid='anon';try{if(typeof RP_FB!=='undefined'&&RP_FB.user&&RP_FB.user.uid)uid=RP_FB.user.uid;}catch(e){}return 'ffgdr_erb_pg_v171_'+uid+'_'+encodeURIComponent(norm(name));}
+function snapshotProfile(name){name=String(name||'').trim();if(!name)return null;var p={pgName:name,updatedAt:Date.now(),fields:{}};PROFILE_IDS.forEach(function(id){var v=readField(id);if(v!==undefined)p.fields[id]=v;});try{if(typeof ERB_PG_PROFILES!=='undefined')ERB_PG_PROFILES[norm(name)]=p;}catch(e){}try{localStorage.setItem(cacheKey(name),JSON.stringify(p));}catch(e){}try{if(typeof ERB_PROFILE_BOUND_NAME!=='undefined')ERB_PROFILE_BOUND_NAME=name;}catch(e){}profileReadyName=name;return p;}
+function profileFor(name){name=String(name||'').trim();if(!name)return null;var p=null;try{if(typeof ERB_PG_PROFILES!=='undefined')p=ERB_PG_PROFILES[norm(name)]||null;}catch(e){}if(p&&p.fields)return p;try{var raw=localStorage.getItem(cacheKey(name));if(raw){p=JSON.parse(raw);if(p&&p.fields)return p;}var uid='anon';try{if(typeof RP_FB!=='undefined'&&RP_FB.user&&RP_FB.user.uid)uid=RP_FB.user.uid;}catch(x){}raw=localStorage.getItem('ffgdr_erb_pg_v160_'+uid+'_'+encodeURIComponent(norm(name)));if(raw){p=JSON.parse(raw);if(p&&p.fields)return p;}}catch(e){}return null;}
+function applyProfile(name){var p=profileFor(name);if(!p||!p.fields)return false;try{ERB_GUIDE_RESTORING=true;window.__ERB_GUIDE_RESTORING=true;}catch(e){}try{PROFILE_IDS.forEach(function(id){setField(id,p.fields[id]===undefined&&/^malus/.test(id)?'0':p.fields[id]);});setField('pgNomeSessione',p.pgName||name);if(typeof ERB_PG_PROFILES!=='undefined')ERB_PG_PROFILES[norm(name)]=p;if(typeof ERB_PROFILE_BOUND_NAME!=='undefined')ERB_PROFILE_BOUND_NAME=p.pgName||name;profileReadyName=p.pgName||name;if(typeof aggiornaCampiTipoPG==='function')aggiornaCampiTipoPG();if(typeof ricalcolaErbologia==='function')ricalcolaErbologia();if(typeof erbPlantRenderLibrary==='function')erbPlantRenderLibrary();}finally{try{ERB_GUIDE_RESTORING=false;window.__ERB_GUIDE_RESTORING=false;}catch(e){}}return true;}
+function status(txt,bad){if(typeof rpProfileStatus==='function')rpProfileStatus(txt,bad?'bad':'ok');else{var s=E('rp-profile-session-status');if(s){s.textContent=txt;s.className='session-status '+(bad?'bad':'ok');}}}
+
+/* Guida: un solo salvataggio autoritativo, con profilo completo (compresi i Malus). */
+window.erbGuideSaveNow=function(){
+  try{if(typeof ERB_GUIDE_RESTORING!=='undefined'&&ERB_GUIDE_RESTORING)return Promise.resolve(true);}catch(e){}
+  var name=currentPg();if(name&&profileReadyName&&norm(name)===norm(profileReadyName))snapshotProfile(name);
+  var ref=typeof erbGuideDoc==='function'?erbGuideDoc():null;if(!ref)return Promise.resolve(false);
+  try{if(typeof ERB_GUIDE_SAVE_TIMER!=='undefined'&&ERB_GUIDE_SAVE_TIMER){clearTimeout(ERB_GUIDE_SAVE_TIMER);ERB_GUIDE_SAVE_TIMER=null;}}catch(e){}
+  var state=typeof erbGuideCollectState==='function'?erbGuideCollectState():{};
+  try{if(typeof erbPlantSyncActive==='function')erbPlantSyncActive(state);}catch(e){}
+  try{if(typeof erbGuideLocalWrite==='function')erbGuideLocalWrite(state);}catch(e){}
+  var payload={recordType:'guide',ownerUid:'__erb_guide__',guideUid:RP_FB.user.uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),toolVersion:'erbologia-guide-v171',state:state,plantLibrary:(typeof ERB_PLANT_LIBRARY!=='undefined'?ERB_PLANT_LIBRARY:[]),activePlantId:(typeof ERB_ACTIVE_PLANT_ID!=='undefined'?ERB_ACTIVE_PLANT_ID:''),pgProfiles:(typeof ERB_PG_PROFILES!=='undefined'?ERB_PG_PROFILES:{})};
+  if(typeof erbGuideStatus==='function')erbGuideStatus('Guida: salvataggio su Firebase…','saving');
+  var chain=(typeof ERB_GUIDE_SAVE_CHAIN!=='undefined'?ERB_GUIDE_SAVE_CHAIN:Promise.resolve());
+  var task=Promise.resolve(chain).catch(function(){}).then(function(){return ref.set(payload,{merge:true});}).then(function(){if(typeof erbPlantRenderLibrary==='function')erbPlantRenderLibrary();if(typeof erbGuideStatus==='function')erbGuideStatus('Guida e archivio Piante salvati su Firebase ✓','ok');return true;}).catch(function(err){console.error(err);if(typeof erbGuideStatus==='function')erbGuideStatus('Guida: errore di salvataggio Firebase — '+(err.message||err),'bad');return false;});
+  try{ERB_GUIDE_SAVE_CHAIN=task;}catch(e){}return task;
+};
+var baseGuideSchedule=window.erbGuideScheduleSave;
+if(typeof baseGuideSchedule==='function')window.erbGuideScheduleSave=function(){var n=currentPg();if(n&&(!profileReadyName||norm(n)!==norm(profileReadyName)))return;return baseGuideSchedule.apply(this,arguments);};
+
+function saveProfile(show){var name=currentPg();if(!name){status('Inserisci prima il nome del PG.',true);return Promise.resolve(false);}snapshotProfile(name);var b=E('erbV171SavePgBtn');if(b)b.disabled=true;if(show!==false)status('Salvataggio di '+name+'…',false);return timeout(window.erbGuideSaveNow(),10000,'Firebase non ha confermato il salvataggio entro 10 secondi.').then(function(ok){if(ok===false)throw new Error('Firebase non ha confermato il salvataggio.');snapshotProfile(name);if(show!==false)status('Dati di '+name+' salvati ✓',false);return true;}).catch(function(err){console.error(err);status('Salvataggio non riuscito: '+(err.message||err),true);return false;}).finally(function(){if(b)b.disabled=false;});}
+window.erbV171SaveProfileNow=saveProfile;window.erbV160SaveProfileNow=saveProfile;
+function loadProfile(){var name=currentPg();if(!name){status('Inserisci il nome del PG da caricare.',true);return Promise.resolve(false);}status('Caricamento di '+name+'…',false);return waitFor(function(){try{return typeof ERB_GUIDE_READY==='undefined'||ERB_GUIDE_READY===true;}catch(e){return true;}},10000).catch(function(){return true;}).then(function(){if(!applyProfile(name)){status('Nessun profilo salvato trovato per '+name+'. Puoi compilarlo e premere «Salva dati PG».',true);return false;}status('Profilo di '+name+' caricato ✓',false);return true;});}
+function clearProfile(){var old=profileReadyName||currentPg();if(old){snapshotProfile(old);Promise.resolve(window.erbGuideSaveNow()).catch(function(){});}try{if(typeof RP_SAVE_TIMER!=='undefined'&&RP_SAVE_TIMER){clearTimeout(RP_SAVE_TIMER);RP_SAVE_TIMER=null;}}catch(e){}try{if(typeof ERB_GUIDE_SAVE_TIMER!=='undefined'&&ERB_GUIDE_SAVE_TIMER){clearTimeout(ERB_GUIDE_SAVE_TIMER);ERB_GUIDE_SAVE_TIMER=null;}}catch(e){}try{if(typeof RP_CURRENT_ID!=='undefined'){RP_CURRENT_ID='';RP_CURRENT_DATA=null;RP_READONLY=false;}}catch(e){}try{if(typeof ERB_ACTIVE_PLANT_ID!=='undefined')ERB_ACTIVE_PLANT_ID='';}catch(e){}try{if(typeof ERB_PROFILE_BOUND_NAME!=='undefined')ERB_PROFILE_BOUND_NAME='';}catch(e){}profileReadyName='';try{ERB_GUIDE_RESTORING=true;window.__ERB_GUIDE_RESTORING=true;}catch(e){}try{if(typeof resetGuidaErbologia==='function')resetGuidaErbologia();setField('pgNomeSessione','');setField('pgTipo','studente');setField('pgSegueErbologia','si');setField('empatia','10');setField('sapienzaErbologicaGuida','0');['livErborista','livAmico','livCustode','livColtivatore'].forEach(function(id){setField(id,'0');});setField('pgErbologoMestiere',false);['erbImmPelleAutofertilizzante','erbImmFarfalleVomitose','erbImmErboruto','erbImmSpruzzolosi','erbImmStridulite','erbImmVogliaVampirella','erbImmSolleticoMessicano'].forEach(function(id){setField(id,false);});MALUS.forEach(function(m){setField(m[0],'0');});if(typeof aggiornaCampiTipoPG==='function')aggiornaCampiTipoPG();if(typeof ricalcolaErbologia==='function')ricalcolaErbologia();if(typeof erbPlantRenderLibrary==='function')erbPlantRenderLibrary();var w=E('piante-workspace'),h=E('piante-session-home');if(w)w.style.display='none';if(h)h.style.display='block';}finally{try{ERB_GUIDE_RESTORING=false;window.__ERB_GUIDE_RESTORING=false;}catch(e){}}status('Campi svuotati. I profili, le Piante archiviate e le Ricerche salvate non sono stati eliminati.',false);var f=E('pgNomeSessione');if(f)try{f.focus();}catch(e){}return true;}
+window.erbV171ClearProfile=clearProfile;
+/* Il nome non crea, salva o apre nulla da solo. */
+window.rpProfileNameCommitted=function(){var name=currentPg();if(!name)return Promise.resolve(null);if(applyProfile(name)){status('Profilo di '+name+' caricato ✓',false);return Promise.resolve(null);}try{if(typeof ERB_PROFILE_BOUND_NAME!=='undefined')ERB_PROFILE_BOUND_NAME=name;}catch(e){}profileReadyName=name;return Promise.resolve(null);};
+
+/* Evita che digitare un nome nuovo faccia partire i vecchi autosalvataggi. */
+['input','change'].forEach(function(type){window.addEventListener(type,function(ev){if(!ev.target||ev.target.id!=='pgNomeSessione')return;profileReadyName='';ev.stopImmediatePropagation();if(type==='input')status('Premi «Carica PG» per recuperare un profilo esistente oppure compila i dati e salva.',false);},true);});
+window.addEventListener('keydown',function(ev){if(ev.target&&ev.target.id==='pgNomeSessione'&&ev.key==='Enter'){ev.preventDefault();ev.stopImmediatePropagation();loadProfile();}},true);
+window.addEventListener('click',function(ev){var b=ev.target&&ev.target.closest?ev.target.closest('#erbV171LoadPgBtn,#erbV171SavePgBtn,#erbV171ClearPgBtn'):null;if(!b)return;ev.preventDefault();ev.stopPropagation();if(b.id==='erbV171LoadPgBtn')loadProfile();else if(b.id==='erbV171SavePgBtn')saveProfile(true);else clearProfile();},true);
+/* Dopo ogni modifica del profilo già caricato conserva una fotografia completa, compresi i nuovi Malus. */
+document.addEventListener('input',function(ev){var p=E('modoPersonaggio');if(!p||!p.contains(ev.target)||ev.target.id==='pgNomeSessione')return;var n=currentPg();if(n&&profileReadyName&&norm(n)===norm(profileReadyName))snapshotProfile(n);},false);document.addEventListener('change',function(ev){var p=E('modoPersonaggio');if(!p||!p.contains(ev.target)||ev.target.id==='pgNomeSessione')return;var n=currentPg();if(n&&profileReadyName&&norm(n)===norm(profileReadyName))snapshotProfile(n);},false);
+
+/* Stepper Malus */
+function malusNumber(id){var e=E(id),v=parseFloat(String((e||{}).value||'0').replace(',','.'));return isFinite(v)&&v>0?v:0;}
+function stepMalus(id,d){var e=E(id);if(!e)return;var v=Math.max(0,Math.round((malusNumber(id)+d)*2)/2);e.value=String(v);try{e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));}catch(x){}if(typeof ricalcolaErbologia==='function')ricalcolaErbologia();syncResearchAutomaticMalus();}
+function buildSteppers(){MALUS.forEach(function(m){var e=E(m[0]);if(!e)return;var w=e.closest('.erb-v171-malus-input');if(!w||w.querySelector('.erb-v171-stepper'))return;var s=document.createElement('span');s.className='erb-v171-stepper';s.innerHTML='<button type="button" aria-label="Aumenta">▲</button><button type="button" aria-label="Diminuisci">▼</button>';var bs=s.querySelectorAll('button');bs[0].addEventListener('click',function(){stepMalus(m[0],.5);});bs[1].addEventListener('click',function(){stepMalus(m[0],-.5);});w.appendChild(s);});}
+/* Empatia effettiva: il valore di scheda resta intatto, il malus viene sottratto nei calcoli. */
+if(typeof leggiPG==='function'){var baseLeggiPG=leggiPG;leggiPG=function(){var pg=baseLeggiPG.apply(this,arguments),m=malusNumber('malusMagEmpatia');pg.malusEmpatiaProfilo=m;pg.empatiaBase=Number(pg.empatiaBase||pg.empatia||0);pg.empatia=Math.max(0,pg.empatiaBase-m);return pg;};window.leggiPG=leggiPG;}
+if(typeof rpEmpatia==='function'){var baseRpEmpatia=rpEmpatia;rpEmpatia=function(){return Math.max(0,Number(baseRpEmpatia.apply(this,arguments)||0)-malusNumber('malusMagEmpatia'));};window.rpEmpatia=rpEmpatia;}
+
+/* ===== Registro Malus della Ricerca ===== */
+function malusHidden(){return E('erbResearchMalusJson');}
+function parseMalus(){var h=malusHidden(),a=[];try{a=JSON.parse(h&&h.value||'[]');if(!Array.isArray(a))a=[];}catch(e){a=[];}return a.filter(function(x){return x&&typeof x==='object';});}
+function writeMalus(a,fireChange){var h=malusHidden();if(!h)return;h.value=JSON.stringify(a||[]);renderMalus();if(fireChange!==false){try{h.dispatchEvent(new Event('change',{bubbles:true}));}catch(e){}}}
+function makeId(){return 'm_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,6);}
+function upsertAuto(a,key,text,source,active){var x=a.find(function(z){return z.autoKey===key;});if(active){if(!x){x={id:makeId(),autoKey:key,text:text,source:source||'Automatico',resolved:false};a.push(x);}else{x.text=text;x.source=source||x.source;x.resolved=false;}}else if(x){x.resolved=true;}return a;}
+function profileMalusEntries(){var out=[];MALUS.forEach(function(m){var v=malusNumber(m[0]);if(v>0)out.push({key:'profile:'+m[0],text:m[1]+' — '+m[2]+': −'+String(v).replace('.',','),source:'Profilo PG'});});return out;}
+function syncResearchAutomaticMalus(){var h=malusHidden();if(!h)return;var a=parseMalus();profileMalusEntries().forEach(function(x){upsertAuto(a,x.key,x.text,x.source,true);});MALUS.forEach(function(m){if(malusNumber(m[0])<=0)upsertAuto(a,'profile:'+m[0],'', 'Profilo PG',false);});
+  /* Malus a Empatia inseriti nel sistema Bonus/Malus della Ricerca. */
+  var raw=[];try{raw=JSON.parse(String((E('bonusRicercaJson')||{}).value||'[]'));if(!Array.isArray(raw))raw=[];}catch(e){raw=[];}var activeKeys={};raw.forEach(function(x){if(!x)return;var kind=x.kind,p=null;try{p=window.EBX_SEARCH_PRESETS&&window.EBX_SEARCH_PRESETS[x.preset];}catch(e){}if(x.preset&&x.preset!=='manual'&&p)kind=p.kind;if(kind!=='malusEmpatia')return;var value=Number(x.value||(p&&p.value)||0);if(!(value>0))return;var label=String((p&&(p.label||p.source))||x.source||'Malus Empatia'),key='researchbonus:'+String(x.preset||'manual')+'|'+String(x.scope||'all')+'|'+String(x.source||'');activeKeys[key]=1;upsertAuto(a,key,label+': −'+value+' Empatia','Bonus/Malus Ricerca',true);});a.forEach(function(x){if(x.autoKey&&x.autoKey.indexOf('researchbonus:')===0&&!activeKeys[x.autoKey])x.resolved=true;});
+  /* Il file Erbologia determina il contagio da Febbre Malarica ma non ne quantifica qui l'effetto sui Parametri: la ricordiamo senza inventare valori. */
+  var malaria=Number((E('risultatoMalariaViaggio')||{}).value||0)===1;upsertAuto(a,'malaria','Febbre Malarica contratta durante il viaggio estero — si manifesta al rientro nel Regno Unito','Viaggio estero',malaria);
+  h.value=JSON.stringify(a);renderMalus();updateMalusSticky();}
+function renderMalus(){var host=E('erbV171ResearchMalusList');if(!host)return;var a=parseMalus();host.innerHTML='';if(!a.length){host.innerHTML='<div class="erb-v171-research-malus-empty">Nessun malus registrato per questa Ricerca.</div>';updateMalusSticky();return;}a.forEach(function(x,idx){var r=document.createElement('div');r.className='erb-v171-research-malus-row'+(x.resolved?' resolved':'');r.innerHTML='<div><input type="text" value="'+esc(x.text||'')+'" data-erb-v171-malus-text="'+idx+'"><div class="erb-v171-research-malus-source">'+esc(x.source||'Manuale')+'</div></div><label><input type="checkbox" data-erb-v171-malus-resolved="'+idx+'" '+(x.resolved?'checked':'')+'> risolto</label><button type="button" class="erb-v171-research-malus-remove" data-erb-v171-malus-remove="'+idx+'">×</button>';host.appendChild(r);});updateMalusSticky();}
+function updateMalusSticky(){var s=E('erbV171ResearchMalusSummary');if(!s)return;var active=parseMalus().filter(function(x){return !x.resolved&&String(x.text||'').trim();});if(!active.length){s.innerHTML='<span class="muted">Nessun malus attivo nella Ricerca.</span>';return;}s.innerHTML='<b>Malus attivi:</b> '+active.map(function(x){return esc(x.text);}).join(' · ')+' <button type="button" class="session-btn ghost" id="erbV171EditMalus">Modifica malus</button>';}
+function seedResearchMalusJson(){var a=[];profileMalusEntries().forEach(function(x){a.push({id:makeId(),autoKey:x.key,text:x.text,source:x.source,resolved:false});});return JSON.stringify(a);}
+if(typeof rpNewSessionData==='function'){var baseNewData=rpNewSessionData;rpNewSessionData=function(name){var d=baseNewData.apply(this,arguments);d.state=d.state||{};if(!d.state.erbResearchMalusJson)d.state.erbResearchMalusJson=seedResearchMalusJson();d.toolVersion='erbologia-ricerca-v171';return d;};window.rpNewSessionData=rpNewSessionData;}
+window.addEventListener('click',function(ev){var b=ev.target&&ev.target.closest?ev.target.closest('#erbV171ResearchMalusAdd,[data-erb-v171-malus-remove],#erbV171EditMalus'):null;if(!b)return;if(b.id==='erbV171EditMalus'){ev.preventDefault();if(typeof rpGoto==='function')rpGoto('config');setTimeout(function(){var x=E('erbV171ResearchMalusBox');if(x)x.scrollIntoView({behavior:'smooth',block:'center'});},80);return;}if(b.id==='erbV171ResearchMalusAdd'){ev.preventDefault();var inp=E('erbV171ResearchMalusInput'),t=String((inp||{}).value||'').trim();if(!t)return;var a=parseMalus();a.push({id:makeId(),text:t,source:'Manuale',resolved:false});if(inp)inp.value='';writeMalus(a,true);return;}var idx=Number(b.getAttribute('data-erb-v171-malus-remove'));if(Number.isInteger(idx)){ev.preventDefault();var a2=parseMalus();a2.splice(idx,1);writeMalus(a2,true);}},true);
+document.addEventListener('input',function(ev){var idx=ev.target&&ev.target.getAttribute?ev.target.getAttribute('data-erb-v171-malus-text'):null;if(idx===null)return;var a=parseMalus(),i=Number(idx);if(a[i]){a[i].text=String(ev.target.value||'');var h=malusHidden();if(h)h.value=JSON.stringify(a);updateMalusSticky();if(typeof rpScheduleSave==='function')rpScheduleSave();}},true);document.addEventListener('change',function(ev){var idx=ev.target&&ev.target.getAttribute?ev.target.getAttribute('data-erb-v171-malus-resolved'):null;if(idx!==null){var a=parseMalus(),i=Number(idx);if(a[i]){a[i].resolved=!!ev.target.checked;writeMalus(a,true);}return;}if(ev.target&&(['bonusRicercaJson','risultatoMalariaViaggio'].indexOf(ev.target.id)>=0||ev.target.closest&&ev.target.closest('#ebxResearchBonusRows')))setTimeout(syncResearchAutomaticMalus,0);if(ev.target&&MALUS.some(function(m){return m[0]===ev.target.id;}))setTimeout(syncResearchAutomaticMalus,0);},true);
+
+/* ===== Apertura Ricerca protetta e salvataggio non distruttivo ===== */
+var V171_RESEARCH_LOADING=false;
+if(typeof rpCollectState==='function'){var baseCollect=rpCollectState;rpCollectState=function(){var live=baseCollect.apply(this,arguments)||{},old={};try{old=(RP_CURRENT_DATA&&RP_CURRENT_DATA.state&&typeof RP_CURRENT_DATA.state==='object')?RP_CURRENT_DATA.state:{};}catch(e){}return Object.assign({},old,live);};window.rpCollectState=rpCollectState;}
+if(typeof rpScheduleSave==='function'){var baseSchedule=rpScheduleSave;rpScheduleSave=function(){if(V171_RESEARCH_LOADING)return;return baseSchedule.apply(this,arguments);};window.rpScheduleSave=rpScheduleSave;}
+function reapplyResearchState(state){if(!state)return;try{RP_RESTORING=true;var fields=document.querySelectorAll('#piante-workspace [data-key]');fields.forEach(function(f){var k=f.getAttribute('data-key');if(state[k]===undefined)return;if(f.type==='checkbox'||f.type==='radio')f.checked=!!state[k];else f.value=state[k];});if(typeof ricalcolaRicerca==='function')ricalcolaRicerca();}finally{try{RP_RESTORING=false;}catch(e){}}renderMalus();syncResearchAutomaticMalus();}
+if(typeof rpOpenSession==='function'){var baseOpen=rpOpenSession;rpOpenSession=function(id,data){try{if(RP_SAVE_TIMER){clearTimeout(RP_SAVE_TIMER);RP_SAVE_TIMER=null;}}catch(e){}V171_RESEARCH_LOADING=true;var pg=String((data&&(data.pgName||data.initialPgName))||'').trim();if(pg){var f=E('pgNomeSessione');if(f&&!f.value)f.value=pg;if(profileFor(pg)){applyProfile(pg);profileReadyName=pg;}}var out=baseOpen.apply(this,arguments),st=data&&data.state;setTimeout(function(){reapplyResearchState(st);},70);setTimeout(function(){reapplyResearchState(st);V171_RESEARCH_LOADING=false;if(typeof rpStatus==='function')rpStatus('rp-save-status',RP_READONLY?'Modalità sola lettura.':'Ricerca caricata · autosalvataggio attivo','ok');},220);if(pg){waitFor(function(){try{return typeof ERB_GUIDE_READY==='undefined'||ERB_GUIDE_READY===true;}catch(e){return true;}},10000).then(function(){if(profileFor(pg)){applyProfile(pg);profileReadyName=pg;}}).catch(function(){});}return out;};window.rpOpenSession=rpOpenSession;}
+window.rpLoadSession=function(id){if(!RP_FB||!RP_FB.db||!RP_FB.user)return Promise.reject(new Error('Firebase non è pronto.'));if(typeof rpStatus==='function')rpStatus('rp-session-home-msg','Caricamento Ricerca…','');return RP_FB.db.collection(RP_COLLECTION).doc(id).get().then(function(doc){if(!doc.exists)throw new Error('La Ricerca non esiste più.');var d=doc.data()||{};if(d.recordType==='guide')throw new Error('Questo documento appartiene alla Guida.');if(RP_FB.user.uid!==RP_NARRATOR_UID&&d.ownerUid!==RP_FB.user.uid)throw new Error('Questa Ricerca appartiene a un altro account.');rpOpenSession(doc.id,d);if(typeof rpStatus==='function')rpStatus('rp-session-home-msg','','');return d;}).catch(function(err){console.error(err);if(typeof rpStatus==='function')rpStatus('rp-session-home-msg','Impossibile aprire la Ricerca: '+(err.message||err),'bad');throw err;});};
+window.rpNavigateSession=function(id){try{history.replaceState(null,'',window.location.pathname+window.location.search+'#session='+encodeURIComponent(id));}catch(e){}return window.rpLoadSession(id);};
+
+/* ===== Salvataggi manuali ===== */
+function stamp(){try{return new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}catch(e){return new Date().toLocaleTimeString();}}
+function ensureManualSaves(){document.querySelectorAll('#piante-workspace .research-flow-page').forEach(function(p){if(p.querySelector('.erb-v171-manual-save'))return;var f=document.createElement('div');f.className='erb-v171-manual-save';f.innerHTML='<button type="button" class="session-btn" data-erb-v171-save-research><i class="fa-solid fa-floppy-disk"></i> Salva questa pagina</button><span class="erb-v171-save-feedback"></span>';p.appendChild(f);});document.querySelectorAll('#modoErbologia .pannello').forEach(function(p){if(p.querySelector(':scope > .erb-v171-manual-save'))return;var f=document.createElement('div');f.className='erb-v171-manual-save';f.innerHTML='<button type="button" class="bottone-azione" data-erb-v171-save-guide><i class="fa-solid fa-floppy-disk"></i> Salva questa pagina</button><span class="erb-v171-save-feedback"></span>';p.appendChild(f);});}
+window.addEventListener('click',function(ev){var b=ev.target&&ev.target.closest?ev.target.closest('[data-erb-v171-save-research],[data-erb-v171-save-guide]'):null;if(!b)return;ev.preventDefault();var s=b.parentNode.querySelector('.erb-v171-save-feedback');b.disabled=true;if(s)s.textContent='Salvataggio…';var p=b.hasAttribute('data-erb-v171-save-research')?waitFor(function(){return !V171_RESEARCH_LOADING;},10000).then(function(){return typeof rpSaveNow==='function'?rpSaveNow():false;}):window.erbGuideSaveNow();Promise.resolve(p).then(function(ok){if(ok===false)throw new Error('salvataggio non confermato');if(s)s.textContent=(b.hasAttribute('data-erb-v171-save-research')?'Ricerca':'Guida')+' salvata alle '+stamp()+' ✓';}).catch(function(err){if(s)s.textContent='Salvataggio non riuscito: '+(err.message||err);}).finally(function(){b.disabled=false;});},true);
+
+/* ===== Modali e nuova Ricerca sempre visibile ===== */
+function modal(id,title,text,actions){var m=E(id);if(m)return m;m=document.createElement('div');m.id=id;m.className='erb-v171-modal';m.innerHTML='<div class="erb-v171-modal-box"><h3>'+esc(title)+'</h3><p class="erb-v171-modal-copy">'+text+'</p><div class="erb-v171-modal-actions"></div></div>';document.body.appendChild(m);var h=m.querySelector('.erb-v171-modal-actions');actions.forEach(function(a){var b=document.createElement('button');b.type='button';b.className=a.cls||'session-btn';b.textContent=a.label;b.addEventListener('click',a.fn);h.appendChild(b);});m.addEventListener('click',function(e){if(e.target===m)m.classList.remove('open');});return m;}
+function clearResearchWorkspace(){try{RP_RESTORING=true;document.querySelectorAll('#piante-workspace [data-key]').forEach(function(f){if(f.type==='checkbox'||f.type==='radio'){f.checked=false;return;}if(f.tagName==='SELECT'){var v='';for(var i=0;i<f.options.length;i++)if(f.options[i].defaultSelected){v=f.options[i].value;break;}if(v===''&&f.options.length)v=f.options[0].value;f.value=v;}else f.value=f.defaultValue!==undefined?f.defaultValue:'';});var rows=E('ebxResearchBonusRows');if(rows)rows.innerHTML='';var b=E('bonusRicercaJson');if(b)b.value='[]';if(typeof RP_FLOW!=='undefined'){RP_FLOW.page='config';RP_FLOW.summaryVisited=false;RP_FLOW.outcomeVisited=false;}}finally{try{RP_RESTORING=false;}catch(e){}}if(typeof ricalcolaRicerca==='function')ricalcolaRicerca();}
+function createNewResearch(saveFirst){var name=currentPg();if(!name){status('Inserisci o carica prima il PG.',true);if(typeof mostraModo==='function')mostraModo('Personaggio');return Promise.resolve(false);}if(!RP_FB||!RP_FB.user||!RP_FB.db){status('Firebase non è ancora pronto.',true);return Promise.resolve(false);}var before=Promise.resolve(true);if(saveFirst){before=Promise.resolve().then(function(){if(typeof RP_CURRENT_ID!=='undefined'&&RP_CURRENT_ID&&!RP_READONLY&&typeof rpSaveNow==='function')return rpSaveNow();return true;}).then(function(ok){if(ok===false)throw new Error('La Ricerca attuale non è stata salvata.');return saveProfile(false);}).then(function(ok){if(ok===false)throw new Error('Il profilo non è stato salvato.');return true;});}else{try{if(RP_SAVE_TIMER){clearTimeout(RP_SAVE_TIMER);RP_SAVE_TIMER=null;}}catch(e){}}
+  return before.then(function(){try{RP_CURRENT_ID='';RP_CURRENT_DATA=null;RP_READONLY=false;}catch(e){}clearResearchWorkspace();var data=rpNewSessionData(name);data.state=data.state||{};data.state.erbResearchMalusJson=seedResearchMalusJson();RP_CREATING=true;return RP_FB.db.collection(RP_COLLECTION).add(data).then(function(ref){var dd=Object.assign({},data,{createdAt:new Date(),updatedAt:new Date()});RP_CREATING=false;try{if(typeof rpUpsertSessionCache==='function')rpUpsertSessionCache(ref.id,dd);}catch(e){}try{history.replaceState(null,'',window.location.pathname+window.location.search+'#session='+encodeURIComponent(ref.id));}catch(e){}rpOpenSession(ref.id,dd);return true;});}).catch(function(err){console.error(err);try{RP_CREATING=false;}catch(e){}if(typeof rpStatus==='function')rpStatus('rp-session-home-msg','Impossibile iniziare la nuova Ricerca: '+(err.message||err),'bad');return false;});}
+function openNewResearchModal(){var has=!!(typeof RP_CURRENT_ID!=='undefined'&&RP_CURRENT_ID);var m=modal('erbV171NewResearchModal','Inizia un’altra Ricerca',has?'Hai già una Ricerca aperta. Vuoi salvarla prima di crearne una nuova?':'Vuoi salvare i dati correnti del PG/Guida prima di creare una nuova Ricerca?',[]);var a=m.querySelector('.erb-v171-modal-actions');a.innerHTML='';[['Salva e inizia un’altra',true,'session-btn'],['Inizia senza salvare',false,'session-btn ghost'],['Annulla',null,'session-danger-btn']].forEach(function(x){var b=document.createElement('button');b.type='button';b.className=x[2];b.textContent=x[0];b.addEventListener('click',function(){if(x[1]===null){m.classList.remove('open');return;}b.disabled=true;createNewResearch(x[1]).then(function(ok){if(ok)m.classList.remove('open');}).finally(function(){b.disabled=false;});});a.appendChild(b);});m.classList.add('open');}
+
+/* ===== Svuota Guida con salvataggio opzionale ===== */
+function clearGuideUi(saveFirst){var oldActive='';try{oldActive=ERB_ACTIVE_PLANT_ID||'';}catch(e){}var before=saveFirst?Promise.resolve(window.erbGuideSaveNow()):Promise.resolve(true);return before.then(function(ok){if(saveFirst&&ok===false)throw new Error('La Guida non è stata salvata.');try{if(typeof ERB_GUIDE_SAVE_TIMER!=='undefined'&&ERB_GUIDE_SAVE_TIMER){clearTimeout(ERB_GUIDE_SAVE_TIMER);ERB_GUIDE_SAVE_TIMER=null;}ERB_ACTIVE_PLANT_ID='';ERB_GUIDE_RESTORING=true;window.__ERB_GUIDE_RESTORING=true;if(typeof resetGuidaErbologia==='function')resetGuidaErbologia();}finally{try{ERB_GUIDE_RESTORING=false;window.__ERB_GUIDE_RESTORING=false;}catch(e){}}if(typeof erbPlantRenderLibrary==='function')erbPlantRenderLibrary();return window.erbGuideSaveNow();}).then(function(){if(typeof erbGuideStatus==='function')erbGuideStatus('Guida svuotata. Piante archiviate, profili e Ricerche non sono stati eliminati.','ok');return true;}).catch(function(err){console.error(err);if(typeof erbGuideStatus==='function')erbGuideStatus('Non posso svuotare la Guida: '+(err.message||err),'bad');return false;});}
+function openClearGuideModal(){var m=modal('erbV171ClearGuideModal','Svuota Guida','Vuoi salvare la Pianta attualmente aperta prima di svuotare i campi della Guida? L’Archivio Piante, i profili e le Ricerche non verranno eliminati.',[]);var a=m.querySelector('.erb-v171-modal-actions');a.innerHTML='';[['Salva e svuota',true,'session-btn'],['Svuota senza salvare',false,'session-btn ghost'],['Annulla',null,'session-danger-btn']].forEach(function(x){var b=document.createElement('button');b.type='button';b.className=x[2];b.textContent=x[0];b.addEventListener('click',function(){if(x[1]===null){m.classList.remove('open');return;}b.disabled=true;clearGuideUi(x[1]).then(function(ok){if(ok)m.classList.remove('open');}).finally(function(){b.disabled=false;});});a.appendChild(b);});m.classList.add('open');}
+
+/* ===== Archivio Piante in details ===== */
+function decoratePlantLibrary(){var card=E('erbPlantLibraryCard');if(card&&!E('erbV171LibraryDetails')){var d=document.createElement('details');d.id='erbV171LibraryDetails';var s=document.createElement('summary');s.textContent='Archivio Piante e Ricerche';card.parentNode.insertBefore(d,card);d.appendChild(s);d.appendChild(card);}var host=E('erbPlantLibraryList');if(!host)return;host.querySelectorAll('.erb-v140-plant-item').forEach(function(c){var active=c.classList.contains('active'),b=c.querySelector('[data-plant-open]');if(!b)return;if(active){b.textContent='Aperta sotto';b.disabled=true;b.classList.add('erb-v171-open-below');}else{b.textContent='Apri nella Guida';b.disabled=false;b.classList.remove('erb-v171-open-below');}});}
+if(typeof erbPlantRenderLibrary==='function'){var basePlantRender=erbPlantRenderLibrary;erbPlantRenderLibrary=function(){var out=basePlantRender.apply(this,arguments);decoratePlantLibrary();return out;};window.erbPlantRenderLibrary=erbPlantRenderLibrary;}
+
+/* ===== Concludi qui: mostra subito Importa nella Guida ===== */
+function concludeBox(n){var panel=document.querySelector('[data-rp-page-panel="enc'+n+'"]'),actions=panel&&panel.querySelector('.flow-actions');if(!actions)return;var id='erbV171ConcludeBox'+n,box=E(id);if(!box){box=document.createElement('div');box.id=id;box.className='erb-v171-conclude-box';actions.insertAdjacentElement('afterend',box);}var sp=String((E('speciePianta'+n)||{}).value||'Pianta').trim()||'Pianta',count=n===1?1:Number((E('risultatoEsemplari'+n)||{}).value||1),opts='';for(var i=1;i<=Math.max(1,count);i++)opts+='<option value="'+i+'">Esemplare '+i+'</option>';box.innerHTML='<h4>Incontro concluso — '+esc(sp)+'</h4><div class="erb-v171-conclude-actions">'+(count>1?'<select data-rp-quick-import-exemplar="'+n+'">'+opts+'</select>':'')+'<button type="button" class="bottone-azione" data-rp-quick-import-guide="'+n+'">Importa '+esc(sp)+' nella Guida</button><button type="button" class="session-btn ghost" data-erb-v171-go-outcome>Vai al riepilogo finale →</button></div>';box.scrollIntoView({behavior:'smooth',block:'nearest'});}
+window.addEventListener('click',function(ev){var b=ev.target&&ev.target.closest?ev.target.closest('.flow-action-btn[data-rp-goto="outcome"],#erbV171NewResearchBtn,#erbV171ClearGuideBtn,[data-erb-v171-go-outcome]'):null;if(!b)return;if(b.id==='erbV171NewResearchBtn'){ev.preventDefault();ev.stopPropagation();openNewResearchModal();return;}if(b.id==='erbV171ClearGuideBtn'){ev.preventDefault();ev.stopPropagation();openClearGuideModal();return;}if(b.hasAttribute('data-erb-v171-go-outcome')){ev.preventDefault();if(typeof rpGoto==='function')rpGoto('outcome');return;}var panel=b.closest('.research-flow-page'),key=panel&&panel.getAttribute('data-rp-page-panel'),m=key&&key.match(/^enc([123])$/);if(m){ev.preventDefault();ev.stopPropagation();concludeBox(Number(m[1]));}},true);
+
+function ensureSticky(){var mode=E('modoRicerca');if(mode&&!E('erbV171ResearchSticky')){var bar=document.createElement('div');bar.id='erbV171ResearchSticky';bar.innerHTML='<button type="button" class="session-btn" id="erbV171NewResearchBtn"><i class="fa-solid fa-plus"></i> Inizia un’altra Ricerca</button><div class="erb-v171-mal-summary" id="erbV171ResearchMalusSummary"></div>';mode.insertBefore(bar,mode.firstChild);}var guide=E('modoErbologia');if(guide&&!E('erbV171GuideSticky')){var gs=document.createElement('div');gs.id='erbV171GuideSticky';gs.innerHTML='<button type="button" class="bottone-azione bottone-secondario" id="erbV171ClearGuideBtn"><i class="fa-solid fa-broom"></i> Svuota Guida</button>';var st=E('erb-guide-save-status');if(st&&st.nextSibling)st.parentNode.insertBefore(gs,st.nextSibling);else guide.insertBefore(gs,guide.firstChild);}updateMalusSticky();}
+function init(){buildSteppers();ensureSticky();ensureManualSaves();decoratePlantLibrary();renderMalus();syncResearchAutomaticMalus();var name=currentPg();if(name&&profileFor(name)){applyProfile(name);profileReadyName=name;}var oldReset=E('erbResetAllBtn');if(oldReset)oldReset.disabled=false;}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,250);});else setTimeout(init,250);
+})();
+</script>
+
+</body>
+</html>
