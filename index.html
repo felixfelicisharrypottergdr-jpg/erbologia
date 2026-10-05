@@ -1,3 +1,4 @@
+<!-- Erbologia tool v172 — fix salvataggio Profilo PG: «Salva dati PG» usa un documento Firebase dedicato e non dipende più dal salvataggio dell'intera Guida; «Carica PG» legge il profilo dedicato con fallback/migrazione dai salvataggi legacy; i documenti profile sono esclusi dalle Ricerche. Mantiene integralmente v171. 05/10/2026 -->
 <!-- Erbologia tool v171 — allineamento consolidato alla Magizoologia v203: profilo PG esplicito Salva/Carica/Svuota, Malus categorizzati persistenti, Registro malus Ricerca, apertura Ricerca protetta, salvataggi manuali, nuova Ricerca sempre visibile con conferma, archivio Piante in details, Svuota Guida con conferma, import immediato e contrasto finale consolidato. -->
 <!-- Erbologia tool v164 — Profilo iniziale consolidato, Ricerche multiple per PG, nuova Ricerca vuota ed etichetta corretta. -->
 <!-- Erbologia tool v163 — import Ricerca→Guida robusto e verificato, allineato al controllo Magizoologia v177. -->
@@ -5902,13 +5903,13 @@ function rpSaveNow(){
   return task;
 }
 function rpOpenSession(id,data){RP_CURRENT_ID=id;RP_CURRENT_DATA=data;RP_READONLY=!rpSessionCanEdit(data);rpEl('piante-session-home').style.display='none';rpWorkspace().style.display='block';var state=data.state||{};if(state.nomePgRicerca===undefined)state.nomePgRicerca=data.pgName||data.initialPgName||'';rpApplyState(state);rpSetReadonly(RP_READONLY);rpCaricaDatiSessioneNelProfilo();if(!RP_READONLY&&rpNormName(data.pgName||data.initialPgName)===rpNormName(rpProfileName())){rpRememberProfileSession(id,data,rpProfileName());rpSincronizzaProfiloRicerca();rpProfileStatus('Sessione Firebase pronta ✓','ok');}else{rpAggiornaDatiCondivisi();}rpUpdateToolbar();rpStatus('rp-save-status',RP_READONLY?'Modalità sola lettura.':'Ricerca caricata · autosalvataggio attivo',RP_READONLY?'':'ok');rpResumeFlow(RP_READONLY);}
-function rpLoadSession(id){rpStatus('rp-session-home-msg','Caricamento Ricerca…','');return RP_FB.db.collection(RP_COLLECTION).doc(id).get().then(function(doc){if(!doc.exists)throw new Error('La Ricerca non esiste più.');var dd=doc.data();if(dd&&dd.recordType==='guide')throw new Error('Questo documento appartiene alla Guida, non a una Ricerca.');rpOpenSession(doc.id,dd);rpStatus('rp-session-home-msg','','');}).catch(function(err){console.error(err);rpStatus('rp-session-home-msg','Impossibile aprire la Ricerca: '+err.message,'bad');rpEl('piante-session-home').style.display='block';rpWorkspace().style.display='none';});}
+function rpLoadSession(id){rpStatus('rp-session-home-msg','Caricamento Ricerca…','');return RP_FB.db.collection(RP_COLLECTION).doc(id).get().then(function(doc){if(!doc.exists)throw new Error('La Ricerca non esiste più.');var dd=doc.data();if(dd&&(dd.recordType==='guide'||dd.recordType==='profile'))throw new Error('Questo documento è un salvataggio di servizio, non una Ricerca.');rpOpenSession(doc.id,dd);rpStatus('rp-session-home-msg','','');}).catch(function(err){console.error(err);rpStatus('rp-session-home-msg','Impossibile aprire la Ricerca: '+err.message,'bad');rpEl('piante-session-home').style.display='block';rpWorkspace().style.display='none';});}
 var RP_SESSION_LIST_CACHE=null,RP_SESSION_LIST_CACHE_AT=0,RP_SESSION_LIST_CACHE_MS=5*60*1000,RP_SESSION_LIST_PROMISE=null,RP_SESSION_CACHE_UID='';
 function rpInvalidateSessionList(){RP_SESSION_LIST_CACHE=null;RP_SESSION_LIST_CACHE_AT=0;RP_SESSION_LIST_PROMISE=null;}
-function rpSessionRowsForProfile(name){var wanted=rpNormName(name),rows=RP_SESSION_LIST_CACHE||[],best=null,narr=RP_FB.user&&RP_FB.user.uid===RP_NARRATOR_UID;for(var i=0;i<rows.length;i++){var d=rows[i]&&rows[i].data;if(!d||d.recordType==='guide')continue;if(!narr&&d.ownerUid!==RP_FB.user.uid)continue;if(rpNormName(d.pgName||d.initialPgName)!==wanted)continue;if(!best||rpSessionTime(d)>rpSessionTime(best.data))best=rows[i];}return best;}
+function rpSessionRowsForProfile(name){var wanted=rpNormName(name),rows=RP_SESSION_LIST_CACHE||[],best=null,narr=RP_FB.user&&RP_FB.user.uid===RP_NARRATOR_UID;for(var i=0;i<rows.length;i++){var d=rows[i]&&rows[i].data;if(!d||d.recordType==='guide'||d.recordType==='profile')continue;if(!narr&&d.ownerUid!==RP_FB.user.uid)continue;if(rpNormName(d.pgName||d.initialPgName)!==wanted)continue;if(!best||rpSessionTime(d)>rpSessionTime(best.data))best=rows[i];}return best;}
 function rpUpsertSessionCache(id,data){if(!RP_SESSION_LIST_CACHE||!id||!data)return;var found=false;for(var i=0;i<RP_SESSION_LIST_CACHE.length;i++){if(RP_SESSION_LIST_CACHE[i]&&RP_SESSION_LIST_CACHE[i].id===id){RP_SESSION_LIST_CACHE[i]={id:id,data:data};found=true;break;}}if(!found)RP_SESSION_LIST_CACHE.push({id:id,data:data});RP_SESSION_LIST_CACHE.sort(function(a,b){return rpSessionTime(b.data)-rpSessionTime(a.data);});RP_SESSION_LIST_CACHE_AT=Date.now();}
 function rpRenderSessionList(rows){var host=rpEl('rp-session-list');if(!host)return;host.innerHTML='';if(!rows||!rows.length){host.innerHTML='<div class="session-status">Non ci sono Ricerche Piante Magiche in corso.</div>';return;}rows.forEach(function(r){var d=r.data,mine=d.ownerUid===RP_FB.user.uid,narr=RP_FB.user.uid===RP_NARRATOR_UID,box=document.createElement('div');box.className='session-item';var row=document.createElement('div');row.className='session-item-row';var left=document.createElement('div'),title=document.createElement('div');title.className='session-title';title.textContent=(d.pgName||d.initialPgName||'PG')+' — '+(d.tipoRicerca==='passiva'?'Ricerca Passiva':'Ricerca Attiva');left.appendChild(title);var meta=document.createElement('div');meta.className='session-meta';var dt=rpFormatTs(d.updatedAt);meta.textContent=dt?'Aggiornata '+dt:'';left.appendChild(meta);var own=document.createElement('span');own.className='session-owner'+(mine?' mine':'');own.textContent=mine?'Tua Ricerca':(narr?'Gestibile dal Narratore':'Altro giocatore');left.appendChild(own);var actions=document.createElement('div');actions.className='session-item-buttons';var b=document.createElement('button');b.type='button';b.className='session-btn'+((mine||narr)?'':' ghost');b.textContent=(mine||narr)?'Riprendi':'Visualizza';b.addEventListener(evtClick,function(){try{history.replaceState(null,'',window.location.pathname+window.location.search+'#session='+encodeURIComponent(r.id));}catch(e){}rpOpenSession(r.id,d);rpStatus('rp-session-home-msg','','');});actions.appendChild(b);if(mine||narr){var end=document.createElement('button');end.type='button';end.className='session-danger-btn session-list-conclude';end.textContent='Concludi Ricerca';end.addEventListener(evtClick,function(){rpConcludeFromList(r.id,d,end);});actions.appendChild(end);}row.appendChild(left);row.appendChild(actions);box.appendChild(row);host.appendChild(box);});}
-function rpLoadSessions(force){var host=rpEl('rp-session-list');if(!host||!RP_FB.db||!RP_FB.user)return Promise.resolve([]);if(!force&&RP_SESSION_LIST_CACHE&&Date.now()-RP_SESSION_LIST_CACHE_AT<RP_SESSION_LIST_CACHE_MS){rpRenderSessionList(RP_SESSION_LIST_CACHE);return Promise.resolve(RP_SESSION_LIST_CACHE);}if(!force&&RP_SESSION_LIST_PROMISE)return RP_SESSION_LIST_PROMISE;host.innerHTML='<div class="session-status">Caricamento sessioni…</div>';/* I player leggono esclusivamente le proprie Ricerche. Solo il Narratore mantiene la lista globale. */var q=RP_FB.db.collection(RP_COLLECTION);if(RP_FB.user.uid!==RP_NARRATOR_UID)q=q.where('ownerUid','==',RP_FB.user.uid);else q=q.where('ownerUid','!=','__erb_guide__');RP_SESSION_LIST_PROMISE=q.get().then(function(snap){var rows=[];snap.forEach(function(doc){var dd=doc.data();if(dd&&dd.recordType==='guide')return;rows.push({id:doc.id,data:dd});});rows.sort(function(a,b){return rpSessionTime(b.data)-rpSessionTime(a.data);});RP_SESSION_LIST_CACHE=rows;RP_SESSION_LIST_CACHE_AT=Date.now();rpRenderSessionList(rows);return rows;}).catch(function(err){console.error(err);host.innerHTML='<div class="session-status bad">Non riesco a leggere le Ricerche in corso: '+rpEsc(err.message||err)+'</div>';return[];}).finally(function(){RP_SESSION_LIST_PROMISE=null;});return RP_SESSION_LIST_PROMISE;}
+function rpLoadSessions(force){var host=rpEl('rp-session-list');if(!host||!RP_FB.db||!RP_FB.user)return Promise.resolve([]);if(!force&&RP_SESSION_LIST_CACHE&&Date.now()-RP_SESSION_LIST_CACHE_AT<RP_SESSION_LIST_CACHE_MS){rpRenderSessionList(RP_SESSION_LIST_CACHE);return Promise.resolve(RP_SESSION_LIST_CACHE);}if(!force&&RP_SESSION_LIST_PROMISE)return RP_SESSION_LIST_PROMISE;host.innerHTML='<div class="session-status">Caricamento sessioni…</div>';/* I player leggono esclusivamente le proprie Ricerche. Solo il Narratore mantiene la lista globale. */var q=RP_FB.db.collection(RP_COLLECTION);if(RP_FB.user.uid!==RP_NARRATOR_UID)q=q.where('ownerUid','==',RP_FB.user.uid);else q=q.where('ownerUid','!=','__erb_guide__');RP_SESSION_LIST_PROMISE=q.get().then(function(snap){var rows=[];snap.forEach(function(doc){var dd=doc.data();if(dd&&(dd.recordType==='guide'||dd.recordType==='profile'))return;rows.push({id:doc.id,data:dd});});rows.sort(function(a,b){return rpSessionTime(b.data)-rpSessionTime(a.data);});RP_SESSION_LIST_CACHE=rows;RP_SESSION_LIST_CACHE_AT=Date.now();rpRenderSessionList(rows);return rows;}).catch(function(err){console.error(err);host.innerHTML='<div class="session-status bad">Non riesco a leggere le Ricerche in corso: '+rpEsc(err.message||err)+'</div>';return[];}).finally(function(){RP_SESSION_LIST_PROMISE=null;});return RP_SESSION_LIST_PROMISE;}
 
 function rpConcludeFromList(id,data,btn){
   if(!id||!data||!rpSessionCanEdit(data)||!RP_FB.db||!RP_FB.user)return;
@@ -9577,6 +9578,68 @@ var profileReadyName='';
 function cacheKey(name){var uid='anon';try{if(typeof RP_FB!=='undefined'&&RP_FB.user&&RP_FB.user.uid)uid=RP_FB.user.uid;}catch(e){}return 'ffgdr_erb_pg_v171_'+uid+'_'+encodeURIComponent(norm(name));}
 function snapshotProfile(name){name=String(name||'').trim();if(!name)return null;var p={pgName:name,updatedAt:Date.now(),fields:{}};PROFILE_IDS.forEach(function(id){var v=readField(id);if(v!==undefined)p.fields[id]=v;});try{if(typeof ERB_PG_PROFILES!=='undefined')ERB_PG_PROFILES[norm(name)]=p;}catch(e){}try{localStorage.setItem(cacheKey(name),JSON.stringify(p));}catch(e){}try{if(typeof ERB_PROFILE_BOUND_NAME!=='undefined')ERB_PROFILE_BOUND_NAME=name;}catch(e){}profileReadyName=name;return p;}
 function profileFor(name){name=String(name||'').trim();if(!name)return null;var p=null;try{if(typeof ERB_PG_PROFILES!=='undefined')p=ERB_PG_PROFILES[norm(name)]||null;}catch(e){}if(p&&p.fields)return p;try{var raw=localStorage.getItem(cacheKey(name));if(raw){p=JSON.parse(raw);if(p&&p.fields)return p;}var uid='anon';try{if(typeof RP_FB!=='undefined'&&RP_FB.user&&RP_FB.user.uid)uid=RP_FB.user.uid;}catch(x){}raw=localStorage.getItem('ffgdr_erb_pg_v160_'+uid+'_'+encodeURIComponent(norm(name)));if(raw){p=JSON.parse(raw);if(p&&p.fields)return p;}}catch(e){}return null;}
+/* v172 — Profilo PG Firebase indipendente dalla Guida.
+   Il salvataggio esplicito usa un documento posseduto dall'utente, così un errore
+   della Guida/Archivio non può più impedire di salvare il PG o iniziare una Ricerca. */
+function firebaseProfileDoc(name){
+  name=String(name||'').trim();
+  if(!name||typeof RP_FB==='undefined'||!RP_FB||!RP_FB.db||!RP_FB.user)return null;
+  return RP_FB.db.collection(RP_COLLECTION).doc('profile_v172_'+RP_FB.user.uid+'_'+encodeURIComponent(norm(name)));
+}
+function rememberRemoteProfile(name,p){
+  if(!p||!p.fields)return null;
+  name=String((p.pgName||name)||'').trim();
+  p.pgName=name;
+  try{if(typeof ERB_PG_PROFILES!=='undefined')ERB_PG_PROFILES[norm(name)]=p;}catch(e){}
+  try{localStorage.setItem(cacheKey(name),JSON.stringify(p));}catch(e){}
+  try{if(typeof ERB_PROFILE_BOUND_NAME!=='undefined')ERB_PROFILE_BOUND_NAME=name;}catch(e){}
+  profileReadyName=name;
+  return p;
+}
+function profileFromFirebaseData(name,data){
+  data=data||{};
+  var p=data.profile;
+  if(!p&&data.fields)p={pgName:data.pgName||name,updatedAt:data.profileUpdatedAt||Date.now(),fields:data.fields};
+  if(!p&&data.state&&data.state.fields)p={pgName:data.pgName||name,updatedAt:Date.now(),fields:data.state.fields};
+  if(!p||!p.fields)return null;
+  p.pgName=p.pgName||data.pgName||name;
+  return p;
+}
+function saveProfileDirect(name,p){
+  name=String(name||'').trim();
+  if(!name)return Promise.reject(new Error('Inserisci prima il nome del PG.'));
+  if(typeof RP_FB==='undefined'||!RP_FB||!RP_FB.db||!RP_FB.user)return Promise.reject(new Error('Firebase non è ancora pronto.'));
+  p=p&&p.fields?p:snapshotProfile(name);
+  var ref=firebaseProfileDoc(name);
+  if(!ref)return Promise.reject(new Error('Documento del profilo non disponibile.'));
+  var payload={
+    recordType:'profile',
+    ownerUid:RP_FB.user.uid,
+    pgName:name,
+    normalizedPgName:norm(name),
+    profileUpdatedAt:p.updatedAt||Date.now(),
+    updatedAt:firebase.firestore.FieldValue.serverTimestamp(),
+    toolVersion:'erbologia-profile-v172',
+    profile:p,
+    fields:p.fields
+  };
+  return ref.set(payload,{merge:true}).then(function(){rememberRemoteProfile(name,p);return true;});
+}
+function loadProfileDirect(name){
+  name=String(name||'').trim();
+  if(!name)return Promise.resolve(null);
+  if(typeof RP_FB==='undefined'||!RP_FB||!RP_FB.db||!RP_FB.user)return Promise.reject(new Error('Firebase non è ancora pronto.'));
+  var ref=firebaseProfileDoc(name);
+  if(!ref)return Promise.reject(new Error('Documento del profilo non disponibile.'));
+  return ref.get().then(function(doc){
+    if(!doc.exists)return null;
+    var p=profileFromFirebaseData(name,doc.data()||{});
+    return p?rememberRemoteProfile(name,p):null;
+  });
+}
+window.erbV172SaveProfileDirect=saveProfileDirect;
+window.erbV172LoadProfileDirect=loadProfileDirect;
+
 function applyProfile(name){var p=profileFor(name);if(!p||!p.fields)return false;try{ERB_GUIDE_RESTORING=true;window.__ERB_GUIDE_RESTORING=true;}catch(e){}try{PROFILE_IDS.forEach(function(id){setField(id,p.fields[id]===undefined&&/^malus/.test(id)?'0':p.fields[id]);});setField('pgNomeSessione',p.pgName||name);if(typeof ERB_PG_PROFILES!=='undefined')ERB_PG_PROFILES[norm(name)]=p;if(typeof ERB_PROFILE_BOUND_NAME!=='undefined')ERB_PROFILE_BOUND_NAME=p.pgName||name;profileReadyName=p.pgName||name;if(typeof aggiornaCampiTipoPG==='function')aggiornaCampiTipoPG();if(typeof ricalcolaErbologia==='function')ricalcolaErbologia();if(typeof erbPlantRenderLibrary==='function')erbPlantRenderLibrary();}finally{try{ERB_GUIDE_RESTORING=false;window.__ERB_GUIDE_RESTORING=false;}catch(e){}}return true;}
 function status(txt,bad){if(typeof rpProfileStatus==='function')rpProfileStatus(txt,bad?'bad':'ok');else{var s=E('rp-profile-session-status');if(s){s.textContent=txt;s.className='session-status '+(bad?'bad':'ok');}}}
 
@@ -9598,9 +9661,60 @@ window.erbGuideSaveNow=function(){
 var baseGuideSchedule=window.erbGuideScheduleSave;
 if(typeof baseGuideSchedule==='function')window.erbGuideScheduleSave=function(){var n=currentPg();if(n&&(!profileReadyName||norm(n)!==norm(profileReadyName)))return;return baseGuideSchedule.apply(this,arguments);};
 
-function saveProfile(show){var name=currentPg();if(!name){status('Inserisci prima il nome del PG.',true);return Promise.resolve(false);}snapshotProfile(name);var b=E('erbV171SavePgBtn');if(b)b.disabled=true;if(show!==false)status('Salvataggio di '+name+'…',false);return timeout(window.erbGuideSaveNow(),10000,'Firebase non ha confermato il salvataggio entro 10 secondi.').then(function(ok){if(ok===false)throw new Error('Firebase non ha confermato il salvataggio.');snapshotProfile(name);if(show!==false)status('Dati di '+name+' salvati ✓',false);return true;}).catch(function(err){console.error(err);status('Salvataggio non riuscito: '+(err.message||err),true);return false;}).finally(function(){if(b)b.disabled=false;});}
+function saveProfile(show){
+  var name=currentPg();
+  if(!name){status('Inserisci prima il nome del PG.',true);return Promise.resolve(false);}
+  var snap=snapshotProfile(name),b=E('erbV171SavePgBtn');
+  if(b)b.disabled=true;
+  if(show!==false)status('Salvataggio di '+name+'…',false);
+  return timeout(
+    waitFor(function(){return typeof RP_FB!=='undefined'&&RP_FB&&RP_FB.db&&RP_FB.user;},10000).then(function(){return saveProfileDirect(name,snap);}),
+    12000,
+    'Firebase non ha confermato il salvataggio entro 12 secondi.'
+  ).then(function(ok){
+    if(ok===false)throw new Error('Firebase ha rifiutato il salvataggio.');
+    snapshotProfile(name);
+    if(show!==false)status('Dati di '+name+' salvati ✓',false);
+    return true;
+  }).catch(function(err){
+    console.error(err);
+    status('Salvataggio non riuscito: '+(err.message||err),true);
+    return false;
+  }).finally(function(){if(b)b.disabled=false;});
+}
 window.erbV171SaveProfileNow=saveProfile;window.erbV160SaveProfileNow=saveProfile;
-function loadProfile(){var name=currentPg();if(!name){status('Inserisci il nome del PG da caricare.',true);return Promise.resolve(false);}status('Caricamento di '+name+'…',false);return waitFor(function(){try{return typeof ERB_GUIDE_READY==='undefined'||ERB_GUIDE_READY===true;}catch(e){return true;}},10000).catch(function(){return true;}).then(function(){if(!applyProfile(name)){status('Nessun profilo salvato trovato per '+name+'. Puoi compilarlo e premere «Salva dati PG».',true);return false;}status('Profilo di '+name+' caricato ✓',false);return true;});}
+function loadProfile(){
+  var name=currentPg(),remoteErr=null;
+  if(!name){status('Inserisci il nome del PG da caricare.',true);return Promise.resolve(false);}
+  status('Caricamento di '+name+'…',false);
+  return timeout(
+    waitFor(function(){return typeof RP_FB!=='undefined'&&RP_FB&&RP_FB.db&&RP_FB.user;},10000).then(function(){return loadProfileDirect(name);}),
+    12000,
+    'Firebase non ha risposto entro 12 secondi.'
+  ).catch(function(err){remoteErr=err;console.error(err);return null;}).then(function(remote){
+    if(remote){
+      applyProfile(name);
+      status('Profilo di '+name+' caricato ✓',false);
+      return true;
+    }
+    /* Compatibilità: recupera i profili v171/v160 già presenti nella Guida o nella cache
+       e li migra sul documento profile dedicato senza bloccare l'apertura. */
+    if(applyProfile(name)){
+      var legacy=profileFor(name);
+      if(legacy&&typeof RP_FB!=='undefined'&&RP_FB&&RP_FB.db&&RP_FB.user){
+        Promise.resolve(saveProfileDirect(name,legacy)).catch(function(err){console.error(err);});
+      }
+      status('Profilo di '+name+' caricato ✓',false);
+      return true;
+    }
+    if(remoteErr){
+      status('Caricamento non riuscito: '+(remoteErr.message||remoteErr),true);
+      return false;
+    }
+    status('Nessun profilo salvato trovato per '+name+'. Puoi compilarlo e premere «Salva dati PG».',true);
+    return false;
+  });
+}
 function clearProfile(){var old=profileReadyName||currentPg();if(old){snapshotProfile(old);Promise.resolve(window.erbGuideSaveNow()).catch(function(){});}try{if(typeof RP_SAVE_TIMER!=='undefined'&&RP_SAVE_TIMER){clearTimeout(RP_SAVE_TIMER);RP_SAVE_TIMER=null;}}catch(e){}try{if(typeof ERB_GUIDE_SAVE_TIMER!=='undefined'&&ERB_GUIDE_SAVE_TIMER){clearTimeout(ERB_GUIDE_SAVE_TIMER);ERB_GUIDE_SAVE_TIMER=null;}}catch(e){}try{if(typeof RP_CURRENT_ID!=='undefined'){RP_CURRENT_ID='';RP_CURRENT_DATA=null;RP_READONLY=false;}}catch(e){}try{if(typeof ERB_ACTIVE_PLANT_ID!=='undefined')ERB_ACTIVE_PLANT_ID='';}catch(e){}try{if(typeof ERB_PROFILE_BOUND_NAME!=='undefined')ERB_PROFILE_BOUND_NAME='';}catch(e){}profileReadyName='';try{ERB_GUIDE_RESTORING=true;window.__ERB_GUIDE_RESTORING=true;}catch(e){}try{if(typeof resetGuidaErbologia==='function')resetGuidaErbologia();setField('pgNomeSessione','');setField('pgTipo','studente');setField('pgSegueErbologia','si');setField('empatia','10');setField('sapienzaErbologicaGuida','0');['livErborista','livAmico','livCustode','livColtivatore'].forEach(function(id){setField(id,'0');});setField('pgErbologoMestiere',false);['erbImmPelleAutofertilizzante','erbImmFarfalleVomitose','erbImmErboruto','erbImmSpruzzolosi','erbImmStridulite','erbImmVogliaVampirella','erbImmSolleticoMessicano'].forEach(function(id){setField(id,false);});MALUS.forEach(function(m){setField(m[0],'0');});if(typeof aggiornaCampiTipoPG==='function')aggiornaCampiTipoPG();if(typeof ricalcolaErbologia==='function')ricalcolaErbologia();if(typeof erbPlantRenderLibrary==='function')erbPlantRenderLibrary();var w=E('piante-workspace'),h=E('piante-session-home');if(w)w.style.display='none';if(h)h.style.display='block';}finally{try{ERB_GUIDE_RESTORING=false;window.__ERB_GUIDE_RESTORING=false;}catch(e){}}status('Campi svuotati. I profili, le Piante archiviate e le Ricerche salvate non sono stati eliminati.',false);var f=E('pgNomeSessione');if(f)try{f.focus();}catch(e){}return true;}
 window.erbV171ClearProfile=clearProfile;
 /* Il nome non crea, salva o apre nulla da solo. */
@@ -9637,7 +9751,7 @@ function syncResearchAutomaticMalus(){var h=malusHidden();if(!h)return;var a=par
 function renderMalus(){var host=E('erbV171ResearchMalusList');if(!host)return;var a=parseMalus();host.innerHTML='';if(!a.length){host.innerHTML='<div class="erb-v171-research-malus-empty">Nessun malus registrato per questa Ricerca.</div>';updateMalusSticky();return;}a.forEach(function(x,idx){var r=document.createElement('div');r.className='erb-v171-research-malus-row'+(x.resolved?' resolved':'');r.innerHTML='<div><input type="text" value="'+esc(x.text||'')+'" data-erb-v171-malus-text="'+idx+'"><div class="erb-v171-research-malus-source">'+esc(x.source||'Manuale')+'</div></div><label><input type="checkbox" data-erb-v171-malus-resolved="'+idx+'" '+(x.resolved?'checked':'')+'> risolto</label><button type="button" class="erb-v171-research-malus-remove" data-erb-v171-malus-remove="'+idx+'">×</button>';host.appendChild(r);});updateMalusSticky();}
 function updateMalusSticky(){var s=E('erbV171ResearchMalusSummary');if(!s)return;var active=parseMalus().filter(function(x){return !x.resolved&&String(x.text||'').trim();});if(!active.length){s.innerHTML='<span class="muted">Nessun malus attivo nella Ricerca.</span>';return;}s.innerHTML='<b>Malus attivi:</b> '+active.map(function(x){return esc(x.text);}).join(' · ')+' <button type="button" class="session-btn ghost" id="erbV171EditMalus">Modifica malus</button>';}
 function seedResearchMalusJson(){var a=[];profileMalusEntries().forEach(function(x){a.push({id:makeId(),autoKey:x.key,text:x.text,source:x.source,resolved:false});});return JSON.stringify(a);}
-if(typeof rpNewSessionData==='function'){var baseNewData=rpNewSessionData;rpNewSessionData=function(name){var d=baseNewData.apply(this,arguments);d.state=d.state||{};if(!d.state.erbResearchMalusJson)d.state.erbResearchMalusJson=seedResearchMalusJson();d.toolVersion='erbologia-ricerca-v171';return d;};window.rpNewSessionData=rpNewSessionData;}
+if(typeof rpNewSessionData==='function'){var baseNewData=rpNewSessionData;rpNewSessionData=function(name){var d=baseNewData.apply(this,arguments);d.state=d.state||{};if(!d.state.erbResearchMalusJson)d.state.erbResearchMalusJson=seedResearchMalusJson();d.recordType='research';d.toolVersion='erbologia-ricerca-v172';return d;};window.rpNewSessionData=rpNewSessionData;}
 window.addEventListener('click',function(ev){var b=ev.target&&ev.target.closest?ev.target.closest('#erbV171ResearchMalusAdd,[data-erb-v171-malus-remove],#erbV171EditMalus'):null;if(!b)return;if(b.id==='erbV171EditMalus'){ev.preventDefault();if(typeof rpGoto==='function')rpGoto('config');setTimeout(function(){var x=E('erbV171ResearchMalusBox');if(x)x.scrollIntoView({behavior:'smooth',block:'center'});},80);return;}if(b.id==='erbV171ResearchMalusAdd'){ev.preventDefault();var inp=E('erbV171ResearchMalusInput'),t=String((inp||{}).value||'').trim();if(!t)return;var a=parseMalus();a.push({id:makeId(),text:t,source:'Manuale',resolved:false});if(inp)inp.value='';writeMalus(a,true);return;}var idx=Number(b.getAttribute('data-erb-v171-malus-remove'));if(Number.isInteger(idx)){ev.preventDefault();var a2=parseMalus();a2.splice(idx,1);writeMalus(a2,true);}},true);
 document.addEventListener('input',function(ev){var idx=ev.target&&ev.target.getAttribute?ev.target.getAttribute('data-erb-v171-malus-text'):null;if(idx===null)return;var a=parseMalus(),i=Number(idx);if(a[i]){a[i].text=String(ev.target.value||'');var h=malusHidden();if(h)h.value=JSON.stringify(a);updateMalusSticky();if(typeof rpScheduleSave==='function')rpScheduleSave();}},true);document.addEventListener('change',function(ev){var idx=ev.target&&ev.target.getAttribute?ev.target.getAttribute('data-erb-v171-malus-resolved'):null;if(idx!==null){var a=parseMalus(),i=Number(idx);if(a[i]){a[i].resolved=!!ev.target.checked;writeMalus(a,true);}return;}if(ev.target&&(['bonusRicercaJson','risultatoMalariaViaggio'].indexOf(ev.target.id)>=0||ev.target.closest&&ev.target.closest('#ebxResearchBonusRows')))setTimeout(syncResearchAutomaticMalus,0);if(ev.target&&MALUS.some(function(m){return m[0]===ev.target.id;}))setTimeout(syncResearchAutomaticMalus,0);},true);
 
@@ -9647,7 +9761,7 @@ if(typeof rpCollectState==='function'){var baseCollect=rpCollectState;rpCollectS
 if(typeof rpScheduleSave==='function'){var baseSchedule=rpScheduleSave;rpScheduleSave=function(){if(V171_RESEARCH_LOADING)return;return baseSchedule.apply(this,arguments);};window.rpScheduleSave=rpScheduleSave;}
 function reapplyResearchState(state){if(!state)return;try{RP_RESTORING=true;var fields=document.querySelectorAll('#piante-workspace [data-key]');fields.forEach(function(f){var k=f.getAttribute('data-key');if(state[k]===undefined)return;if(f.type==='checkbox'||f.type==='radio')f.checked=!!state[k];else f.value=state[k];});if(typeof ricalcolaRicerca==='function')ricalcolaRicerca();}finally{try{RP_RESTORING=false;}catch(e){}}renderMalus();syncResearchAutomaticMalus();}
 if(typeof rpOpenSession==='function'){var baseOpen=rpOpenSession;rpOpenSession=function(id,data){try{if(RP_SAVE_TIMER){clearTimeout(RP_SAVE_TIMER);RP_SAVE_TIMER=null;}}catch(e){}V171_RESEARCH_LOADING=true;var pg=String((data&&(data.pgName||data.initialPgName))||'').trim();if(pg){var f=E('pgNomeSessione');if(f&&!f.value)f.value=pg;if(profileFor(pg)){applyProfile(pg);profileReadyName=pg;}}var out=baseOpen.apply(this,arguments),st=data&&data.state;setTimeout(function(){reapplyResearchState(st);},70);setTimeout(function(){reapplyResearchState(st);V171_RESEARCH_LOADING=false;if(typeof rpStatus==='function')rpStatus('rp-save-status',RP_READONLY?'Modalità sola lettura.':'Ricerca caricata · autosalvataggio attivo','ok');},220);if(pg){waitFor(function(){try{return typeof ERB_GUIDE_READY==='undefined'||ERB_GUIDE_READY===true;}catch(e){return true;}},10000).then(function(){if(profileFor(pg)){applyProfile(pg);profileReadyName=pg;}}).catch(function(){});}return out;};window.rpOpenSession=rpOpenSession;}
-window.rpLoadSession=function(id){if(!RP_FB||!RP_FB.db||!RP_FB.user)return Promise.reject(new Error('Firebase non è pronto.'));if(typeof rpStatus==='function')rpStatus('rp-session-home-msg','Caricamento Ricerca…','');return RP_FB.db.collection(RP_COLLECTION).doc(id).get().then(function(doc){if(!doc.exists)throw new Error('La Ricerca non esiste più.');var d=doc.data()||{};if(d.recordType==='guide')throw new Error('Questo documento appartiene alla Guida.');if(RP_FB.user.uid!==RP_NARRATOR_UID&&d.ownerUid!==RP_FB.user.uid)throw new Error('Questa Ricerca appartiene a un altro account.');rpOpenSession(doc.id,d);if(typeof rpStatus==='function')rpStatus('rp-session-home-msg','','');return d;}).catch(function(err){console.error(err);if(typeof rpStatus==='function')rpStatus('rp-session-home-msg','Impossibile aprire la Ricerca: '+(err.message||err),'bad');throw err;});};
+window.rpLoadSession=function(id){if(!RP_FB||!RP_FB.db||!RP_FB.user)return Promise.reject(new Error('Firebase non è pronto.'));if(typeof rpStatus==='function')rpStatus('rp-session-home-msg','Caricamento Ricerca…','');return RP_FB.db.collection(RP_COLLECTION).doc(id).get().then(function(doc){if(!doc.exists)throw new Error('La Ricerca non esiste più.');var d=doc.data()||{};if(d.recordType==='guide'||d.recordType==='profile')throw new Error('Questo documento è un salvataggio di servizio, non una Ricerca.');if(RP_FB.user.uid!==RP_NARRATOR_UID&&d.ownerUid!==RP_FB.user.uid)throw new Error('Questa Ricerca appartiene a un altro account.');rpOpenSession(doc.id,d);if(typeof rpStatus==='function')rpStatus('rp-session-home-msg','','');return d;}).catch(function(err){console.error(err);if(typeof rpStatus==='function')rpStatus('rp-session-home-msg','Impossibile aprire la Ricerca: '+(err.message||err),'bad');throw err;});};
 window.rpNavigateSession=function(id){try{history.replaceState(null,'',window.location.pathname+window.location.search+'#session='+encodeURIComponent(id));}catch(e){}return window.rpLoadSession(id);};
 
 /* ===== Salvataggi manuali ===== */
