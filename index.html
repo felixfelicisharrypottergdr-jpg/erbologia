@@ -1,3 +1,4 @@
+<!-- Erbologia tool v174 — fix definitivo scope Profilo/Nuova Ricerca: lo stato condiviso della Guida (ERB_PG_PROFILES, profilo attivo, archivio Piante e flag di salvataggio) è ora esposto in modo controllato ai controller v154/v171/v172, eliminando «ERB_PG_PROFILES is not defined» senza duplicare i dati. Mantiene integralmente v172. 12/10/2026 -->
 <!-- Erbologia tool v172 — fix salvataggio Profilo PG: «Salva dati PG» usa un documento Firebase dedicato e non dipende più dal salvataggio dell'intera Guida; «Carica PG» legge il profilo dedicato con fallback/migrazione dai salvataggi legacy; i documenti profile sono esclusi dalle Ricerche. Mantiene integralmente v171. 05/10/2026 -->
 <!-- Erbologia tool v171 — allineamento consolidato alla Magizoologia v203: profilo PG esplicito Salva/Carica/Svuota, Malus categorizzati persistenti, Registro malus Ricerca, apertura Ricerca protetta, salvataggi manuali, nuova Ricerca sempre visibile con conferma, archivio Piante in details, Svuota Guida con conferma, import immediato e contrasto finale consolidato. -->
 <!-- Erbologia tool v164 — Profilo iniziale consolidato, Ricerche multiple per PG, nuova Ricerca vuota ed etichetta corretta. -->
@@ -6694,6 +6695,71 @@ if(typeof window.rpApplyFlow==='function'){var e44OldApplyFlow=window.rpApplyFlo
 if(typeof window.rpResumeFlow==='function'){window.rpResumeFlow=function(){var page='config';if(!rpConfigReady())page='config';else if(!rpEncounterComplete(1))page='enc1';else if(RP_FLOW.outcomeVisited)page='outcome';else if(rpTipo()==='attiva'&&rpPageUnlocked('enc2')&&!rpEncounterComplete(2))page='enc2';else if(rpTipo()==='attiva'&&rpPageUnlocked('enc3')&&!rpEncounterComplete(3))page='enc3';else page='outcome';RP_FLOW.summaryVisited=rpConfigReady();RP_FLOW.page=page;rpApplyFlow();var p=document.querySelector('#piante-workspace [data-rp-page-panel="'+page+'"]');if(p)setTimeout(function(){try{p.scrollIntoView({behavior:'auto',block:'start'});}catch(e){}},80);};}
 
 var ERB_GUIDE_RESTORING=false,ERB_GUIDE_SAVE_TIMER=null,ERB_GUIDE_NAME_SAVE_TIMER=null,ERB_GUIDE_SAVE_CHAIN=Promise.resolve(),ERB_GUIDE_READY=false,ERB_GUIDE_DIRTY_BEFORE_READY=false,ERB_GUIDE_LOADING=false,ERB_PLANT_LIBRARY=[],ERB_ACTIVE_PLANT_ID='',ERB_PG_PROFILES={},ERB_PROFILE_BOUND_NAME='';
+
+/* v174 — stato Erbologia condiviso tra i controller storici.
+   Il controller principale mantiene lo stato autoritativo nelle proprie variabili locali;
+   i controller v154/v171/v172 lo vedono tramite proprietà globali con getter/setter.
+   Questo evita i ReferenceError causati dagli IIFE in strict mode senza duplicare lo stato. */
+(function exposeErbSharedState(){
+  function expose(name,getter,setter){
+    try{
+      var d=Object.getOwnPropertyDescriptor(window,name);
+      if(!d || d.configurable){
+        Object.defineProperty(window,name,{
+          configurable:true,
+          enumerable:false,
+          get:getter,
+          set:setter
+        });
+      }
+    }catch(e){ console.error('Erbologia: impossibile esporre '+name,e); }
+  }
+
+  expose('ERB_PG_PROFILES',
+    function(){ return ERB_PG_PROFILES; },
+    function(v){ ERB_PG_PROFILES=(v&&typeof v==='object')?v:{}; });
+
+  expose('ERB_PROFILE_BOUND_NAME',
+    function(){ return ERB_PROFILE_BOUND_NAME; },
+    function(v){ ERB_PROFILE_BOUND_NAME=String(v||''); });
+
+  expose('ERB_PLANT_LIBRARY',
+    function(){ return ERB_PLANT_LIBRARY; },
+    function(v){ ERB_PLANT_LIBRARY=Array.isArray(v)?v:[]; });
+
+  expose('ERB_ACTIVE_PLANT_ID',
+    function(){ return ERB_ACTIVE_PLANT_ID; },
+    function(v){ ERB_ACTIVE_PLANT_ID=String(v||''); });
+
+  expose('ERB_GUIDE_RESTORING',
+    function(){ return ERB_GUIDE_RESTORING; },
+    function(v){ ERB_GUIDE_RESTORING=!!v; });
+
+  expose('ERB_GUIDE_SAVE_TIMER',
+    function(){ return ERB_GUIDE_SAVE_TIMER; },
+    function(v){ ERB_GUIDE_SAVE_TIMER=v; });
+
+  expose('ERB_GUIDE_NAME_SAVE_TIMER',
+    function(){ return ERB_GUIDE_NAME_SAVE_TIMER; },
+    function(v){ ERB_GUIDE_NAME_SAVE_TIMER=v; });
+
+  expose('ERB_GUIDE_SAVE_CHAIN',
+    function(){ return ERB_GUIDE_SAVE_CHAIN; },
+    function(v){ ERB_GUIDE_SAVE_CHAIN=(v&&typeof v.then==='function')?v:Promise.resolve(); });
+
+  expose('ERB_GUIDE_READY',
+    function(){ return ERB_GUIDE_READY; },
+    function(v){ ERB_GUIDE_READY=!!v; });
+
+  expose('ERB_GUIDE_DIRTY_BEFORE_READY',
+    function(){ return ERB_GUIDE_DIRTY_BEFORE_READY; },
+    function(v){ ERB_GUIDE_DIRTY_BEFORE_READY=!!v; });
+
+  expose('ERB_GUIDE_LOADING',
+    function(){ return ERB_GUIDE_LOADING; },
+    function(v){ ERB_GUIDE_LOADING=!!v; });
+})();
+
 function erbGuideStatus(msg,kind){var e=document.getElementById('erb-guide-save-status');if(!e)return;e.textContent=msg;e.className='guide-firebase-bar'+(kind?' '+kind:'');}
 function erbGuideDoc(){if(!RP_FB||!RP_FB.db||!RP_FB.user)return null;return RP_FB.db.collection(RP_COLLECTION).doc('guide_'+RP_FB.user.uid);}
 var ERB_GUIDE_LOCAL_CACHE_PREFIX='ffgdr_erb_guide_cache_v140_',ERB_GUIDE_LOCAL_CACHE_MS=12*60*60*1000;
